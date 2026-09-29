@@ -18,7 +18,7 @@ $ya = (int)($p['despacho_veces'] ?? 0) > 0;
           <?= $quien ? 'con <strong>' . e(primer_nombre($quien)) . '</strong>' : '' ?>
           <?= e(hace((string)$p['despacho_en'])) ?><?php if ((int)$p['despacho_veces'] > 1): ?>,
             y se mandó <?= (int)$p['despacho_veces'] ?> veces<?php endif; ?>.
-          <?php if (!empty($p['alistado_en'])): ?>Almacén ya lo alistó.<?php else: ?>Almacén lo tiene en «Por alistar».<?php endif; ?>
+          <?php if (!empty($p['alistado_en'])): ?>Ya está alistado.<?php endif; ?>
           Si algo cambió —una dirección, una cantidad— vuelve a mandarlo.</span>
       </div>
     <?php endif; ?>
@@ -110,8 +110,8 @@ $ya = (int)($p['despacho_veces'] ?? 0) > 0;
       <?php /* EL RÓTULO PARA LA CAJA (usuario, 2026-09-20). Media A5 con el
                logo: se descarga, se imprime y se pega, y el mismo PDF se puede
                mandar al grupo. */ ?>
-      <a class="btn btn--linea" href="<?= e(url('/pedidos/rotulo?id=' . (int)$p['id'])) ?>">
-        DESCARGAR EL RÓTULO (PDF)</a>
+      <a class="btn btn--linea" href="<?= e(url('/pedidos/rotulo?id=' . (int)$p['id'] . '&vista=1')) ?>">
+        <?= ico('impresora', 15) ?> VER E IMPRIMIR EL RÓTULO</a>
       <a class="btn btn--linea" href="<?= e(url('/pedidos/ficha?id=' . (int)$p['id'])) ?>">Volver al pedido</a>
     </div>
 

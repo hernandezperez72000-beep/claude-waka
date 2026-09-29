@@ -5,6 +5,7 @@ $equipos   = $equipos ?? [];
 $con_error = (int)($con_error ?? 0);
 $garantias = $garantias ?? [];
 $mostrados = array_merge(array_map(fn($x) => (int)$x['id'], $pedidos), array_map(fn($x) => -(int)$x['id'], $garantias));
+$modo = $modo ?? 'alistar';
 ?>
 <?php /* Un error de un pedido que ya no está en la lista (se anuló, otro lo
          alistó) se dice arriba: dentro de su tarjeta no se vería. */ ?>
@@ -25,6 +26,7 @@ $mostrados = array_merge(array_map(fn($x) => (int)$x['id'], $pedidos), array_map
   </div>
 <?php endif; ?>
 
+<?php if ($modo === 'alistar'): ?>
 <?php /* LAS GARANTÍAS APROBADAS (3i): salen sin cobrar, con envío gratis, a
          la dirección de su pedido. Van primero: el cliente ya esperó. */ ?>
 <?php if ($garantias): ?>
@@ -47,7 +49,7 @@ $mostrados = array_merge(array_map(fn($x) => (int)$x['id'], $pedidos), array_map
       <p class="mini" style="margin:6px 0 0">Del pedido <?= e((string)$g['pedido_codigo']) ?><?= $gp ? ' · ' . e(pedido_como_recibe($gp)) : '' ?>. Sin cobrar nada, tampoco el envío.
         <?php if (trim((string)$g['nota']) !== ''): ?><br>Nota: <?= e((string)$g['nota']) ?><?php endif; ?></p>
       <div class="acciones" style="margin:8px 0 0">
-        <a class="btn btn--linea btn--chico alistar__rotulo" href="<?= e(url('/garantias/rotulo?id=' . $gid)) ?>"><?= ico('flecha',14) ?> RÓTULO (PDF)</a>
+        <a class="btn btn--linea btn--chico alistar__rotulo" href="<?= e(url('/garantias/rotulo?id=' . $gid . '&vista=1')) ?>"><?= ico('impresora',14) ?> RÓTULO</a>
       </div>
       <?php if ($con_error === -$gid && !empty($errores)): ?>
         <div class="aviso aviso--rojo" style="margin-top:10px">
@@ -126,7 +128,7 @@ $mostrados = array_merge(array_map(fn($x) => (int)$x['id'], $pedidos), array_map
 
       <?php /* EL RÓTULO (3h.1): lo pega Almacén en la caja que arma. */ ?>
       <div class="acciones" style="margin:8px 0 0">
-        <a class="btn btn--linea btn--chico alistar__rotulo" href="<?= e(url('/pedidos/rotulo?id=' . $pid)) ?>"><?= ico('flecha',14) ?> RÓTULO (PDF)</a>
+        <a class="btn btn--linea btn--chico alistar__rotulo" href="<?= e(url('/pedidos/rotulo?id=' . $pid . '&vista=1')) ?>"><?= ico('impresora',14) ?> RÓTULO</a>
       </div>
 
       <?php if (($indicaciones[$pid] ?? '') !== ''): ?>
@@ -165,6 +167,19 @@ $mostrados = array_merge(array_map(fn($x) => (int)$x['id'], $pedidos), array_map
   </div>
 <?php endif; ?>
 
+
+<?php /* Lo ya alistado vive en «Por entregar» (5b): aquí, un atajo. */ ?>
+<?php if ((int)($por_entregar_n ?? 0) > 0): ?>
+  <a class="tarjeta tarjeta--enlace atajo-entregar" href="<?= e(url('/pedidos/por-entregar')) ?>" id="atajo-por-entregar">
+    <?= ico('camion', 20) ?>
+    <span class="crece"><strong><?= plural((int)$por_entregar_n, 'pedido alistado por entregar', 'pedidos alistados por entregar') ?></strong>
+      <span class="mini">Están en «Por entregar»: ahí se marca la entrega con su foto.</span></span>
+    <?= ico('flecha', 14) ?>
+  </a>
+<?php endif; ?>
+<?php endif; ?>
+
+<?php if ($modo === 'entregar'): ?>
 <?php /* POR ENTREGAR (3j): lo alistado que ya salió. ENTREGADO pide la foto
          de la entrega (o del envío en la agencia) y el estado pasa solo. */
 $por_entregar = $por_entregar ?? [];
@@ -175,26 +190,49 @@ $con_error_ent = (int)($con_error_ent ?? 0); ?>
     <span><?php foreach ($errores as $x): ?><div><?= e($x) ?></div><?php endforeach; ?></span>
   </div>
 <?php endif; ?>
-<?php if ($por_entregar): ?>
-  <div class="tarjeta" style="margin-top:16px" id="por-entregar">
-    <div class="tarjeta__cab"><h2>Por entregar <span class="chip chip--ambar"><?= (int)($por_entregar_n ?? count($por_entregar)) ?></span></h2></div>
-    <p class="mini muted" style="margin:0 0 8px">Cuando llegue al cliente, sube la foto de la entrega.</p>
-    <?php foreach ($por_entregar as $p): $pid = (int)$p['id']; ?>
-      <details class="entregar" id="entregar-<?= $pid ?>" <?= $con_error_ent === $pid ? 'open' : '' ?>>
-        <summary class="fila">
-          <span class="fila__crece">
-            <span class="fila__t"><?= e((string)$p['codigo']) ?> · <?= e(trim((string)$p['cliente_nombre'] . ' ' . (string)$p['cliente_apellidos'])) ?></span>
-            <span class="fila__s"><?= e(pedido_como_recibe($p)) ?> · salió <?= e(hace((string)$p['despacho_en'])) ?></span>
-          </span>
-          <span class="chip chip--ambar">ENTREGADO</span>
-        </summary>
+<?php if (!$por_entregar): ?>
+  <div class="tarjeta" id="por-entregar-vacio">
+    <?php parte('inicio/vacio', ['ico' => 'OK', 'titulo' => 'Nada por entregar',
+          'texto' => 'Cuando se aliste un pedido, aparece aquí para marcar la entrega con su foto.']); ?>
+  </div>
+<?php else: ?>
+  <div id="por-entregar">
+    <p class="mini muted" style="margin:0 0 10px">Cuando llegue al cliente (o lo recibe la agencia), sube la foto de la entrega.
+      Los envíos a provincia llevan su <strong>guía de remisión</strong>.</p>
+    <div class="alistar">
+    <?php foreach ($por_entregar as $p): $pid = (int)$p['id']; $lns = ($por_entregar_lineas ?? [])[$pid] ?? [];
+          $prov = function_exists('guia_aplica') && guia_aplica($p); $guia = $prov && function_exists('guia_de_pedido') ? guia_de_pedido($pid) : null; ?>
+      <div class="tarjeta alistar__ped entregar" id="entregar-<?= $pid ?>">
+        <div class="tarjeta__cab">
+          <h2><?= e((string)$p['codigo']) ?>
+            <span class="mini" style="font-weight:600">· <?= e(trim((string)$p['cliente_nombre'] . ' ' . (string)$p['cliente_apellidos'])) ?></span></h2>
+          <span class="chip chip--verde">Alistado</span>
+        </div>
+        <p class="mini" style="margin:0 0 6px"><?= e(pedido_como_recibe($p)) ?> · alistado <?= e(hace((string)$p['alistado_en'])) ?></p>
+        <?php if ($lns): ?>
+          <ul class="alistar__lineas">
+            <?php foreach ($lns as $ln): ?>
+              <li><span class="alistar__cant"><?= (int)$ln['cantidad'] ?>×</span>
+                <span class="alistar__desc"><?= e((string)$ln['descripcion']) ?>
+                  <?php if (trim((string)($ln['modelo'] ?? '')) !== ''): ?><span class="alistar__modelo"><?= e((string)$ln['modelo']) ?></span><?php endif; ?></span></li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
+        <div class="acciones" style="margin:8px 0 0">
+          <a class="btn btn--linea btn--chico" href="<?= e(url('/pedidos/rotulo?id=' . $pid . '&vista=1')) ?>"><?= ico('impresora',14) ?> RÓTULO</a>
+          <?php if ($prov): ?>
+            <a class="btn <?= $guia ? 'btn--linea' : 'btn--negro' ?> btn--chico" href="<?= e(url('/pedidos/guia?id=' . $pid)) ?>" id="guia-<?= $pid ?>">
+              <?= ico('doc',14) ?> <?= $guia ? 'GUÍA ' . e((string)$guia['serie'] . '-' . (int)$guia['numero']) : 'GUÍA DE REMISIÓN' ?></a>
+          <?php endif; ?>
+          <a class="btn btn--linea btn--chico" target="_blank" rel="noopener" href="<?= e(url('/pedidos/alistado-foto?id=' . $pid)) ?>"><?= ico('camara',14) ?> FOTO DE LO ALISTADO</a>
+        </div>
         <?php if ($con_error_ent === $pid && !empty($errores)): ?>
           <div class="aviso aviso--rojo" style="margin-top:8px">
             <span><?= ico('alerta',17) ?></span>
             <span><?php foreach ($errores as $x): ?><div><?= e($x) ?></div><?php endforeach; ?></span>
           </div>
         <?php endif; ?>
-        <form method="post" enctype="multipart/form-data" class="form entregar__form">
+        <form method="post" enctype="multipart/form-data" class="form entregar__form alistar__form">
           <?= campo_csrf() ?>
           <input type="hidden" name="accion" value="entregado">
           <input type="hidden" name="id" value="<?= $pid ?>">
@@ -203,8 +241,9 @@ $con_error_ent = (int)($con_error_ent ?? 0); ?>
                 'id_extra' => 'e' . $pid]); ?>
           <div class="acciones"><button class="btn btn--amarillo" type="submit">MARCAR ENTREGADO</button></div>
         </form>
-      </details>
+      </div>
     <?php endforeach; ?>
+    </div>
   </div>
 <?php endif; ?>
 
@@ -231,6 +270,9 @@ $con_error_ent = (int)($con_error_ent ?? 0); ?>
   </div>
 <?php endif; ?>
 
+<?php endif; ?>
+
+<?php if ($modo === 'alistar'): ?>
 <?php if (!empty($garantias_hoy)): ?>
   <div class="tarjeta" style="margin-top:16px" id="garantias-alistadas-hoy">
     <div class="tarjeta__cab"><h2>Garantías alistadas hoy <span class="chip chip--gris"><?= count($garantias_hoy) ?></span></h2></div>
@@ -268,7 +310,7 @@ $con_error_ent = (int)($con_error_ent ?? 0); ?>
         <?php endif; ?>
         <a class="chip chip--ver" target="_blank" rel="noopener" href="<?= e(url('/pedidos/alistado-foto?id=' . (int)$a['id'])) ?>">VER FOTO</a>
         <?php if ($a['anulado_en'] === null): ?>
-        <a class="chip chip--linea" href="<?= e(url('/pedidos/rotulo?id=' . (int)$a['id'])) ?>">Rótulo</a>
+        <a class="chip chip--linea" href="<?= e(url('/pedidos/rotulo?id=' . (int)$a['id'] . '&vista=1')) ?>">Rótulo</a>
         <form method="post" style="display:inline">
           <?= campo_csrf() ?>
           <input type="hidden" name="accion" value="deshacer">
@@ -279,4 +321,6 @@ $con_error_ent = (int)($con_error_ent ?? 0); ?>
       </div>
     <?php endforeach; ?>
   </div>
+<?php endif; ?>
+
 <?php endif; ?>

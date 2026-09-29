@@ -97,6 +97,25 @@ $campo_serie = function (string $campo, string $titulo, string $ej) use ($cfg, $
         <?php $campo_serie('serie_nc_factura', 'Notas de crédito de facturas', 'FC01'); ?>
         <span class="ayuda">Las mismas que tienes creadas en NUBEFACT. Si ya emitiste con una de ellas allá, pon como próximo número el que sigue al último. Solo se puede subir.</span>
 
+        <?php /* 5b · LA GUÍA DE REMISIÓN de los envíos a provincia: su serie y de
+                 dónde sale la mercadería. Almacén y Facturación la emiten desde
+                 «Por entregar», con una vista previa que se puede corregir. */ ?>
+        <h3 style="font-size:13px;margin:16px 0 4px" id="conf-guia">Guía de remisión (envíos a provincia)</h3>
+        <?php $campo_serie('serie_guia', 'Serie de la guía', 'T001'); ?>
+        <div class="form__fila">
+          <label>Ubigeo del almacén
+            <input type="text" name="guia_partida_ubigeo" inputmode="numeric" maxlength="6" placeholder="150101"
+                   value="<?= e((string) ajuste('guia_partida_ubigeo', '')) ?>" <?= $puedo_tocar ? '' : 'disabled' ?>></label>
+          <label>Peso por bulto (kg)
+            <input type="text" name="guia_peso_bulto" inputmode="decimal" maxlength="7" placeholder="5"
+                   value="<?= e((string) ajuste('guia_peso_bulto', '5')) ?>" <?= $puedo_tocar ? '' : 'disabled' ?>></label>
+        </div>
+        <label>Dirección del almacén (punto de partida)
+          <input type="text" name="guia_partida_direccion" maxlength="150" placeholder="Av. … 123, Cercado de Lima"
+                 value="<?= e((string) ajuste('guia_partida_direccion', '')) ?>" <?= $puedo_tocar ? '' : 'disabled' ?>></label>
+        <span class="ayuda">La serie de guías empieza con T y se crea en NUBEFACT. El peso por bulto es el que sale
+          propuesto; en cada guía se corrige.</span>
+
         <?php if ($puedo_tocar): ?>
           <div class="acciones" style="margin-top:12px">
             <button class="btn btn--negro" type="submit">GUARDAR</button>

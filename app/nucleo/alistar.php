@@ -256,6 +256,8 @@ function pedido_entregado_marcar(int $pedido_id, ?string $foto): array
     pedido_evento($pedido_id, 'entregado', 'Se entregó');
     bitacora('pedido.entregado', 'pedido', $pedido_id, ['foto' => $foto]);
     pedido_estado_auto($pedido_id);
+    /* 5b: el asesor se entera (se lo prometió la pantalla al mandarlo). */
+    if (function_exists('notif_entregado')) notif_entregado($pedido_id);
     return ['ok' => true, 'error' => ''];
 }
 

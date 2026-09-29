@@ -80,8 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         avisar('info', 'Este pedido ya estaba en despacho.');
     } else {
         avisar($r['ok'] ? 'ok' : 'error', $r['ok']
-            ? ((int)$r['veces'] === 1 ? 'Mandado a despacho. Almacén ya lo ve en «Por alistar».'
-                                      : 'Vuelto a mandar a despacho. Almacén ya lo ve en «Por alistar».')
+            /* Para el asesor, sin la cocina de Almacén (usuario, 2026-09-29:
+               «eso es insignificante para el asesor»). */
+            ? ((int)$r['veces'] === 1 ? 'Listo, tu pedido salió a despacho. Te avisamos cuando se entregue.'
+                                      : 'Listo, lo volviste a mandar con los cambios.')
             : $r['error']);
     }
     $volver = match (pedir('volver')) {

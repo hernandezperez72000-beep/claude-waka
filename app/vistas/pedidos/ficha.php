@@ -855,7 +855,7 @@ HABLAR CON FACTURACIÓN</a>
           <?php else: ?>
           <?php parte('pedidos/boton_despacho', ['p' => $p, 'clase' => 'btn btn--amarillo', 'html' => 'MANDAR A DESPACHO', 'volver' => 'ficha']); ?>
           <?php endif; ?>
-          <a class="btn btn--linea" href="<?= e(url('/pedidos/rotulo?id=' . (int)$p['id'])) ?>">RÓTULO (PDF)</a>
+          <a class="btn btn--linea" href="<?= e(url('/pedidos/rotulo?id=' . (int)$p['id'] . '&vista=1')) ?>"><?= ico('impresora', 15) ?> RÓTULO</a>
         </div>
       <?php elseif ((string)$p['estado'] === 'anulado'): ?>
         <?php /* EL ANULADO SE PREGUNTA POR SÍ MISMO, no por descarte. Estaba

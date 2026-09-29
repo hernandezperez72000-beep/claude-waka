@@ -13,6 +13,7 @@ php pruebas/correr8.php || fallos=1
 php pruebas/correr9.php || fallos=1
 php pruebas/correr10.php || fallos=1
 php pruebas/correr11.php || fallos=1
+php pruebas/correr12.php || fallos=1
 # Los avisos en vivo, ejecutados de verdad en Node (3d): el sondeo del asesor
 # llevaba meses callado por un error que ninguna prueba de PHP puede ver.
 salida_av=$(node pruebas/avisos.cjs 2>&1)

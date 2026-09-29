@@ -41,14 +41,29 @@ if (!puede('pedidos.despachar') && (int)($p['despacho_veces'] ?? 0) === 0) {
     cortar(409, 'Todavía no sale a despacho', 'El rótulo sale cuando el asesor lo manda a despacho.');
 }
 
-$pdf = rotulo_de_pedido((int)$p['id']);
+/* LA VISTA PREVIA (usuario, 2026-09-29): «que no se descargue de manera
+   directa, que se abra una previsualización, y que se pueda elegir la
+   cantidad de bultos». Con ?vista=1 sale la pantalla; sin ella, el PDF. */
+if (pedir('vista', 'get') === '1') {
+    $bl = rotulo_bloques((int)$p['id']);
+    if ($bl === null) cortar(404, 'Ese pedido no existe');
+    seccion_activa(puede('pedidos.alistar') && !puede('pedidos.crear') ? 'alistar' : 'despacho');
+    pagina('pedidos/rotulo_vista', ['bloques' => $bl, 'codigo' => (string)$p['codigo'],
+        'pdf' => url('/pedidos/rotulo?id=' . (int)$p['id']),
+        'volver' => volver_de_donde_vino(url(puede('pedidos.ver') ? '/pedidos/ficha?id=' . (int)$p['id'] : '/pedidos/por-alistar'))],
+        ['titulo' => 'Rótulo ' . $p['codigo'], 'sin_titulo' => true]);
+    return;
+}
+$bultos = max(1, min(50, (int) pedir_int('bultos', 'get', 1)));
+$pdf = rotulo_de_pedido((int)$p['id'], null, $bultos);
 if ($pdf === null) cortar(404, 'Ese pedido no existe');
 
-/* Se descarga con el código del pedido por nombre: en el grupo de WhatsApp
-   aparecen diez rótulos al día y «documento.pdf» no le sirve a nadie. */
-$nombre = 'rotulo-' . preg_replace('/[^A-Za-z0-9\-]/', '', (string)$p['codigo']) . '.pdf';
+/* Con el código del pedido por nombre: en el grupo de WhatsApp aparecen diez
+   rótulos al día y «documento.pdf» no le sirve a nadie. Se abre en el
+   navegador para imprimir; con ?descargar=1, se descarga. */
+$nombre = 'rotulo-' . preg_replace('/[^A-Za-z0-9\-]/', '', (string)$p['codigo']) . ($bultos > 1 ? '-' . $bultos . 'bultos' : '') . '.pdf';
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="' . $nombre . '"');
+header('Content-Disposition: ' . (pedir('descargar', 'get') === '1' ? 'attachment' : 'inline') . '; filename="' . $nombre . '"');
 header('Content-Length: ' . strlen($pdf));
 header('X-Content-Type-Options: nosniff');
 echo $pdf;

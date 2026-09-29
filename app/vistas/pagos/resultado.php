@@ -97,6 +97,11 @@ $freno_emitir = nubefact_activo() ? pedido_emision_bloqueo($rp) : ''; ?>
                  la constancia de uno emitido fuera (parche 2u). */
               $ruta_emitir = nubefact_activo() ? '/pedidos/emitir' : '/pedidos/comprobante'; ?>
         <?php foreach ($freno_emitir === '' ? comprobantes_que_se_solicitan() : [] as $tv => $tc): $tt = 'EMITIR ' . mb_strtoupper($tc['nombre']); ?>
+          <?php /* 5b: con NUBEFACT, EMITIR abre la vista previa (se corrige y se manda desde ahí). */ ?>
+          <?php if ($ruta_emitir === '/pedidos/emitir'): ?>
+            <a class="btn <?= $resultado['sugerido'] === $tv ? 'btn--negro' : 'btn--linea' ?>"
+               href="<?= e(url('/pedidos/emitir?id=' . (int)$rp['id'] . '&tipo=' . $tv . '&volver=' . rawurlencode((string)$vuelve))) ?>"><?= $tt ?></a>
+            <?php continue; endif; ?>
           <form method="post" action="<?= e(url($ruta_emitir)) ?>" style="display:inline">
             <?= campo_csrf() ?>
             <input type="hidden" name="id" value="<?= (int)$rp['id'] ?>">

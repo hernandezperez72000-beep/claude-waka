@@ -10,70 +10,6 @@
          persona y se vacía sola en cuanto se emite. Va ARRIBA de los pagos
          porque el rato en que facturación tiene tiempo de emitir es justo
          cuando la bandeja de pagos está vacía. */ ?>
-<?php if (!empty($solicitados)): ?>
-  <div class="tarjeta" style="margin-bottom:14px;border-color:var(--marca);border-width:2px">
-    <div class="tarjeta__cab">
-      <?php /* El TOTAL, no lo que cupo en la página: «100» con 122 esperando es
-               una cifra que miente, y facturación no podía distinguir 101 de
-               1010. Sale de la misma condición que la cola. */ ?>
-      <h2><?= ico('tarjeta',18) ?> <?= e(plural((int)$n_solicitados,
-            'comprobante solicitado', 'comprobantes solicitados')) ?></h2>
-      <span class="mini"><?= !empty($mas_solicitados)
-        ? 'Se ven los ' . count($solicitados) . ' más antiguos'
-        : 'Lo pidió el asesor · se van de aquí en cuanto los emites' ?></span>
-    </div>
-    <div class="tabla__caja">
-      <table class="tabla">
-        <thead><tr><th>Pedido</th><th>Cliente</th><th>Pide</th>
-          <th>Asesor</th><th class="der">Total</th><th></th></tr></thead>
-        <tbody>
-        <?php foreach ($solicitados as $sl): ?>
-          <tr>
-            <td class="principal">
-              <a href="<?= e(url('/pedidos/ficha?id=' . (int)$sl['id'])) ?>" style="color:inherit">
-                <div class="fila__t"><?= e((string)$sl['codigo']) ?></div>
-                <?php if (!empty($sl['pide_en'])): ?>
-                  <div class="fila__s"><?= e(hace((string)$sl['pide_en'])) ?></div>
-                <?php endif; ?>
-              </a>
-            </td>
-            <td data-k="Cliente">
-              <div class="recorta"><?= e(trim((string)$sl['cliente_nombre'] . ' '
-                                            . (string)$sl['cliente_apellidos'])) ?></div>
-              <div class="fila__s"><?= e((string)$sl['tipo_doc']) ?>
-                <?= e((string)$sl['documento']) ?></div>
-            </td>
-            <td data-k="Pide">
-              <?php /* El ámbar es el de «hay algo que hacer», el mismo de los
-                       pagos en espera: son la misma clase de fila. */ ?>
-              <span class="chip chip--ambar"><?= e(comprobante_pide_texto((string)$sl['comprobante_pide'])) ?></span>
-            </td>
-            <td data-k="Asesor"><span class="mini"><?= e(primer_nombre((string)$sl['asesor_nombre'])) ?></span></td>
-            <td class="der num"><?= e(soles((int)$sl['total_centimos'])) ?></td>
-            <td class="der">
-              <a class="btn btn--linea" href="<?= e(url('/pedidos/facturar?id=' . (int)$sl['id'])) ?>">
-                EMITIR COMPROBANTE</a>
-              <?php /* Y si todavía no se puede, se dice aquí: si no, la fila se
-                       lee como «alguien no hace su trabajo» (auditoría 2w). */ ?>
-              <?php if ($freno_sl = pedido_emision_bloqueo($sl)): ?>
-                <div class="mini" style="margin-top:6px"><?= e($freno_sl) ?></div>
-              <?php endif; ?>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
-    <p class="mini" style="margin:10px 0 0">
-      Si una venta no lleva comprobante, márcalo en <strong>Emitir comprobante</strong> y sale de la lista.
-      <?php if (!empty($mas_solicitados)): ?>
-        <br><strong>Se ven las <?= count($solicitados) ?> más antiguas</strong> de
-        <?= (int)$n_solicitados ?>: vacía estas y aparecen las siguientes.
-      <?php endif; ?>
-    </p>
-  </div>
-<?php endif; ?>
-
 <?php /* LA VENTANA DE «QUÉ ACABA DE PASAR». Va la primera del HTML: si el
          navegador no pinta el CSS, lo que se lee arriba del todo es lo que
          hace falta decidir. */ ?>
@@ -173,6 +109,74 @@
 
 <?php endif; ?>
 
+<?php /* EL ORDEN (usuario, 2026-09-29): primero «Sin revisar» (y lo que está en
+         espera), después los comprobantes solicitados y al final los
+         validados. Lo que mueve dinero va arriba. */ ?>
+<?php if (!empty($solicitados)): ?>
+  <div class="tarjeta" id="comprobantes-solicitados" style="margin-top:14px;border-color:var(--marca);border-width:2px">
+    <div class="tarjeta__cab">
+      <?php /* El TOTAL, no lo que cupo en la página: «100» con 122 esperando es
+               una cifra que miente, y facturación no podía distinguir 101 de
+               1010. Sale de la misma condición que la cola. */ ?>
+      <h2><?= ico('tarjeta',18) ?> <?= e(plural((int)$n_solicitados,
+            'comprobante solicitado', 'comprobantes solicitados')) ?></h2>
+      <span class="mini"><?= !empty($mas_solicitados)
+        ? 'Se ven los ' . count($solicitados) . ' más antiguos'
+        : 'Lo pidió el asesor · se van de aquí en cuanto los emites' ?></span>
+    </div>
+    <div class="tabla__caja">
+      <table class="tabla">
+        <thead><tr><th>Pedido</th><th>Cliente</th><th>Pide</th>
+          <th>Asesor</th><th class="der">Total</th><th></th></tr></thead>
+        <tbody>
+        <?php foreach ($solicitados as $sl): ?>
+          <tr>
+            <td class="principal">
+              <a href="<?= e(url('/pedidos/ficha?id=' . (int)$sl['id'])) ?>" style="color:inherit">
+                <div class="fila__t"><?= e((string)$sl['codigo']) ?></div>
+                <?php if (!empty($sl['pide_en'])): ?>
+                  <div class="fila__s"><?= e(hace((string)$sl['pide_en'])) ?></div>
+                <?php endif; ?>
+              </a>
+            </td>
+            <td data-k="Cliente">
+              <div class="recorta"><?= e(trim((string)$sl['cliente_nombre'] . ' '
+                                            . (string)$sl['cliente_apellidos'])) ?></div>
+              <div class="fila__s"><?= e((string)$sl['tipo_doc']) ?>
+                <?= e((string)$sl['documento']) ?></div>
+            </td>
+            <td data-k="Pide">
+              <?php /* El ámbar es el de «hay algo que hacer», el mismo de los
+                       pagos en espera: son la misma clase de fila. */ ?>
+              <span class="chip chip--ambar"><?= e(comprobante_pide_texto((string)$sl['comprobante_pide'])) ?></span>
+            </td>
+            <td data-k="Asesor"><span class="mini"><?= e(primer_nombre((string)$sl['asesor_nombre'])) ?></span></td>
+            <td class="der num"><?= e(soles((int)$sl['total_centimos'])) ?></td>
+            <td class="der">
+              <a class="btn btn--linea" href="<?= e(url('/pedidos/facturar?id=' . (int)$sl['id'])) ?>">
+                EMITIR COMPROBANTE</a>
+              <?php /* Y si todavía no se puede, se dice aquí: si no, la fila se
+                       lee como «alguien no hace su trabajo» (auditoría 2w). */ ?>
+              <?php if ($freno_sl = pedido_emision_bloqueo($sl)): ?>
+                <div class="mini" style="margin-top:6px"><?= e($freno_sl) ?></div>
+              <?php endif; ?>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+    <p class="mini" style="margin:10px 0 0">
+      Si una venta no lleva comprobante, márcalo en <strong>Emitir comprobante</strong> y sale de la lista.
+      <?php if (!empty($mas_solicitados)): ?>
+        <br><strong>Se ven las <?= count($solicitados) ?> más antiguas</strong> de
+        <?= (int)$n_solicitados ?>: vacía estas y aparecen las siguientes.
+      <?php endif; ?>
+    </p>
+  </div>
+<?php endif; ?>
+
+
 <?php /* ── LO QUE YA SE VALIDÓ (usuario, 2026-09-23) ────────────────────
          Va DEBAJO de lo que falta por mirar, nunca encima: el trabajo del día
          es lo de arriba. El pago recién confirmado sale en verde un momento —
@@ -266,3 +270,127 @@
   <?php endif; ?>
 </div>
 
+
+<?php /* ── EL VOUCHER FLOTANTE (usuario, 2026-09-29) ────────────────────
+         «Ver voucher» abre el voucher encima de la bandeja y, al lado, el N.º
+         de operación y los mismos tres botones de la fila. Se valida mirando
+         el voucher, sin cambiar de pestaña. Los formularios son los de
+         siempre: la ventana solo cambia a qué pago van. */ ?>
+<dialog class="voucher-flota" id="voucher-flota" aria-labelledby="vf-codigo">
+  <div class="voucher-flota__img" id="vf-caja">
+    <div class="voucher-flota__herr">
+      <button type="button" class="chip chip--linea" id="vf-ver-voucher" aria-pressed="true">Voucher</button>
+      <button type="button" class="chip chip--linea" id="vf-ver-dni" hidden>DNI</button>
+      <button type="button" class="chip chip--linea" id="vf-girar" title="Girar la imagen">Girar</button>
+      <button type="button" class="chip chip--linea" id="vf-zoom" title="Ver más grande">Acercar</button>
+      <a class="chip chip--linea" id="vf-pestana" target="_blank" rel="noopener" href="#">Abrir aparte</a>
+    </div>
+    <div class="voucher-flota__lienzo" id="vf-lienzo">
+      <img id="vf-imagen" alt="Voucher del pago">
+      <iframe id="vf-pdf" title="Voucher en PDF" hidden></iframe>
+    </div>
+  </div>
+  <div class="voucher-flota__panel">
+    <div class="voucher-flota__cab">
+      <div><strong id="vf-codigo">—</strong><div class="mini" id="vf-cliente"></div></div>
+      <button type="button" class="aviso-vivo__x voucher-flota__x" id="vf-cerrar" aria-label="Cerrar">×</button>
+    </div>
+    <div class="voucher-flota__monto num" id="vf-monto"></div>
+    <div class="voucher-flota__datos">
+      <div><span class="mini">Método</span><strong id="vf-metodo"></strong></div>
+      <div><span class="mini">Fecha del pago</span><strong id="vf-fecha"></strong></div>
+      <div><span class="mini">Asesor</span><strong id="vf-asesor"></strong></div>
+    </div>
+
+    <form method="post" action="<?= e(url('/pagos/validar')) ?>" class="form voucher-flota__f" id="vf-validar">
+      <?= campo_csrf() ?>
+      <input type="hidden" name="id" value="">
+      <label>N.º de operación
+        <input type="text" name="operacion" maxlength="60" id="vf-op" autocomplete="off"
+               placeholder="Cópialo del voucher o del extracto"></label>
+      <button class="btn btn--verde btn--ancho" type="submit">VALIDAR</button>
+    </form>
+
+    <div class="voucher-flota__otras">
+      <button type="button" class="btn btn--linea" data-vf-abre="vf-espera">EN ESPERA</button>
+      <button type="button" class="btn btn--rojo-linea" data-vf-abre="vf-denegar">DENEGAR</button>
+    </div>
+    <form method="post" action="<?= e(url('/pagos/espera')) ?>" class="form voucher-flota__f" id="vf-espera" hidden>
+      <?= campo_csrf() ?>
+      <input type="hidden" name="id" value="">
+      <label>¿Por qué queda en espera? <span class="mini">Lo lee el asesor</span>
+        <input type="text" name="nota" maxlength="200" required placeholder="Interbancario, entra mañana"></label>
+      <button class="btn btn--amarillo btn--ancho" type="submit">DEJAR EN ESPERA</button>
+    </form>
+    <form method="post" action="<?= e(url('/pagos/denegar')) ?>" class="form voucher-flota__f" id="vf-denegar" hidden>
+      <?= campo_csrf() ?>
+      <input type="hidden" name="id" value="">
+      <label>¿Por qué se deniega? <span class="mini">Lo lee el asesor</span>
+        <input type="text" name="motivo" maxlength="200" required placeholder="No aparece en el extracto"></label>
+      <button class="btn btn--rojo btn--ancho" type="submit"
+              data-confirmar="Denegar este pago. NO anula el pedido: se queda con su saldo por cobrar, por si el cliente manda el voucher bueno. ¿Seguimos?">DENEGAR</button>
+    </form>
+    <p class="mini" style="margin:auto 0 0">Validar cuando el pago aparezca en el banco. Denegar no anula el pedido.</p>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var d = document.getElementById('voucher-flota');
+  if (!d || !d.showModal) return;
+  var img = document.getElementById('vf-imagen'), pdf = document.getElementById('vf-pdf');
+  var lienzo = document.getElementById('vf-lienzo');
+  var giro = 0, grande = false, urlV = '', urlD = '', pdfV = false;
+  function $(id) { return document.getElementById(id); }
+  function mostrar(url, esPdf) {
+    giro = 0; grande = false; lienzo.classList.remove('voucher-flota__lienzo--grande');
+    img.style.transform = '';
+    if (esPdf) { img.hidden = true; pdf.hidden = false; pdf.src = url; }
+    else { pdf.hidden = true; pdf.removeAttribute('src'); img.hidden = false; img.src = url; }
+    $('vf-pestana').href = url;
+  }
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest('[data-voucher-flota]');
+    if (!a) return;
+    ev.preventDefault();
+    var ds = a.dataset;
+    urlV = a.getAttribute('href'); urlD = ds.dni || ''; pdfV = ds.pdf === '1';
+    mostrar(urlV, pdfV);
+    $('vf-ver-dni').hidden = !urlD;
+    $('vf-ver-voucher').setAttribute('aria-pressed', 'true');
+    $('vf-codigo').textContent = ds.codigo; $('vf-cliente').textContent = ds.cliente;
+    $('vf-monto').textContent = ds.monto; $('vf-metodo').textContent = ds.metodo;
+    $('vf-fecha').textContent = ds.fecha; $('vf-asesor').textContent = ds.asesor;
+    d.querySelectorAll('input[name=id]').forEach(function (i) { i.value = ds.pago; });
+    var op = $('vf-op'); op.value = ds.op || ''; op.required = ds.pideOp === '1';
+    op.placeholder = ds.pideOp === '1' ? 'N.º de operación (obligatorio)' : 'Cópialo del voucher o del extracto';
+    d.querySelector('#vf-espera input[name=nota]').value = ds.nota || '';
+    d.querySelector('#vf-denegar input[name=motivo]').value = '';
+    $('vf-espera').hidden = true; $('vf-denegar').hidden = true;
+    d.showModal();
+    try { op.focus({preventScroll: true}); } catch (e) {}
+  });
+  $('vf-cerrar').addEventListener('click', function () { d.close(); });
+  d.addEventListener('click', function (ev) { if (ev.target === d) d.close(); });
+  d.addEventListener('close', function () { img.removeAttribute('src'); pdf.removeAttribute('src'); });
+  $('vf-ver-voucher').addEventListener('click', function () {
+    mostrar(urlV, pdfV); $('vf-ver-voucher').setAttribute('aria-pressed', 'true'); $('vf-ver-dni').setAttribute('aria-pressed', 'false');
+  });
+  $('vf-ver-dni').addEventListener('click', function () {
+    if (!urlD) return; mostrar(urlD, false); $('vf-ver-dni').setAttribute('aria-pressed', 'true'); $('vf-ver-voucher').setAttribute('aria-pressed', 'false');
+  });
+  $('vf-girar').addEventListener('click', function () { giro = (giro + 90) % 360; img.style.transform = 'rotate(' + giro + 'deg)'; });
+  $('vf-zoom').addEventListener('click', function () {
+    grande = !grande; lienzo.classList.toggle('voucher-flota__lienzo--grande', grande);
+    $('vf-zoom').textContent = grande ? 'Alejar' : 'Acercar';
+  });
+  d.querySelectorAll('[data-vf-abre]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = $(b.getAttribute('data-vf-abre'));
+      ['vf-espera', 'vf-denegar'].forEach(function (id) { if (id !== f.id) $(id).hidden = true; });
+      f.hidden = !f.hidden;
+      if (!f.hidden) { var i = f.querySelector('input[type=text]'); if (i) i.focus(); }
+    });
+  });
+})();
+</script>

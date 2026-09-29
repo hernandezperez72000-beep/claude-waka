@@ -4740,8 +4740,9 @@ $ALM = banco_usuario('almacen');
 $MKT = banco_usuario('marketing');
 banco_entrar($ALM);
 ok('ALMACÉN NO ESCRIBE NINGÚN REGISTRO, ni «suyo»', !puedo_editar($ALM, null) && !puedo_editar($ALM, (int)yo()['pais_id']));
-es('su menú: Inicio, Por alistar y Stock (no Por despachar)', ['inicio', 'alistar', 'stock'], array_column(menu_de(), 'clave'));
-es('EN EL CELULAR, LAS TRES Y «MÁS» (ahí están Mi perfil y Cerrar sesión)', ['inicio', 'alistar', 'stock', 'mas'], array_column(barra_movil(), 'clave'));
+/* 5b (usuario, 2026-09-29): «Por entregar» es otra opción de su menú. */
+es('su menú: Inicio, Por alistar, Por entregar y Stock (no Por despachar)', ['inicio', 'alistar', 'entregar', 'stock'], array_column(menu_de(), 'clave'));
+es('EN EL CELULAR, LAS CUATRO Y «MÁS» (ahí están Mi perfil y Cerrar sesión)', ['inicio', 'alistar', 'entregar', 'stock', 'mas'], array_column(barra_movil(), 'clave'));
 es('y «Más» no repite ninguna sección', [], menu_mas());
 ok('su frase del día no habla de vender', ($f_a = frase_del_dia('almacen', 'manana')) !== null && $f_a['rol_clave'] === 'almacen');
 ok('no se le pinta el contador de despacho (no es quien manda)', !le_avisamos_de_despacho(yo()));

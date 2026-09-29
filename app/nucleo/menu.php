@@ -69,6 +69,7 @@ function menu_de(?array $u = null): array
         ['clave'=>'despacho',  'texto'=>'Por despachar',   'ruta'=>'/pedidos/por-despachar','icono'=>'camion'],
         /* Administración también alista, de respaldo (3g). */
         ['clave'=>'alistar',   'texto'=>'Por alistar',     'ruta'=>'/pedidos/por-alistar','icono'=>'caja'],
+        ['clave'=>'entregar',  'texto'=>'Por entregar',    'ruta'=>'/pedidos/por-entregar','icono'=>'camion'],
         ['clave'=>'stock',     'texto'=>'Stock y pre venta','corto'=>'Stock','ruta'=>'/stock',    'icono'=>'cubo',     'barra'=>true],
         /* 3i: las garantías que esperan su aprobación. */
         ['clave'=>'garantias', 'texto'=>'Garantías',       'ruta'=>'/garantias', 'icono'=>'escudo'],
@@ -103,6 +104,9 @@ function menu_de(?array $u = null): array
         ['clave'=>'inicio',    'texto'=>'Inicio',          'ruta'=>'/inicio',    'icono'=>'casa',     'barra'=>true],
         ['clave'=>'alistar',   'texto'=>'Por alistar',     'corto'=>'Alistar',
          'ruta'=>'/pedidos/por-alistar', 'icono'=>'caja', 'barra'=>true],
+        /* 5b (usuario, 2026-09-29): lo ya alistado, en su propia opción. */
+        ['clave'=>'entregar',  'texto'=>'Por entregar',    'corto'=>'Entregar',
+         'ruta'=>'/pedidos/por-entregar', 'icono'=>'camion', 'barra'=>true],
         ['clave'=>'stock',     'texto'=>'Stock y pre venta','corto'=>'Stock','ruta'=>'/stock', 'icono'=>'cubo', 'barra'=>true],
     ];
 
@@ -244,7 +248,7 @@ function contadores(bool $olvidar = false): array
     $u = yo();
     if (!$u) return $c = [];
 
-    $c = ['recepcion' => 0, 'config' => 0, 'stock' => 0, 'pagos' => 0, 'despacho' => 0, 'alistar' => 0, 'garantias' => 0];
+    $c = ['recepcion' => 0, 'config' => 0, 'stock' => 0, 'pagos' => 0, 'despacho' => 0, 'alistar' => 0, 'entregar' => 0, 'garantias' => 0];
 
     try {
         /* Visitas esperando en las oficinas de su país. Por PERMISO como todo
@@ -279,6 +283,7 @@ function contadores(bool $olvidar = false): array
         /* Lo que Almacén tiene que alistar (3g): solo a quien alista y no vende. */
         if (function_exists('le_avisamos_de_alistar') && le_avisamos_de_alistar($u)) {
             $c['alistar'] = alistar_pendientes_n($u);
+            $c['entregar'] = function_exists('pedidos_por_entregar_n') ? pedidos_por_entregar_n($u) : 0;
         }
 
         /* Las garantías que esperan aprobación (3i): a quien las aprueba. */

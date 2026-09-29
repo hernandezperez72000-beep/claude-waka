@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
-seccion_activa('alistar');
+/* 5b (usuario, 2026-09-29): «Por entregar» es otra opción del menú de
+   Almacén, con lo que ya está alistado. Es este mismo controlador: las
+   acciones (alistar, entregar, deshacer) son las mismas y viven en un sitio. */
+$modo = (($ruta ?? '') === '/pedidos/por-entregar') ? 'entregar' : 'alistar';
+seccion_activa($modo);
 
 /**
  * POR ALISTAR (3g): lo que el asesor ya mandó a despacho y Almacén tiene que
@@ -30,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $r = pedido_alistar($id, pedir_int('quien_id'), $foto['archivo']);
             if ($r['ok']) {
                 voucher_pendiente_confirmar(voucher_contexto($ctx, 'foto_alistado'));
-                avisar('ok', 'Listo: ' . (string) valor('SELECT codigo FROM pedidos WHERE id = ?', [$id]) . ' quedó alistado.');
+                avisar('ok', 'Listo: ' . (string) valor('SELECT codigo FROM pedidos WHERE id = ?', [$id]) . ' quedó alistado. Ya está en «Por entregar».');
                 ir('/pedidos/por-alistar');
             }
             $errores[] = $r['error'];
@@ -70,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($r['ok']) {
                 voucher_pendiente_confirmar(voucher_contexto($ctx, 'foto_entrega'));
                 avisar('ok', 'Listo: ' . (string) valor('SELECT codigo FROM pedidos WHERE id = ?', [$id]) . ' quedó entregado.');
-                ir('/pedidos/por-alistar#por-entregar');
+                ir('/pedidos/por-entregar');
             }
             $errores[] = $r['error'];
         }
@@ -79,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($accion === 'entregado_deshacer' && $id) {
         $r = pedido_entregado_deshacer($id);
         avisar($r['ok'] ? 'ok' : 'error', $r['ok'] ? 'Vuelve a «Por entregar».' : $r['error']);
-        ir('/pedidos/por-alistar#por-entregar');
+        ir('/pedidos/por-entregar');
     }
     if ($accion === 'deshacer' && $id) {
         $r = pedido_alistado_deshacer($id);
@@ -112,7 +116,18 @@ foreach ($por_entregar as $p0) {
     $pend_entrega[(int)$p0['id']] = voucher_pendiente(voucher_contexto('entregar-' . (int)$p0['id'], 'foto_entrega'));
 }
 
+$n_alistar = alistar_pendientes_n($u);
+$n_entregar = pedidos_por_entregar_n($u);
+/* EL INDICADOR (usuario, 2026-09-29): cuántas solicitudes hay, arriba y
+   grande. Lo refresca el sondeo de avisos sin recargar la página. */
+$indicador = '<a class="cuenta-grande' . ($modo === 'alistar' ? ' cuenta-grande--on' : '') . '" href="' . e(url('/pedidos/por-alistar')) . '">'
+           . '<span class="cuenta-grande__n" id="alistar-cuantos">' . $n_alistar . '</span><span class="cuenta-grande__k">por alistar</span></a>'
+           . '<a class="cuenta-grande' . ($modo === 'entregar' ? ' cuenta-grande--on' : '') . '" href="' . e(url('/pedidos/por-entregar')) . '">'
+           . '<span class="cuenta-grande__n" id="entregar-cuantos">' . $n_entregar . '</span><span class="cuenta-grande__k">por entregar</span></a>';
+
 pagina('pedidos/poralistar', [
+    'modo'         => $modo,
+    'por_entregar_lineas' => $modo === 'entregar' ? pedidos_lineas_de(array_map(fn($x) => (int)$x['id'], $por_entregar)) : [],
     'pedidos'      => $pedidos,
     'cuantos'      => pedidos_por_alistar_n($u),
     'tope'         => $tope,
@@ -145,4 +160,6 @@ pagina('pedidos/poralistar', [
     'con_error'    => $con_error,
     'pend_foto'    => $pendientes_foto,
     'quien_elegido'=> (int) pedir_int('quien_id'),
-], ['titulo' => 'Por alistar', 'subtitulo' => 'Lo que ya se mandó a despacho y hay que preparar']);
+], $modo === 'entregar'
+    ? ['titulo' => 'Por entregar', 'subtitulo' => 'Lo alistado que falta entregar al cliente o a la agencia', 'acciones' => $indicador]
+    : ['titulo' => 'Por alistar', 'subtitulo' => 'Lo que ya se mandó a despacho y hay que preparar', 'acciones' => $indicador]);

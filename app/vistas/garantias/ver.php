@@ -132,7 +132,7 @@ $pedida = $est === 'pedida'; ?>
       <div class="tarjeta">
         <div class="acciones">
           <?php if (puede('pedidos.alistar') || $resuelvo): ?>
-            <a class="btn btn--linea btn--chico" href="<?= e(url('/garantias/rotulo?id=' . (int)$g['id'])) ?>"><?= ico('flecha',14) ?> RÓTULO (PDF)</a>
+            <a class="btn btn--linea btn--chico" href="<?= e(url('/garantias/rotulo?id=' . (int)$g['id'] . '&vista=1')) ?>"><?= ico('impresora',14) ?> RÓTULO</a>
           <?php endif; ?>
           <?php if (puede('pedidos.alistar')): ?>
             <a class="btn btn--linea btn--chico" href="<?= e(url('/pedidos/por-alistar#garantia-' . (int)$g['id'])) ?>">Por alistar</a>

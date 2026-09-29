@@ -168,6 +168,21 @@ function destino_seguro(?string $ruta): string
     return $ruta;
 }
 
+/**
+ * «VOLVER»: la pantalla de donde vino la persona, si era de este mismo sitio
+ * (5b: la vista previa del rótulo y de los comprobantes). Si no, $si_no.
+ */
+function volver_de_donde_vino(string $si_no): string
+{
+    $r = (string)($_SERVER['HTTP_REFERER'] ?? '');
+    $h = (string) parse_url($r, PHP_URL_HOST);
+    if ($r === '' || $h === '' || strcasecmp($h, (string)($_SERVER['SERVER_NAME'] ?? '')) !== 0 && strcasecmp($h, (string) parse_url('//' . ($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST)) !== 0) return $si_no;
+    $ruta = (string) parse_url($r, PHP_URL_PATH);
+    $q = (string) parse_url($r, PHP_URL_QUERY);
+    $d = destino_seguro($ruta . ($q !== '' ? '?' . $q : ''));
+    return $d === '/inicio' && $ruta !== '/inicio' ? $si_no : $d;
+}
+
 /** Exige sesión; si no hay, manda al acceso guardando a dónde iba. */
 function exigir_sesion(): array
 {

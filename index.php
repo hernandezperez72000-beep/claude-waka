@@ -129,6 +129,10 @@ $rutas = [
 
     /* ── 3g · Almacén alista lo que el asesor mandó a despacho ── */
     '/pedidos/por-alistar'    => ['pedidos/poralistar',   'pedidos.alistar'],
+    /* 5b · lo alistado que falta entregar, en su propia opción del menú. */
+    '/pedidos/por-entregar'   => ['pedidos/poralistar',   'pedidos.alistar'],
+    /* 5b · la guía de remisión de los envíos a provincia: Almacén y Facturación. */
+    '/pedidos/guia'           => ['pedidos/guia',         'pedidos.alistar|pagos.verificar'],
     '/pedidos/alistado-foto'  => ['pedidos/alistadofoto', 'pedidos.alistar|pedidos.ver'],
     /* 3j · la foto de la entrega y el costo del envío que quedó pendiente */
     '/pedidos/entrega-foto'   => ['pedidos/entregafoto', 'pedidos.alistar|pedidos.ver'],

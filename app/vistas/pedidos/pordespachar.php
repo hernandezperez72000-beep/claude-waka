@@ -50,7 +50,7 @@ $faltan  = max(0, $cuantos - count($pedidos));
     <span><?= ico('caja',17) ?></span>
     <span><strong><?= plural($cuantos, 'venta lista para mandar', 'ventas listas para mandar') ?>
       a despacho.</strong>
-      El pago ya está confirmado: pulsa MANDAR y Almacén la ve en «Por alistar».
+      El pago ya está confirmado: pulsa MANDAR y sale a despacho.
       Las que tienen fecha comprometida van primero.</span>
   </div>
 
@@ -293,7 +293,7 @@ $enviados = $enviados ?? []; ?>
           <a class="chip chip--ver" target="_blank" rel="noopener" href="<?= e(url('/pagos/voucher?id=' . $pg_id)) ?>">Voucher<?= count($vch) > 1 ? ' ' . ($k + 1) : '' ?></a>
         <?php endforeach; ?>
         <?php if ($en['anulado_en'] === null): ?>
-          <a class="chip chip--linea" href="<?= e(url('/pedidos/rotulo?id=' . $eid)) ?>">Rótulo</a>
+          <a class="chip chip--linea" href="<?= e(url('/pedidos/rotulo?id=' . $eid . '&vista=1')) ?>">Rótulo</a>
         <?php endif; ?>
         <?php if (!empty($en['entregado_foto'])): ?>
           <a class="chip chip--ver" target="_blank" rel="noopener" href="<?= e(url('/pedidos/entrega-foto?id=' . $eid)) ?>"><?= ico('camara',12) ?> Entrega</a>

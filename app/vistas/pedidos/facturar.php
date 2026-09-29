@@ -187,6 +187,14 @@ $es_factura = (trim((string)($p['comprobante_tipo'] ?? '')) !== ''
           $campo('Sucursal',   (string)$p['sucursal']);
           $campo('Recibe',     (string)$p['recibe']);
         ?>
+        <?php /* 5b · LA GUÍA DE REMISIÓN de un envío a provincia: la emite
+                 Almacén desde «Por entregar»; aquí se ve y se puede corregir. */ ?>
+        <?php if (function_exists('guia_aplica') && guia_aplica($p)): $gr = guia_de_pedido((int)$p['id']); ?>
+          <div class="acciones" style="margin-top:10px">
+            <a class="btn <?= $gr ? 'btn--linea' : 'btn--negro' ?> btn--chico" href="<?= e(url('/pedidos/guia?id=' . (int)$p['id'])) ?>">
+              <?= ico('doc', 14) ?> <?= $gr ? 'GUÍA ' . e($gr['serie'] . '-' . (int)$gr['numero']) : 'GUÍA DE REMISIÓN' ?></a>
+          </div>
+        <?php endif; ?>
       </div>
     <?php endif; ?>
 
@@ -241,16 +249,11 @@ $es_factura = (trim((string)($p['comprobante_tipo'] ?? '')) !== ''
             <?= e(ucfirst($marcado['tipo'])) ?> marcada: <?= e($marcado['texto']) ?>.
             Le llega al cliente a su correo.</p>
           <div class="acciones">
+            <?php /* 5b: EMITIR abre la vista previa, y desde ahí se manda. */ ?>
             <?php foreach (comprobantes_que_se_solicitan() as $tv => $tc): ?>
-              <form method="post" action="<?= e(url('/pedidos/emitir')) ?>" style="display:inline">
-                <?= campo_csrf() ?>
-                <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
-                <input type="hidden" name="tipo" value="<?= e($tv) ?>">
-                <input type="hidden" name="volver" value="facturar">
-                <button class="btn <?= $marcado['tipo'] === $tv ? 'btn--amarillo' : 'btn--linea' ?>" type="submit"
-                        data-confirmar="<?= e(nubefact_confirmar_texto($tc['nombre'], (int)$p['total_centimos'])) ?>">
-                  EMITIR <?= e(mb_strtoupper($tc['nombre'])) ?></button>
-              </form>
+              <a class="btn <?= $marcado['tipo'] === $tv ? 'btn--amarillo' : 'btn--linea' ?>"
+                 href="<?= e(url('/pedidos/emitir?id=' . (int)$p['id'] . '&tipo=' . $tv . '&volver=facturar')) ?>">
+                EMITIR <?= e(mb_strtoupper($tc['nombre'])) ?></a>
             <?php endforeach; ?>
           </div>
           <?php if ($pend = nubefact_pendiente((int)$p['id'])): ?>

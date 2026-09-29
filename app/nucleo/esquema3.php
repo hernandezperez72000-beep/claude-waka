@@ -748,6 +748,9 @@ function migraciones_modulo2(): array
         /* La PRIMERA vez que el pedido salió a despacho: la garantía cuenta
            desde aquí. `despacho_en` cambia al volver a mandarlo. */
         ['pedidos',     'despacho_primero_en', "DATETIME NULL"],
+        /* 5b · el código INEI de un distrito que no estaba en la lista y
+           alguien escribió en una guía de remisión: se recuerda. */
+        ['ubigeo',      'codigo_inei',        "VARCHAR(6) NULL"],
         /* Lo que una garantía aprobada movió en la web (un repuesto que está
            en la tienda): la fila de la cola va colgada de la garantía. */
         ['stock_web_cola', 'garantia_id',     "INT UNSIGNED NULL"],

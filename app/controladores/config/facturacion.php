@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $token = trim((string) pedir('token'));
         $series = [];
         foreach (['serie_boleta' => 'B', 'serie_factura' => 'F',
-                  'serie_nc_boleta' => 'B', 'serie_nc_factura' => 'F'] as $campo => $ini) {
+                  'serie_nc_boleta' => 'B', 'serie_nc_factura' => 'F', 'serie_guia' => 'T'] as $campo => $ini) {
             $v = mb_strtoupper(trim((string) pedir($campo)));
             if ($v !== '' && !nubefact_serie_valida($v, $ini)) {
                 $errores[] = 'La serie «' . $v . '» no vale: son 4 caracteres y empieza por ' . $ini . '.';
@@ -68,6 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($ruta !== '' && !preg_match('#^https://\S+$#', $ruta)) {
             $errores[] = 'La ruta empieza por https:// y se copia entera desde tu cuenta de NUBEFACT.';
         }
+        /* 5b · de dónde sale la guía de remisión (el almacén): una sola vez. */
+        $partida_ubi = trim((string) pedir('guia_partida_ubigeo'));
+        $partida_dir = mb_substr(trim((string) pedir('guia_partida_direccion')), 0, 150);
+        $peso_bulto  = str_replace(',', '.', trim((string) pedir('guia_peso_bulto')));
+        if ($partida_ubi !== '' && !preg_match('/^\d{6}$/', $partida_ubi)) $errores[] = 'El ubigeo del punto de partida son 6 números (Lima Cercado es 150101).';
+        if ($peso_bulto !== '' && (!is_numeric($peso_bulto) || (float)$peso_bulto <= 0 || (float)$peso_bulto > 1000)) $errores[] = 'El peso por bulto es un número de kilos, por ejemplo 5.';
         if ($token !== '' && (mb_strlen($token) < 20 || preg_match('/\s/', $token))) {
             $errores[] = 'Ese token no parece completo. Cópialo otra vez desde NUBEFACT.';
         }
@@ -75,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            serie ya usada volvería a emitir números que existen. */
         $siguientes = [];
         foreach (tabla_existe('nubefact_correlativos')
-                 ? ['serie_boleta' => 2, 'serie_factura' => 1, 'serie_nc_boleta' => 3, 'serie_nc_factura' => 3] : []
+                 ? ['serie_boleta' => 2, 'serie_factura' => 1, 'serie_nc_boleta' => 3, 'serie_nc_factura' => 3, 'serie_guia' => 7] : []
                  as $campo => $tipo) {
             $s = $series[$campo];
             $n = (string) pedir('sig_' . $campo);
@@ -91,6 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($ruta !== '')  guardar_ajuste($pre . 'ruta', $ruta);
             if ($token !== '') guardar_ajuste($pre . 'token', $token);
             foreach ($series as $campo => $v) guardar_ajuste($pre . $campo, $v);
+            guardar_ajuste('guia_partida_ubigeo', $partida_ubi);
+            guardar_ajuste('guia_partida_direccion', $partida_dir);
+            if ($peso_bulto !== '') guardar_ajuste('guia_peso_bulto', (string)(float)$peso_bulto);
             foreach ($siguientes as [$tipo, $s, $n]) {
                 $fila = nubefact_correlativo($amb_edit, $tipo, $s);
                 if ($n > (int)$fila['siguiente']) {
@@ -113,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $cfg = nubefact_config($amb_edit);
 $sig = [];
 if (tabla_existe('nubefact_correlativos')) {
-    foreach (['serie_boleta' => 2, 'serie_factura' => 1, 'serie_nc_boleta' => 3, 'serie_nc_factura' => 3]
+    foreach (['serie_boleta' => 2, 'serie_factura' => 1, 'serie_nc_boleta' => 3, 'serie_nc_factura' => 3, 'serie_guia' => 7]
              as $campo => $tipo) {
         $s = $cfg[$campo];
         $sig[$campo] = $s !== ''

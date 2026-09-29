@@ -4147,9 +4147,14 @@ ok('hay una venta cobrada del todo y sin comprobante', $P2U > 0);
 $n->salir();
 $n->entrar('factu@waka.test', 'Clave-Larga-1');
 $n->ir('/pedidos/facturar?id=' . $P2U);
-ok('facturar enseña EMITIR BOLETA con NUBEFACT',
-   (bool) preg_match('~action="[^"]*/pedidos/emitir"~', $n->cuerpo) && str_contains($n->cuerpo, 'EMITIR BOLETA'));
+/* 5b: EMITIR abre la vista previa, que es la que manda. */
+ok('facturar enseña EMITIR BOLETA con NUBEFACT (a la vista previa)',
+   str_contains($n->cuerpo, '/pedidos/emitir?id=' . $P2U . '&amp;tipo=boleta') && str_contains($n->cuerpo, 'EMITIR BOLETA'));
 ok('y sigue dejando anotar uno emitido fuera', str_contains($n->cuerpo, 'se emitió fuera'));
+$n->ir('/pedidos/emitir?id=' . $P2U . '&tipo=boleta&volver=facturar');
+ok('LA VISTA PREVIA: el comprobante como va a salir, con el texto para corregir y el botón de mandar',
+   $n->codigo === 200 && (bool) preg_match('~action="[^"]*/pedidos/emitir"~', $n->cuerpo) && str_contains($n->cuerpo, 'name="c_nombre"')
+   && str_contains($n->cuerpo, 'name="i_desc[0]"') && str_contains($n->cuerpo, 'MANDAR BOLETA'));
 
 /* NUBEFACT no contesta (la ruta apunta a un puerto cerrado). */
 $n->ir('/pedidos/emitir', ['_t' => $n->testigo(), 'id' => $P2U, 'tipo' => 'boleta', 'volver' => 'facturar']);
@@ -4201,6 +4206,8 @@ ok('y la venta con boleta de prueba vuelve a quedar sin comprobante',
    valor('SELECT comprobante_tipo FROM pedidos WHERE id = ?', [$P2U]) === null);
 $n->ir('/pedidos/facturar?id=' . $P2U);
 ok('y se le puede emitir la de verdad', str_contains($n->cuerpo, 'EMITIR BOLETA'));
+/* 5b: el aviso de que va a SUNAT está en el botón de MANDAR de la vista previa. */
+$n->ir('/pedidos/emitir?id=' . $P2U . '&tipo=boleta&volver=facturar');
 ok('el botón avisa que va a SUNAT', str_contains($n->cuerpo, 'Va a SUNAT.'));
 
 /* Se deja como estaba: sin NUBEFACT configurado. */
@@ -6094,7 +6101,8 @@ $n->ir('/stock/lote', ['_t' => $n->testigoValido(), 'accion' => 'filas', 'id' =>
     'f_id' => ['0'], 'f_codigo' => ['PRD-HTTP92'], 'f_nombre' => ['Lo que escribí'], 'f_modelo' => [''], 'f_unidades' => ['cero']]);
 ok('SI NO SE PUEDE GUARDAR, LO ESCRITO SIGUE AHÍ', str_contains($n->cuerpo, 'las unidades son un número') && str_contains($n->cuerpo, 'value="Lo que escribí"'));
 $n->ir('/stock/lote', ['_t' => $n->testigoValido(), 'accion' => 'interruptor', 'id' => $LH, 'encender' => '1']);
-ok('A LA VENTA, AVISANDO DEL QUE NO TIENE PRECIO', str_contains($n->cuerpo, 'Lote a la venta') && str_contains($n->cuerpo, 'id="aviso-ocultos"')
+/* 5b: sin bajar la pantalla, con la ventana «Pre venta activada». */
+ok('A LA VENTA, AVISANDO DEL QUE NO TIENE PRECIO', str_contains($n->cuerpo, 'id="preventa-activada"') && str_contains($n->cuerpo, 'Pre venta activada') && str_contains($n->cuerpo, 'id="aviso-ocultos"')
    && (int) valor('SELECT disponible FROM lotes WHERE id = ?', [$LH]) === 1);
 ok('con la barra del barco', str_contains($n->cuerpo, 'class="barco barco--amarillo"') && str_contains($n->cuerpo, 'Shenzhen'));
 
@@ -6500,8 +6508,10 @@ $n->salir(); $n->entrar('almacen@waka.test', 'Clave-Larga-1');
 $QUIEN3J = insertar('lista_items', ['lista_id' => (int) valor("SELECT id FROM listas WHERE clave = 'equipo_despacho'"), 'pais_id' => $PE3J, 'valor' => 'Pedro 3j', 'orden' => 99]);
 $n->subir('/pedidos/por-alistar', ['_t' => $n->testigoValido(), 'accion' => 'alistado', 'id' => $PV3J, 'quien_id' => $QUIEN3J], ['foto_alistado' => ['caja.jpg', 'image/jpeg', $JPG]]);
 ok('se alista', valor('SELECT alistado_foto FROM pedidos WHERE id = ?', [$PV3J]) !== null);
+$n->ir('/pedidos/por-entregar');
+ok('Y QUEDA EN «POR ENTREGAR» (5b: su propia opción del menú)', str_contains($n->cuerpo, 'id="por-entregar"') && str_contains($n->cuerpo, 'id="entregar-' . $PV3J . '"'));
 $n->ir('/pedidos/por-alistar');
-ok('Y QUEDA EN «POR ENTREGAR»', str_contains($n->cuerpo, 'id="por-entregar"') && str_contains($n->cuerpo, 'id="entregar-' . $PV3J . '"'));
+ok('y en «Por alistar» queda el atajo', str_contains($n->cuerpo, 'id="atajo-por-entregar"') && !str_contains($n->cuerpo, 'id="entregar-' . $PV3J . '"'));
 $n->subir('/pedidos/por-alistar', ['_t' => $n->testigoValido(), 'accion' => 'entregado', 'id' => $PV3J], []);
 ok('SIN FOTO NO', str_contains($n->cuerpo, 'Falta la foto de la entrega') && valor('SELECT entregado_en FROM pedidos WHERE id = ?', [$PV3J]) === null, mb_substr(strip_tags($n->cuerpo), 0, 300));
 $n->subir('/pedidos/por-alistar', ['_t' => $n->testigoValido(), 'accion' => 'entregado', 'id' => $PV3J], ['foto_entrega' => ['entrega.jpg', 'image/jpeg', $JPG]]);

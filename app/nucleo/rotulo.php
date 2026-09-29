@@ -83,11 +83,21 @@ function pdf_partir(string $t, float $ancho, float $tam, bool $negrita = false):
  */
 function pdf_hoja(array $bloques, ?array $logo = null): string
 {
-    /* A5 vertical: 420 × 595 puntos. Márgenes de 34, que es lo que deja una
-       impresora doméstica sin recortar. */
-    $ancho_hoja = 420.0; $alto_hoja = 595.0; $margen = 34.0;
+    /* A5 vertical: 420 × 595 puntos. Una sola hoja, como antes de la 5b. */
+    return pdf_documento([['ancho' => 420.0, 'alto' => 595.0, 'flujo' => pdf_contenido($bloques, $logo, 0.0, 0.0, 420.0, 595.0)]], $logo);
+}
+
+/**
+ * LO QUE SE PINTA DE UN RÓTULO, dentro de un rectángulo de la hoja (5b: dos
+ * rótulos por A4). $x0, $y0: la esquina de abajo a la izquierda, en puntos.
+ */
+function pdf_contenido(array $bloques, ?array $logo, float $x0, float $y0, float $ancho_hoja, float $alto_hoja): string
+{
+    /* Márgenes de 34, que es lo que deja una impresora doméstica sin recortar. */
+    $margen = 34.0;
     $util = $ancho_hoja - 2 * $margen;
-    $y = $alto_hoja - $margen;
+    $y = $y0 + $alto_hoja - $margen;
+    $izq = $x0 + $margen;
     $c = [];
 
     if ($logo && ($logo['alto'] ?? 0) > 0) {
@@ -95,7 +105,7 @@ function pdf_hoja(array $bloques, ?array $logo = null): string
         $h = $w * ((float)$logo['alto'] / max(1.0, (float)$logo['ancho']));
         $y -= $h;
         $c[] = 'q ' . pdf_num($w) . ' 0 0 ' . pdf_num($h) . ' '
-             . pdf_num($margen) . ' ' . pdf_num($y) . ' cm /Im1 Do Q';
+             . pdf_num($izq) . ' ' . pdf_num($y) . ' cm /Im1 Do Q';
         $y -= 14;
     }
 
@@ -106,8 +116,8 @@ function pdf_hoja(array $bloques, ?array $logo = null): string
         if ($tipo === 'espacio') { $y -= (float)($b['alto'] ?? 8); continue; }
         if ($tipo === 'linea') {
             $y -= 6;
-            $c[] = '0.75 w 0.8 0.8 0.8 RG ' . pdf_num($margen) . ' ' . pdf_num($y) . ' m '
-                 . pdf_num($ancho_hoja - $margen) . ' ' . pdf_num($y) . ' l S';
+            $c[] = '0.75 w 0.8 0.8 0.8 RG ' . pdf_num($izq) . ' ' . pdf_num($y) . ' m '
+                 . pdf_num($x0 + $ancho_hoja - $margen) . ' ' . pdf_num($y) . ' l S';
             $y -= 10;
             continue;
         }
@@ -119,52 +129,102 @@ function pdf_hoja(array $bloques, ?array $logo = null): string
             'titulo' => [21.0, true,  false, 26.0],
             'clave'  => [9.5,  true,  true,  13.0],
             'grande' => [19.0, true,  false, 24.0],
+            'bulto'  => [15.0, true,  false, 20.0],
             default  => [14.0, false, false, 18.0],
         };
         $fuente = $negrita ? '/F2' : '/F1';
         foreach (pdf_partir($texto, $util, $tam, $negrita) as $linea) {
             $y -= $salto;
-            if ($y < $margen) break 2;   // no se escribe fuera del papel
+            if ($y < $y0 + $margen) break 2;   // no se escribe fuera del papel
             $c[] = 'BT ' . $fuente . ' ' . pdf_num($tam) . ' Tf '
                  . ($gris ? '0.45 0.45 0.45 rg ' : '0 0 0 rg ')
-                 . pdf_num($margen) . ' ' . pdf_num($y) . ' Td ('
+                 . pdf_num($izq) . ' ' . pdf_num($y) . ' Td ('
                  . pdf_texto($linea) . ') Tj ET';
         }
     }
+    return implode("\n", $c);
+}
 
-    $flujo = implode("\n", $c);
-
-    /* ── Los objetos ───────────────────────────────────────────────── */
+/**
+ * EL PDF, con una o varias páginas. $paginas: [['ancho', 'alto', 'flujo'], …].
+ * El logo, si lo hay, se comparte entre todas.
+ */
+function pdf_documento(array $paginas, ?array $logo = null): string
+{
     $obj = [];
     $obj[1] = "<< /Type /Catalog /Pages 2 0 R >>";
-    $obj[2] = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
-    $recursos = "/Font << /F1 5 0 R /F2 6 0 R >>"
-              . ($logo ? " /XObject << /Im1 7 0 R >>" : '');
-    $obj[3] = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "
-            . pdf_num($ancho_hoja) . ' ' . pdf_num($alto_hoja) . "] "
-            . "/Resources << $recursos >> /Contents 4 0 R >>";
-    $obj[4] = "<< /Length " . strlen($flujo) . " >>\nstream\n$flujo\nendstream";
-    $obj[5] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
-    $obj[6] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+    $obj[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+    $obj[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+    $n = 5;
+    $img = null;
     if ($logo) {
-        $obj[7] = "<< /Type /XObject /Subtype /Image /Width " . (int)$logo['ancho']
-                . " /Height " . (int)$logo['alto']
-                . " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "
-                . strlen((string)$logo['jpg']) . " >>\nstream\n" . $logo['jpg'] . "\nendstream";
+        $img = $n++;
+        $obj[$img] = "<< /Type /XObject /Subtype /Image /Width " . (int)$logo['ancho']
+                   . " /Height " . (int)$logo['alto']
+                   . " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "
+                   . strlen((string)$logo['jpg']) . " >>\nstream\n" . $logo['jpg'] . "\nendstream";
     }
+    $recursos = "/Font << /F1 3 0 R /F2 4 0 R >>" . ($img ? " /XObject << /Im1 $img 0 R >>" : '');
+    $kids = [];
+    foreach ($paginas as $pg) {
+        $cont = $n++;
+        $pag  = $n++;
+        $flujo = (string)$pg['flujo'];
+        $obj[$cont] = "<< /Length " . strlen($flujo) . " >>\nstream\n$flujo\nendstream";
+        $obj[$pag]  = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " . pdf_num((float)$pg['ancho']) . ' ' . pdf_num((float)$pg['alto']) . "] "
+                    . "/Resources << $recursos >> /Contents $cont 0 R >>";
+        $kids[] = "$pag 0 R";
+    }
+    $obj[2] = "<< /Type /Pages /Kids [" . implode(' ', $kids) . "] /Count " . count($kids) . " >>";
+    ksort($obj);
 
     $pdf = "%PDF-1.4\n";
     $pos = [];
-    foreach ($obj as $n => $cuerpo) {
-        $pos[$n] = strlen($pdf);
-        $pdf .= "$n 0 obj\n$cuerpo\nendobj\n";
+    foreach ($obj as $k => $cuerpo) {
+        $pos[$k] = strlen($pdf);
+        $pdf .= "$k 0 obj\n$cuerpo\nendobj\n";
     }
     $inicio = strlen($pdf);
     $total  = count($obj) + 1;
     $pdf .= "xref\n0 $total\n0000000000 65535 f \n";
-    foreach ($obj as $n => $_) $pdf .= sprintf("%010d 00000 n \n", $pos[$n]);
+    for ($k = 1; $k < $total; $k++) $pdf .= sprintf("%010d 00000 n \n", $pos[$k]);
     $pdf .= "trailer\n<< /Size $total /Root 1 0 R >>\nstartxref\n$inicio\n%%EOF";
     return $pdf;
+}
+
+/**
+ * LOS RÓTULOS DE LOS BULTOS EN HOJAS A4 (usuario, 2026-09-29): uno por bulto,
+ * dos por hoja (A4 horizontal partida en dos A5), cada uno con «BULTO 2 DE 3»
+ * y una línea de corte entre los dos.
+ */
+function rotulos_a4(array $bloques, int $bultos, ?array $logo): string
+{
+    $bultos = max(1, min(50, $bultos));
+    $paginas = [];
+    for ($k = 1; $k <= $bultos; $k += 2) {
+        $flujo = [];
+        foreach ([0, 1] as $lado) {
+            $i = $k + $lado;
+            if ($i > $bultos) break;
+            $flujo[] = pdf_contenido(rotulo_con_bulto($bloques, $i, $bultos), $logo, $lado * 421.0, 0.0, 421.0, 595.0);
+        }
+        /* La línea de corte, punteada, en medio de la hoja. */
+        if ($k + 1 <= $bultos) $flujo[] = 'q 0.6 w 0.6 0.6 0.6 RG [4 4] 0 d 421 18 m 421 577 l S Q';
+        $paginas[] = ['ancho' => 842.0, 'alto' => 595.0, 'flujo' => implode("\n", $flujo)];
+    }
+    return pdf_documento($paginas, $logo);
+}
+
+/** El rótulo con su «BULTO k DE n» debajo del título (solo si hay más de uno). */
+function rotulo_con_bulto(array $bloques, int $k, int $n): array
+{
+    if ($n <= 1) return $bloques;
+    $out = [];
+    foreach ($bloques as $i => $b) {
+        $out[] = $b;
+        if ($i === 0) $out[] = ['tipo' => 'bulto', 'texto' => 'BULTO ' . $k . ' DE ' . $n];
+    }
+    return $out;
 }
 
 /** El logo de Waka, en JPEG, para meterlo en el PDF. Null si no se puede. */
@@ -197,7 +257,14 @@ function rotulo_logo(): ?array
  * una caja lo lee quien la carga, quien la recibe en la agencia y a veces el
  * vecino del cliente. El precio no es asunto de ninguno de los tres.
  */
-function rotulo_de_pedido(int $pedido_id, ?int $garantia_id = null): ?string
+function rotulo_de_pedido(int $pedido_id, ?int $garantia_id = null, int $bultos = 1): ?string
+{
+    $b = rotulo_bloques($pedido_id, $garantia_id);
+    return $b === null ? null : rotulos_a4($b, $bultos, rotulo_logo());
+}
+
+/** Lo que dice el rótulo de un pedido (o de su garantía), bloque a bloque: lo usan el PDF y la vista previa. */
+function rotulo_bloques(int $pedido_id, ?int $garantia_id = null): ?array
 {
     $p = pedido_de($pedido_id);
     if (!$p) return null;
@@ -290,5 +357,5 @@ function rotulo_de_pedido(int $pedido_id, ?int $garantia_id = null): ?string
     $b[] = ['tipo' => 'clave', 'texto' => 'REMITE: WAKA IMPORTACIONES · ASESOR '
                                         . mb_strtoupper(primer_nombre(trim((string)$p['asesor_nombre'])))];
 
-    return pdf_hoja($b, rotulo_logo());
+    return $b;
 }

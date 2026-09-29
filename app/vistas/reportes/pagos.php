@@ -107,54 +107,68 @@ $max = 0; foreach ($grupos as $g) $max = max($max, (int)$g['monto']);
   </div>
 </div>
 
-<div class="rejilla rejilla--panel">
-  <div class="tarjeta">
-    <div class="tarjeta__cab"><h2>Por <?= e($agrupar === 'dia' ? 'día' : $agrupar) ?></h2>
-      <span class="mini">Solo dinero confirmado</span></div>
-    <?php if (!$grupos): ?>
-      <p class="mini">No entró ningún pago confirmado en ese periodo.</p>
-    <?php else: ?>
-      <?php /* Solo los diez primeros a la vista (usuario, 2026-09-22): un mes
-               entero eran treinta líneas y el detalle quedaba a dos pantallas
-               de aquí. El resto sigue estando, plegado. */ ?>
-      <?php $g_tope = 10; $g_i = 0; ?>
-      <?php foreach ($grupos as $g): $g_i++; ?>
-        <?php if ($g_i === $g_tope + 1): ?>
-          <details class="desplegable" style="margin-top:8px">
-            <summary>Ver los otros <?= count($grupos) - $g_tope ?></summary>
-        <?php endif; ?>
-        <div class="dato">
-          <span class="dato__crece" style="min-width:0;flex:1">
-            <span class="dato__t"><?= e($g['etiqueta']) ?></span>
-            <span class="pista pista--fina">
-              <span class="pista__llena" style="width:<?= $max > 0 ? round((int)$g['monto'] * 100 / $max) : 0 ?>%"></span>
-            </span>
-          </span>
-          <span class="dato__k" style="text-align:right">
-            <strong><?= e(soles((int)$g['monto'])) ?></strong><br>
-            <?= plural((int)$g['n'], 'pago', 'pagos') ?>
-          </span>
-        </div>
-      <?php endforeach; ?>
-      <?php if (count($grupos) > $g_tope): ?></details><?php endif; ?>
-    <?php endif; ?>
+<?php /* EL ORDEN (usuario, 2026-09-29): las cifras, el detalle de lo validado,
+         las ventas sin comprobante y, al final, por día y por banco. */ ?>
+<?php if ($filas): ?>
+  <div class="tarjeta" style="margin-top:0" id="reporte-detalle">
+    <div class="tarjeta__cab">
+      <h2>El detalle<?= $estado !== 'todos' ? ' · ' . match($estado) {
+          'validados' => 'solo validados',
+          'pendientes' => 'solo pendientes',
+          'denegados'  => 'solo denegados por facturación',
+          'rechazados' => 'denegados y quitados',
+          default => '' } : '' ?></h2>
+      <span class="mini"><?= $todas_las_filas > count($filas)
+        ? 'Se muestran ' . count($filas) . ' de ' . $todas_las_filas
+          . ' · el Excel trae hasta ' . number_format(REPORTE_PAGOS_TOPE, 0, ',', ' ')
+        : plural($todas_las_filas, 'pago', 'pagos') ?></span>
+    </div>
+    <div class="tabla__caja">
+      <table class="tabla">
+        <thead><tr><th>Fecha</th><th>Pedido</th><th>Cliente</th><th>Banco / método</th>
+          <th>Operación</th><th class="der">Monto</th><th>Estado</th><th>Comprobante</th><th>Asesor</th></tr></thead>
+        <tbody>
+        <?php foreach ($filas as $f): ?>
+          <tr>
+            <td class="mini"><?= e(fecha_corta((string)$f['fecha'])) ?></td>
+            <td class="principal">
+              <a href="<?= e(url('/pedidos/ficha?id=' . (int)$f['pedido_id'])) ?>" style="color:inherit">
+                <?= e($f['codigo']) ?></a>
+            </td>
+            <td data-k="Cliente"><span class="recorta"><?= e(trim((string)$f['cliente_nombre'] . ' ' . (string)$f['cliente_apellidos'])) ?></span></td>
+            <td data-k="Banco"><?= e($f['metodo'] ?: '—') ?></td>
+            <td data-k="Operación"><span class="mini"><?= e($f['operacion'] ?: '—') ?></span></td>
+            <td class="der num" data-k="Monto">
+              <?= (string)$f['tipo'] === 'devolucion' ? '− ' : '' ?><?= e(soles(abs((int)$f['monto_centimos']))) ?>
+            </td>
+            <td data-k="Estado">
+              <?php /* El mismo pago tiene que leerse igual aquí que en la ficha:
+                       una sola definición, en pago_chip(). */ ?>
+              <?php [$k_cls, $k_txt, $k_ico, $k_nota] = pago_chip($f); ?>
+              <span class="chip <?= e($k_cls) ?>">
+                <?= $k_ico ? ico($k_ico, 12) : '' ?><?= e($k_txt) ?></span>
+              <?php if ($k_nota !== ''): ?>
+                <div class="fila__s" style="max-width:220px"><?= e($k_nota) ?></div>
+              <?php endif; ?>
+            </td>
+            <td data-k="Comprobante">
+              <?php $ct = pedido_comprobante_texto($f); ?>
+              <?php if ($ct !== ''): ?>
+                <span class="mini"><?= e($ct) ?></span>
+              <?php elseif ((string)($f['comprobante_tipo'] ?? '') === 'ninguno'): ?>
+                <span class="mini muted">no lleva</span>
+              <?php else: ?>
+                <span class="chip chip--ambar">Sin emitir</span>
+              <?php endif; ?>
+            </td>
+            <td data-k="Asesor"><span class="mini"><?= e(primer_nombre((string)$f['asesor_nombre'])) ?></span></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <div class="tarjeta">
-    <div class="tarjeta__cab"><h2>Por banco / método</h2>
-      <span class="mini">Solo dinero confirmado</span></div>
-    <?php if (!$por_metodo): ?>
-      <p class="mini">Sin dinero confirmado en el periodo.</p>
-    <?php else: ?>
-      <?php foreach ($por_metodo as $nombre => $monto): ?>
-        <div class="dato">
-          <span class="dato__k"><?= e($nombre) ?></span>
-          <span class="dato__t"><?= e(soles((int)$monto)) ?></span>
-        </div>
-      <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
-</div>
+<?php endif; ?>
 
 <?php $n_sin_comprobante_todo = (int)($n_sin_comprobante_todo ?? $n_sin_comprobante); ?>
 <?php if ($n_sin_comprobante > 0 || $n_sin_comprobante_todo > 0): ?>
@@ -215,6 +229,56 @@ $max = 0; foreach ($grupos as $g) $max = max($max, (int)$g['monto']);
   </div>
 <?php endif; ?>
 
+<div class="rejilla rejilla--panel" style="margin-top:12px" id="reporte-desglose">
+  <div class="tarjeta">
+    <div class="tarjeta__cab"><h2>Por <?= e($agrupar === 'dia' ? 'día' : $agrupar) ?></h2>
+      <span class="mini">Solo dinero confirmado</span></div>
+    <?php if (!$grupos): ?>
+      <p class="mini">No entró ningún pago confirmado en ese periodo.</p>
+    <?php else: ?>
+      <?php /* Solo los diez primeros a la vista (usuario, 2026-09-22): un mes
+               entero eran treinta líneas y el detalle quedaba a dos pantallas
+               de aquí. El resto sigue estando, plegado. */ ?>
+      <?php $g_tope = 10; $g_i = 0; ?>
+      <?php foreach ($grupos as $g): $g_i++; ?>
+        <?php if ($g_i === $g_tope + 1): ?>
+          <details class="desplegable" style="margin-top:8px">
+            <summary>Ver los otros <?= count($grupos) - $g_tope ?></summary>
+        <?php endif; ?>
+        <div class="dato">
+          <span class="dato__crece" style="min-width:0;flex:1">
+            <span class="dato__t"><?= e($g['etiqueta']) ?></span>
+            <span class="pista pista--fina">
+              <span class="pista__llena" style="width:<?= $max > 0 ? round((int)$g['monto'] * 100 / $max) : 0 ?>%"></span>
+            </span>
+          </span>
+          <span class="dato__k" style="text-align:right">
+            <strong><?= e(soles((int)$g['monto'])) ?></strong><br>
+            <?= plural((int)$g['n'], 'pago', 'pagos') ?>
+          </span>
+        </div>
+      <?php endforeach; ?>
+      <?php if (count($grupos) > $g_tope): ?></details><?php endif; ?>
+    <?php endif; ?>
+  </div>
+
+  <div class="tarjeta">
+    <div class="tarjeta__cab"><h2>Por banco / método</h2>
+      <span class="mini">Solo dinero confirmado</span></div>
+    <?php if (!$por_metodo): ?>
+      <p class="mini">Sin dinero confirmado en el periodo.</p>
+    <?php else: ?>
+      <?php foreach ($por_metodo as $nombre => $monto): ?>
+        <div class="dato">
+          <span class="dato__k"><?= e($nombre) ?></span>
+          <span class="dato__t"><?= e(soles((int)$monto)) ?></span>
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+</div>
+
+
 <?php /* QUIÉN ACUMULA DENEGADOS (usuario, 2026-09-11): «serviría para saber si
          hay un asesor con muchos pagos denegados y podríamos estar más
          pendientes de ese asesor». Va ARRIBA del detalle porque la pregunta es
@@ -247,67 +311,6 @@ $max = 0; foreach ($grupos as $g) $max = max($max, (int)$g['monto']);
       Un pago denegado <strong>no es una falta</strong>: un voucher puede tardar en aparecer en el
       banco. Lo que dice algo es que se repita en la misma persona.
     </p>
-  </div>
-<?php endif; ?>
-
-<?php if ($filas): ?>
-  <div class="tarjeta" style="margin-top:12px">
-    <div class="tarjeta__cab">
-      <h2>El detalle<?= $estado !== 'todos' ? ' · ' . match($estado) {
-          'validados' => 'solo validados',
-          'pendientes' => 'solo pendientes',
-          'denegados'  => 'solo denegados por facturación',
-          'rechazados' => 'denegados y quitados',
-          default => '' } : '' ?></h2>
-      <span class="mini"><?= $todas_las_filas > count($filas)
-        ? 'Se muestran ' . count($filas) . ' de ' . $todas_las_filas
-          . ' · el Excel trae hasta ' . number_format(REPORTE_PAGOS_TOPE, 0, ',', ' ')
-        : plural($todas_las_filas, 'pago', 'pagos') ?></span>
-    </div>
-    <div class="tabla__caja">
-      <table class="tabla">
-        <thead><tr><th>Fecha</th><th>Pedido</th><th>Cliente</th><th>Banco / método</th>
-          <th>Operación</th><th class="der">Monto</th><th>Estado</th><th>Comprobante</th><th>Asesor</th></tr></thead>
-        <tbody>
-        <?php foreach ($filas as $f): ?>
-          <tr>
-            <td class="mini"><?= e(fecha_corta((string)$f['fecha'])) ?></td>
-            <td class="principal">
-              <a href="<?= e(url('/pedidos/ficha?id=' . (int)$f['pedido_id'])) ?>" style="color:inherit">
-                <?= e($f['codigo']) ?></a>
-            </td>
-            <td data-k="Cliente"><span class="recorta"><?= e(trim((string)$f['cliente_nombre'] . ' ' . (string)$f['cliente_apellidos'])) ?></span></td>
-            <td data-k="Banco"><?= e($f['metodo'] ?: '—') ?></td>
-            <td data-k="Operación"><span class="mini"><?= e($f['operacion'] ?: '—') ?></span></td>
-            <td class="der num" data-k="Monto">
-              <?= (string)$f['tipo'] === 'devolucion' ? '− ' : '' ?><?= e(soles(abs((int)$f['monto_centimos']))) ?>
-            </td>
-            <td data-k="Estado">
-              <?php /* El mismo pago tiene que leerse igual aquí que en la ficha:
-                       una sola definición, en pago_chip(). */ ?>
-              <?php [$k_cls, $k_txt, $k_ico, $k_nota] = pago_chip($f); ?>
-              <span class="chip <?= e($k_cls) ?>">
-                <?= $k_ico ? ico($k_ico, 12) : '' ?><?= e($k_txt) ?></span>
-              <?php if ($k_nota !== ''): ?>
-                <div class="fila__s" style="max-width:220px"><?= e($k_nota) ?></div>
-              <?php endif; ?>
-            </td>
-            <td data-k="Comprobante">
-              <?php $ct = pedido_comprobante_texto($f); ?>
-              <?php if ($ct !== ''): ?>
-                <span class="mini"><?= e($ct) ?></span>
-              <?php elseif ((string)($f['comprobante_tipo'] ?? '') === 'ninguno'): ?>
-                <span class="mini muted">no lleva</span>
-              <?php else: ?>
-                <span class="chip chip--ambar">Sin emitir</span>
-              <?php endif; ?>
-            </td>
-            <td data-k="Asesor"><span class="mini"><?= e(primer_nombre((string)$f['asesor_nombre'])) ?></span></td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
   </div>
 <?php endif; ?>
 

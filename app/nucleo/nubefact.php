@@ -60,6 +60,9 @@ function nubefact_config(?string $amb = null): array
         'serie_factura'    => mb_strtoupper($k('serie_factura')),
         'serie_nc_boleta'  => mb_strtoupper($k('serie_nc_boleta')),
         'serie_nc_factura' => mb_strtoupper($k('serie_nc_factura')),
+        /* 5b · la guía de remisión remitente (empieza con T). No hace falta
+           para emitir boletas: sin ella, solo no sale el botón de la guía. */
+        'serie_guia'       => mb_strtoupper($k('serie_guia')),
     ];
     $cfg['listo'] = $cfg['ruta'] !== '' && $cfg['token'] !== ''
                  && nubefact_serie_valida($cfg['serie_boleta'], 'B')
@@ -421,7 +424,7 @@ function nubefact_enviar_reservado(int $cpe_id, array $datos, ?array $cfg = null
                ya existe es de otro comprobante —emitido en NUBEFACT a mano—, y
                adoptarlo sería darle a esta venta la boleta de otro cliente. */
             if (!$reintento) return nubefact_numero_ocupado($cpe_id, $datos);
-            $q = nubefact_llamar(['operacion' => 'consultar_comprobante',
+            $q = nubefact_llamar(['operacion' => (int)$datos['tipo_de_comprobante'] === 7 ? 'consultar_guia' : 'consultar_comprobante',
                                   'tipo_de_comprobante' => $datos['tipo_de_comprobante'],
                                   'serie' => $datos['serie'], 'numero' => $datos['numero']], $cfg);
             if (($q['red'] ?? '') === '' && !isset($q['cuerpo']['errors'])) {
@@ -466,7 +469,7 @@ function nubefact_respuesta_buena(array $r, array $datos): bool
 function nubefact_es_el_mismo(array $c, array $datos): bool
 {
     $qr = trim((string)($c['cadena_para_codigo_qr'] ?? ''));
-    if ($qr === '') return true;
+    if ($qr === '' || !isset($datos['total'])) return true;   // la guía no lleva total
     $x = explode('|', $qr);
     if (count($x) < 9) return true;
     $total_ok = abs((float)$x[5] - (float)$datos['total']) < 0.005;
@@ -566,7 +569,7 @@ function nubefact_del_pedido(int $pedido_id): array
 /** «Boleta B001-123», «Nota de crédito BC01-4». */
 function nubefact_nombre(array $cpe): string
 {
-    $t = match ((int)$cpe['tipo_cpe']) { 1 => 'Factura', 2 => 'Boleta', 3 => 'Nota de crédito', default => 'Comprobante' };
+    $t = match ((int)$cpe['tipo_cpe']) { 1 => 'Factura', 2 => 'Boleta', 3 => 'Nota de crédito', 7 => 'Guía de remisión', default => 'Comprobante' };
     return $t . ' ' . $cpe['serie'] . '-' . (int)$cpe['numero'];
 }
 
@@ -577,7 +580,7 @@ function nubefact_nombre(array $cpe): string
  *
  * $tipo: 'boleta' o 'factura'. Devuelve ['ok', 'error', 'cpe'?].
  */
-function nubefact_emitir(int $pedido_id, string $tipo): array
+function nubefact_emitir(int $pedido_id, string $tipo, array $ed = []): array
 {
     $mal = fn(string $e) => ['ok' => false, 'error' => $e];
     if (!in_array($tipo, ['boleta', 'factura'], true)) return $mal('Elige boleta o factura.');
@@ -609,6 +612,15 @@ function nubefact_emitir(int $pedido_id, string $tipo): array
                              (int)($p['descuento_centimos'] ?? 0) + (int)$p['cashback_usado_centimos'],
                              max(0, (int) ajuste('igv_porcentaje', 18)));
     if ($montos['total'] <= 0) return $mal('Esta venta suma cero: no hay nada que facturar.');
+    /* LO QUE FACTURACIÓN CORRIGIÓ EN LA VISTA PREVIA (5b): el nombre, la
+       dirección, el correo, la descripción de cada línea y la observación.
+       Los montos NO: el comprobante tiene que decir lo que el cliente pagó. */
+    $cambios = [];
+    if ($ed) {
+        $ap = nubefact_aplicar_ediciones($ccpe, $montos, $ed, 'Pedido ' . (string)$p['codigo']);
+        if (!$ap['ok']) return $mal($ap['error']);
+        [$ccpe, $montos, $cambios, $obs] = [$ap['cliente'], $ap['montos'], $ap['cambios'], $ap['observaciones']];
+    }
     /* El comprobante tiene que decir lo mismo que el pedido. Si algún día el
        total se calcula distinto en los dos sitios, se para aquí y no en SUNAT. */
     if ($montos['total'] !== (int)$p['total_centimos']) {
@@ -679,7 +691,7 @@ function nubefact_emitir(int $pedido_id, string $tipo): array
 
     $datos = is_array($prep['datos'] ?? null) && !empty($prep['datos']['items'])
            ? $prep['datos']
-           : nubefact_datos($p, $ccpe, $tipo_cpe, $serie, $numero, $montos);
+           : nubefact_datos($p, $ccpe, $tipo_cpe, $serie, $numero, $montos, isset($obs) ? ['observaciones' => $obs] : []);
     $r = nubefact_enviar_reservado($cpe_id, $datos, $cfg, $prep['reintento']);
     if (!$r['ok']) return $r;
 
@@ -694,10 +706,70 @@ function nubefact_emitir(int $pedido_id, string $tipo): array
         'comprobante_en'     => date('Y-m-d H:i:s'),
     ]);
     pedido_evento($pedido_id, 'comprobante', 'Se emitió ' . $nombre_tipo . ' ' . $serie . '-' . $numero
+        . ($cambios ? ' (con ' . plural(count($cambios), 'dato corregido', 'datos corregidos') . ')' : '')
         . ($cfg['ambiente'] === 'prueba' ? ' (prueba)' : ''));
-    bitacora('pedido.comprobante', 'pedido', $pedido_id, ['tipo' => $nombre_tipo, 'electronico' => 1]);
+    bitacora('pedido.comprobante', 'pedido', $pedido_id, ['tipo' => $nombre_tipo, 'electronico' => 1] + ($cambios ? ['cambios' => $cambios] : []));
     comprobantes_pendientes_olvidar();
     return $r;
+}
+
+/**
+ * LAS CORRECCIONES DE LA VISTA PREVIA (5b). $ed: nombre, direccion, email,
+ * observaciones, desc[k]. Solo texto: los montos no se tocan.
+ * → ['ok', 'error', 'cliente', 'montos', 'cambios', 'observaciones']
+ */
+function nubefact_aplicar_ediciones(array $ccpe, array $montos, array $ed, string $obs_def): array
+{
+    $cambios = [];
+    $t = fn($v, int $n) => mb_substr(trim(preg_replace('/\s+/u', ' ', (string)$v) ?? ''), 0, $n);
+    foreach (['nombre' => 100, 'direccion' => 100] as $k => $n) {
+        if (!array_key_exists($k, $ed)) continue;
+        $v = $t($ed[$k], $n);
+        if ($v === '' && $k === 'nombre') return ['ok' => false, 'error' => 'El nombre del cliente no puede quedar vacío.'];
+        if ($v === '') $v = '-';
+        if ($v !== (string)$ccpe[$k]) { $cambios[$k] = ['de' => (string)$ccpe[$k], 'a' => $v]; $ccpe[$k] = $v; }
+    }
+    if (array_key_exists('email', $ed)) {
+        $v = $t($ed['email'], 120);
+        if ($v !== '' && !filter_var($v, FILTER_VALIDATE_EMAIL)) return ['ok' => false, 'error' => 'El correo no está bien escrito.'];
+        if ($v !== (string)$ccpe['email']) { $cambios['email'] = ['de' => (string)$ccpe['email'], 'a' => $v]; $ccpe['email'] = $v; }
+    }
+    foreach ((array)($ed['desc'] ?? []) as $k => $d) {
+        $k = (int)$k;
+        if (!isset($montos['items'][$k])) continue;
+        $d = $t($d, 250);
+        if ($d === '') return ['ok' => false, 'error' => 'La descripción de una línea no puede quedar vacía.'];
+        if ($d !== (string)$montos['items'][$k]['descripcion']) {
+            $cambios['linea_' . ($k + 1)] = ['de' => (string)$montos['items'][$k]['descripcion'], 'a' => $d];
+            $montos['items'][$k]['descripcion'] = $d;
+        }
+    }
+    $obs = array_key_exists('observaciones', $ed) ? $t($ed['observaciones'], 250) : $obs_def;
+    if ($obs !== $obs_def) $cambios['observaciones'] = ['de' => $obs_def, 'a' => $obs];
+    return ['ok' => true, 'error' => '', 'cliente' => $ccpe, 'montos' => $montos, 'cambios' => $cambios, 'observaciones' => $obs];
+}
+
+/**
+ * LO QUE SE VA A EMITIR, SIN EMITIRLO (la vista previa, 5b).
+ * → ['ok', 'error', 'p', 'cliente', 'montos', 'serie', 'tipo_cpe']
+ */
+function nubefact_previa(int $pedido_id, string $tipo): array
+{
+    $mal = fn(string $e) => ['ok' => false, 'error' => $e];
+    if (!in_array($tipo, ['boleta', 'factura'], true)) return $mal('Elige boleta o factura.');
+    $p = pedido_de($pedido_id);
+    if (!$p) return $mal('Ese pedido no existe.');
+    $cli = una('SELECT * FROM clientes WHERE id = ?', [(int)$p['cliente_id']]);
+    if (!$cli) return $mal('El cliente de esta venta no existe.');
+    $ccpe = nubefact_cliente($cli, $tipo, $p);
+    if (!$ccpe['ok']) return $mal($ccpe['error']);
+    $montos = nubefact_items(pedido_lineas($pedido_id), pedido_flete_dentro($p),
+                             (int)($p['descuento_centimos'] ?? 0) + (int)$p['cashback_usado_centimos'],
+                             max(0, (int) ajuste('igv_porcentaje', 18)));
+    $cfg = nubefact_config();
+    return ['ok' => true, 'error' => '', 'p' => $p, 'cliente' => $ccpe, 'montos' => $montos,
+            'serie' => $tipo === 'factura' ? $cfg['serie_factura'] : $cfg['serie_boleta'], 'tipo_cpe' => $tipo === 'factura' ? 1 : 2,
+            'bloqueo' => pedido_emision_bloqueo($p)];
 }
 
 /**

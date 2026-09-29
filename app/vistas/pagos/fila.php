@@ -69,7 +69,23 @@
       <a class="chip chip--linea" href="<?= e($url_ver) ?>" data-ver-venta>VER VENTA</a>
     <?php endif; ?>
     <?php if ($pg['voucher']): ?>
-      <a class="chip chip--linea" target="_blank" rel="noopener"
+      <?php /* EL VOUCHER FLOTANTE (usuario, 2026-09-29): se abre encima de la
+               bandeja y al lado van el N.º de operación y los tres botones.
+               Los datos viajan en el enlace; sin JavaScript abre en otra
+               pestaña como antes. */ ?>
+      <a class="chip chip--linea" target="_blank" rel="noopener" data-voucher-flota
+         data-pago="<?= (int)$pg['id'] ?>"
+         data-codigo="<?= e((string)$pg['codigo']) ?>"
+         data-cliente="<?= e(trim((string)$pg['cliente_nombre'] . ' ' . (string)$pg['cliente_apellidos'])) ?>"
+         data-monto="<?= e(soles((int)$pg['monto_centimos'])) ?>"
+         data-metodo="<?= e((string)($pg['metodo'] ?: '—')) ?>"
+         data-fecha="<?= e(fecha_corta((string)$pg['fecha'])) ?>"
+         data-asesor="<?= e(primer_nombre((string)$pg['asesor_nombre'])) ?>"
+         data-op="<?= e((string)$pg['operacion']) ?>"
+         data-pide-op="<?= metodo_pide_comprobante($pg['metodo_item_id'] ?? null) && trim((string)$pg['operacion']) === '' ? '1' : '0' ?>"
+         data-nota="<?= e((string)($pg['espera_nota'] ?? '')) ?>"
+         data-pdf="<?= str_ends_with((string)$pg['voucher'], '.pdf') ? '1' : '0' ?>"
+         data-dni="<?= !empty($pg['foto_dni']) ? e(url('/pagos/voucher?que=dni&id=' . (int)$pg['id'])) : '' ?>"
          href="<?= e(url('/pagos/voucher?id=' . (int)$pg['id'])) ?>">VER VOUCHER</a>
     <?php else: ?>
       <span class="chip chip--ambar">Sin voucher</span>

@@ -105,6 +105,7 @@ require_once HUB_APP . '/nucleo/pagos.php';
 require_once HUB_APP . '/nucleo/whatsapp.php';
 require_once HUB_APP . '/nucleo/rotulo.php';
 require_once HUB_APP . '/nucleo/nubefact.php';
+require_once HUB_APP . '/nucleo/guias.php';
 require_once HUB_APP . '/nucleo/catalogo.php';
 require_once HUB_APP . '/nucleo/tienda.php';
 require_once HUB_APP . '/nucleo/stock_web.php';

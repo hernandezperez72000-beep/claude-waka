@@ -39,6 +39,7 @@ function notif_tipos(): array
            minutos) el sondeo de pagos de Facturación. */
         'pago_nuevo'=> ['nombre' => 'Pago por confirmar',      'sonido' => 'pago',     'emergente' => 0, 'horas' => 1, 'solo_push' => 1],
         'resumen'   => ['nombre' => 'Se cerró un bono',        'sonido' => 'despacho', 'emergente' => 0, 'horas' => 24],
+        'entregado' => ['nombre' => 'Pedido entregado',        'sonido' => 'despacho', 'emergente' => 0, 'horas' => 24],
     ];
 }
 
@@ -270,6 +271,19 @@ function notif_pago_nuevo(array $pedido, int $monto): int
         'titulo' => 'Entró un pago por confirmar',
         'texto' => (string)$pedido['codigo'] . ' · ' . soles($monto) . ' · ' . primer_nombre((string)($pedido['asesor_nombre'] ?? '')),
         'url' => '/pagos/por-validar',
+    ]);
+}
+
+/** «Pedido entregado»: al asesor, cuando Almacén marca la entrega con su foto. */
+function notif_entregado(int $pedido_id): int
+{
+    $p = una('SELECT pe.id, pe.codigo, pe.pais_id, pe.asesor_id, c.nombre AS cliente_nombre FROM pedidos pe JOIN clientes c ON c.id = pe.cliente_id WHERE pe.id = ?', [$pedido_id]);
+    if (!$p) return 0;
+    return notificar([
+        'pais_id' => (int)$p['pais_id'], 'para_usuario_id' => (int)$p['asesor_id'], 'tipo' => 'entregado',
+        'titulo' => 'Pedido entregado · ' . (string)$p['codigo'],
+        'texto' => primer_nombre((string)$p['cliente_nombre']) . ' ya lo tiene. La foto de la entrega está en el pedido.',
+        'url' => '/pedidos/ficha?id=' . (int)$p['id'],
     ]);
 }
 
