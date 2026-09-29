@@ -537,6 +537,9 @@ function pago_registrar(int $pedido_id, array $d): array
         . ($concepto !== '' ? ' · ' . $concepto : '')
         . ($al_instante ? '' : ' · queda PENDIENTE de validación'));
     bitacora('pago.registrar', 'pago', $id, ['pedido' => $pedido_id, 'monto' => $monto]);
+    /* 5b: a Facturación le llega al celular aunque tenga el HUB cerrado
+       (dentro del HUB ya le suena el sondeo de pagos). */
+    if (!$al_instante && function_exists('notif_pago_nuevo')) notif_pago_nuevo($pedido, $monto);
 
     return ['ok' => true, 'error' => '', 'id' => $id, 'cashback' => $cashback,
             'pendiente' => !$al_instante];
@@ -648,6 +651,9 @@ function pago_validar(int $pago_id, string $operacion = ''): array
     pedido_evento((int)$pg['pedido_id'], 'pago',
         'Pago de ' . soles((int)$pg['monto_centimos']) . ' validado');
     bitacora('pago.validar', 'pago', $pago_id, ['monto' => (int)$pg['monto_centimos']]);
+    /* 5b (usuario, 2026-09-29): el asesor se entera EN EL MOMENTO, con sonido:
+       «Pago pre venta · confirmado» o «Pago confirmado · despachar». */
+    if ((string)$pg['tipo'] === 'cobro' && function_exists('notif_pago_confirmado')) notif_pago_confirmado($pago_id);
 
     return ['ok' => true, 'error' => '', 'cashback' => $cashback];
     }));

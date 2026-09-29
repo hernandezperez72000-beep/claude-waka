@@ -1,0 +1,6 @@
+# Lo que dejan las pruebas y el uso: fotos, vouchers y comprobantes subidos.
+/uploads/**/*.jpg
+/uploads/**/*.jpeg
+/uploads/**/*.png
+/uploads/**/*.webp
+/uploads/**/*.pdf

@@ -2,7 +2,7 @@
    Cachea el esqueleto (CSS, JS, logo, íconos) para que la apertura sea
    inmediata después de la primera vez. Las páginas SIEMPRE se piden a la
    red: en un HUB de ventas mostrar una página vieja es peor que esperar. */
-const CACHE = 'waka-hub-v3';
+const CACHE = 'waka-hub-v4';
 
 /* Solo se precachean archivos que NUNCA cambian de contenido bajo el mismo
    nombre. El CSS y el JS no van aquí: llegan con ?v=<fecha> pegado, así que
@@ -68,4 +68,41 @@ self.addEventListener('message', (ev) => {
   if (ev.data === 'olvidar-todo') {
     ev.waitUntil(caches.keys().then((ks) => Promise.all(ks.map((k) => caches.delete(k)))));
   }
+});
+
+/* ── 5b · EL PUSH: lo que llega con el HUB cerrado ──────────────────────
+   El servidor manda {t: título, b: texto, u: ruta, i: imagen, g: tipo}. Las
+   rutas vienen relativas al HUB: se completan con la carpeta de este service
+   worker, así sirve igual en /hub/ que en la raíz. */
+self.addEventListener('push', (ev) => {
+  let d = {};
+  try { d = ev.data ? ev.data.json() : {}; } catch (e) { d = { t: 'HUB Waka', b: ev.data ? ev.data.text() : '' }; }
+  const base = self.registration.scope;
+  const op = {
+    body: d.b || '',
+    icon: new URL('assets/img/icono-192.png', base).href,
+    badge: new URL('assets/img/icono-192.png', base).href,
+    tag: 'waka-' + (d.id || d.g || Date.now()),
+    data: { url: new URL(d.u || 'inicio', base).href },
+    vibrate: [180, 80, 180],
+  };
+  if (d.i) op.image = new URL(d.i, base).href;
+  ev.waitUntil(self.registration.showNotification(d.t || 'HUB Waka', op));
+});
+
+/* Tocar la notificación abre (o trae al frente) el HUB en esa pantalla. */
+self.addEventListener('notificationclick', (ev) => {
+  ev.notification.close();
+  const url = (ev.notification.data && ev.notification.data.url) || self.registration.scope;
+  ev.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((ls) => {
+      for (const c of ls) {
+        if (c.url.indexOf(self.registration.scope) === 0 && 'focus' in c) {
+          if ('navigate' in c) c.navigate(url).catch(() => null);
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
 });

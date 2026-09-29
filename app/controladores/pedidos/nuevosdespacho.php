@@ -84,4 +84,7 @@ json([
     'nuevos'   => $desde > 0 ? $nuevos : 0,   // la primera vuelta nunca avisa
     'ultimo'   => $r['ultimo'],
     'trabados' => $trabados,
+    /* 5b: las notificaciones (el pago confirmado, la pre venta nueva, el
+       aviso general) viajan en este mismo sondeo. */
+    'notifs'   => function_exists('notif_para_mi') ? notif_para_mi($u) : [],
 ]);

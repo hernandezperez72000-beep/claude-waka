@@ -137,6 +137,9 @@ function pedido_alistar(int $pedido_id, ?int $quien_id, ?string $foto): array
     if ($st->rowCount() !== 1) return $mal('Ese pedido ya estaba alistado.');
     /* Con la foto: si alguien deshace y vuelve a marcar, la primera sigue a la vista. */
     bitacora('pedido.alistado', 'pedido', $pedido_id, ['quien' => lista_texto($quien_id), 'foto' => $foto]);
+    pedido_evento($pedido_id, 'alistado', 'Almacén lo alistó' . (lista_texto($quien_id) !== '' ? ' (' . lista_texto($quien_id) . ')' : ''));
+    /* La etiqueta pasa a «Alistado» (5b). */
+    pedido_estado_auto($pedido_id);
     return ['ok' => true, 'error' => ''];
 }
 
@@ -165,6 +168,8 @@ function pedido_alistado_deshacer(int $pedido_id): array
     bitacora('pedido.alistado_deshecho', 'pedido', $pedido_id, [
         'quien' => lista_texto($p['alistado_quien_id'] !== null ? (int)$p['alistado_quien_id'] : null),
         'foto' => $p['alistado_foto'], 'por' => $p['alistado_por'], 'en' => $p['alistado_en']]);
+    pedido_evento($pedido_id, 'alistado_deshecho', 'Se deshizo «alistado»');
+    pedido_estado_auto($pedido_id);
     return ['ok' => true, 'error' => ''];
 }
 

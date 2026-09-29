@@ -58,12 +58,27 @@ $avisa_trab  = !$sin_menu && le_avisamos_de_trabados($usuario);
    para quien registra ventas. */
 $avisa_desc  = !$sin_menu && $usuario && puede_el($usuario, 'pedidos.crear') && descuentos_disponibles();
 $trab_ahora  = $avisa_trab ? pagos_trabados_resumen($usuario) : ['n' => 0, 'ultimo' => 0];
+
+/* 5b · LAS NOTIFICACIONES. Quien no tenía sondeo (Almacén, Dirección,
+   Marketing) pregunta por las suyas; los demás las reciben en el suyo. Lo
+   «emergente» que falta ver (el aviso general, la pre venta nueva) sale al
+   entrar, en una ventana encima de la pantalla, una sola vez. */
+$con_notif   = !$sin_menu && $usuario && function_exists('notif_listo') && notif_listo();
+$notif_sondea = $con_notif && !$avisa_pagos && !($avisa_desp || $avisa_trab || $avisa_desc);
+$notif_al_entrar = $con_notif ? notif_para_mi($usuario, true, 3) : [];
+$push_clave = '';
+if ($con_notif && push_listo()) {
+    try { $push_clave = push_vapid()['publica']; } catch (Throwable $ex) { $push_clave = ''; }
+}
 ?>
 <body data-raiz="<?= e(url('')) ?>"
       <?php /* De quién es la marca guardada entre páginas: la usan los dos sondeos. */ ?>
-      <?php if ($avisa_pagos || $avisa_desp || $avisa_trab || $avisa_desc): ?>
+      <?php if ($avisa_pagos || $avisa_desp || $avisa_trab || $avisa_desc || $con_notif): ?>
         data-usuario="<?= (int)($usuario['id'] ?? 0) ?>"
       <?php endif; ?>
+      <?php if ($notif_sondea): ?>data-notif-sondea="1"<?php endif; ?>
+      <?php if ($con_notif): ?>data-notif="1" data-t="<?= e(csrf()) ?>"<?php endif; ?>
+      <?php if ($push_clave !== ''): ?>data-push-clave="<?= e($push_clave) ?>"<?php endif; ?>
       <?php if ($avisa_pagos): ?>
         data-avisa-pagos="1"
         data-pagos-n="<?= (int)$pagos_ahora['sin_revisar'] ?>"
@@ -178,6 +193,11 @@ $trab_ahora  = $avisa_trab ? pagos_trabados_resumen($usuario) : ['n' => 0, 'ulti
       </a>
     <?php endforeach; ?>
   </nav>
+<?php endif; ?>
+
+<?php if ($notif_al_entrar): ?>
+  <?php /* Los avisos que faltaba ver, uno detrás de otro, en la misma ventana. */ ?>
+  <script type="application/json" id="notif-al-entrar"><?= json_encode($notif_al_entrar, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 <?php endif; ?>
 
 <script src="<?= e(activo('assets/js/hub.js')) ?>" defer></script>

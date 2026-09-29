@@ -93,8 +93,8 @@ if ($asesor_f) { $where[] = 'p.asesor_id = ?'; $par[] = $asesor_f; }
 $estados_lista = todas('SELECT clave, nombre FROM pedido_estados ORDER BY orden, id');
 /* Cada pestaña, con los estados de su camino. */
 $de_tab = $tab === 'preventa'
-    ? ['reservado', 'en_camino', 'llego', 'listo', 'en_despacho', 'entregado', 'anulado']
-    : ['registrado', 'pagado', 'en_despacho', 'entregado', 'anulado'];
+    ? ['reservado', 'en_camino', 'llego', 'listo', 'en_despacho', 'alistado', 'entregado', 'anulado']
+    : ['registrado', 'pagado', 'en_despacho', 'alistado', 'entregado', 'anulado'];
 $estados_lista = array_values(array_filter($estados_lista, fn($x) => in_array((string)$x['clave'], $de_tab, true)));
 $claves_estado = array_column($estados_lista, 'clave');
 if ($estado_f !== '' && in_array($estado_f, $claves_estado, true)) {

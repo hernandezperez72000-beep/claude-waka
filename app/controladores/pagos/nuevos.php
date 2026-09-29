@@ -54,4 +54,6 @@ json([
     'descuento_ultimo'=> $marca_d,
     'descuento_codigo'=> $desc['codigo'],
     'descuento_asesor'=> $desc['asesor'],
+    /* 5b: las notificaciones viajan en este mismo sondeo. */
+    'notifs'          => function_exists('notif_para_mi') ? notif_para_mi($u) : [],
 ]);

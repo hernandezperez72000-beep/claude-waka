@@ -506,13 +506,19 @@ function lote_interruptor(int $lote_id, bool $encender): array
     if ($encender && !lote_filas($lote_id)) return ['ok' => false, 'error' => 'El lote no tiene productos todavía.', 'aviso' => ''];
     actualizar('lotes', $lote_id, ['disponible' => $encender ? 1 : 0]);
     bitacora($encender ? 'lote.encender' : 'lote.apagar', 'lote', $lote_id, []);
+    /* 5b: «Nueva pre venta disponible», a todos los que venden (una vez por
+       hora aunque se apague y se vuelva a encender). */
+    $avisados = 0;
+    if ($encender && (int)$l['disponible'] !== 1 && function_exists('notif_preventa_nueva')) {
+        $avisados = notif_preventa_nueva($l) > 0 ? 1 : 0;
+    }
     $c = lote_completitud($lote_id);
     $rev = (int) valor('SELECT COUNT(*) FROM lote_lineas WHERE lote_id = ? AND resuelto = 0', [$lote_id]);
     $partes = [];
     if ($c['sin'] > 0) $partes[] = plural($c['sin'], 'producto sin precio', 'productos sin precio');
     if ($rev > 0) $partes[] = plural($rev, 'fila por revisar', 'filas por revisar');
     $aviso = $encender && $partes ? 'Tienes ' . implode(' y ', $partes) . '. Hasta que lo arregles, eso no lo ven los asesores.' : '';
-    return ['ok' => true, 'error' => '', 'aviso' => $aviso];
+    return ['ok' => true, 'error' => '', 'aviso' => $aviso, 'avisados' => $avisados];
 }
 
 /**

@@ -67,6 +67,28 @@ $paso = $paso ?? ['paso' => '', 'ancla' => '', 'texto' => '']; ?>
 </dialog>
 <div id="lote-js" hidden data-abrir="<?= e((string)($abrir ?? '')) ?>" data-hay-error="<?= $errores ? '1' : '0' ?>"></div>
 
+<?php /* PRE VENTA ACTIVADA (usuario, 2026-09-29): una ventana encima de la
+         pantalla, sin moverla, que dice que los asesores ya se enteraron. */ ?>
+<?php if (!empty($activado)): ?>
+  <dialog class="emergente emergente--ok" id="preventa-activada" aria-labelledby="preventa-activada-t">
+    <div class="emergente__icono" aria-hidden="true"><?= ico('barco', 30) ?></div>
+    <strong class="emergente__titulo" id="preventa-activada-t">Pre venta activada</strong>
+    <p class="emergente__txt"><?= (int)$activado === 1
+        ? 'Ya se les notificó a los asesores: les llega «Nueva pre venta disponible» en la plataforma y en el celular.'
+        : 'Ya está a la venta. A los asesores se les avisó hace un rato, así que no se les vuelve a avisar.' ?></p>
+    <div class="acciones"><button type="button" class="btn btn--amarillo" id="preventa-activada-ok">ENTENDIDO</button></div>
+  </dialog>
+  <script>
+  (function () {
+    var d = document.getElementById('preventa-activada'); if (!d) return;
+    try { d.showModal(); } catch (e) { d.setAttribute('open', ''); }
+    document.getElementById('preventa-activada-ok').addEventListener('click', function () { d.close(); });
+    /* Que un recargar no la vuelva a enseñar. */
+    try { history.replaceState(null, '', location.pathname + location.search.replace(/[?&]activado=\d/, '').replace(/^&/, '?')); } catch (e) {}
+  })();
+  </script>
+<?php endif; ?>
+
 <?php if ($l && (int)$l['disponible'] === 1 && $cmp['sin'] > 0): ?>
   <div class="aviso aviso--amarillo" style="margin-bottom:14px" id="aviso-ocultos">
     <span><?= ico('alerta',17) ?></span>
@@ -208,12 +230,16 @@ $paso = $paso ?? ['paso' => '', 'ancla' => '', 'texto' => '']; ?>
         <?php $i = 0; foreach ($filas as $f): $bloq = $f['vendidas'] > 0 || !$puedo ? 'readonly' : ''; ?>
           <tr class="<?= (int)$f['resuelto'] === 0 ? 'fila--revisa' : '' ?>" id="fila-<?= (int)$f['id'] ?>">
             <td data-k="Código"><input type="hidden" name="f_id[]" value="<?= (int)$f['id'] ?>">
-              <input type="text" name="f_codigo[]" maxlength="60" value="<?= e((string)(($f['codigo'] ?? '') !== '' ? $f['codigo'] : ($f['producto_sku'] ?? ''))) ?>" <?= $bloq ?> style="max-width:130px"></td>
+              <input type="text" name="f_codigo[]" maxlength="60" value="<?= e((string)(($f['codigo'] ?? '') !== '' ? $f['codigo'] : ($f['producto_sku'] ?? ''))) ?>" <?= $bloq ?: (!empty($f['es_repuesto']) && (int)$f['id'] > 0 ? 'class="campo-auto" readonly title="Este código se pone solo al guardar"' : '') ?> style="max-width:130px"></td>
             <td data-k="Producto"><input type="text" name="f_nombre[]" maxlength="180" value="<?= e((string)$f['producto_nombre']) ?>" <?= $bloq ?>>
-              <?php if ((int)$f['resuelto'] === 0): ?><div class="fila__s"><span class="chip chip--ambar">Revisa</span> <?= e((string)($f['aviso'] ?? '')) ?>
-                <?php if ((string)($f['texto_origen'] ?? '') !== ''): ?>· decía «<?= e((string)$f['texto_origen']) ?>»<?php endif; ?>
-                <?php if ($puedo): ?><label class="check"><input type="checkbox" name="f_ok[]" value="<?= $i ?>"> Ya lo revisé</label><?php endif; ?>
-                <span class="mini">Hasta entonces el asesor no la ve.</span></div><?php endif; ?></td>
+              <?php /* POR CONFIRMAR (usuario, 2026-09-29: «¿qué revisar? ¿para qué
+                       el "ya lo revisé"?»). Ya no hay casilla: la fila dice en
+                       claro qué le hizo dudar al HUB, y GUARDAR LOS PRODUCTOS la
+                       da por buena. Solo se queda así lo que el HUB no puede
+                       resolver solo (una máquina que no encuentra). */ ?>
+              <?php if ((int)$f['resuelto'] === 0): ?><div class="fila__s fila__duda"><span class="chip chip--ambar">Por confirmar</span>
+                <span><?= e((string)($f['aviso'] ?? '') !== '' ? (string)$f['aviso'] : 'Hay algo que confirmar en esta fila') ?><?php if ((string)($f['texto_origen'] ?? '') !== ''): ?> · decía «<?= e((string)$f['texto_origen']) ?>»<?php endif; ?>.</span>
+                <span class="mini"><?= $puedo ? 'Corrígela si hace falta y pulsa GUARDAR LOS PRODUCTOS: queda confirmada.' : 'Falta que la confirme quien llena el lote.' ?> Mientras tanto el asesor no la ve.</span></div><?php endif; ?></td>
             <td data-k="Modelo"><input type="text" name="f_modelo[]" maxlength="120" value="<?= e((string)$f['modelo']) ?>" placeholder="Única" <?= $bloq ?>></td>
             <td data-k="¿Es repuesto?"><?php parte('catalogo/lote_maquina', ['f' => $f, 'bloq' => $bloq !== '', 'con_repuestos' => $con_repuestos ?? true]); ?></td>
             <td data-k="Unidades" class="der"><input type="text" name="f_unidades[]" inputmode="numeric" value="<?= e((string)$f['unidades']) ?>" style="max-width:90px" <?= $puedo ? '' : 'readonly' ?>></td>
@@ -297,14 +323,17 @@ $paso = $paso ?? ['paso' => '', 'ancla' => '', 'texto' => '']; ?>
       </div>
       <div class="tabla__caja">
         <table class="tabla tabla--form">
-          <thead><tr><th>Desde</th><th>Hasta</th><th>Precio por unidad</th><th>Cómo lo llama el asesor</th></tr></thead>
+          <?php /* «Cómo lo llama el asesor» se quitó (usuario, 2026-09-29: «¿de qué
+                   sirve?»). Era solo una etiqueta al lado del tramo en la lista
+                   de pre venta. La que ya estaba escrita se conserva escondida. */ ?>
+          <thead><tr><th>Desde</th><th>Hasta</th><th>Precio por unidad</th></tr></thead>
           <tbody class="tramos">
           <?php foreach ($tr as $t): ?>
             <tr>
               <td data-k="Desde"><input type="text" name="t_desde[]" inputmode="numeric" style="max-width:80px" value="<?= (int)$t['desde'] ?>" <?= $ro ?>></td>
               <td data-k="Hasta"><input type="text" name="t_hasta[]" inputmode="numeric" style="max-width:80px" placeholder="a más" value="<?= $t['hasta'] === null ? '' : (int)$t['hasta'] ?>" <?= $ro ?>></td>
-              <td data-k="Precio"><input type="text" name="t_precio[]" inputmode="decimal" style="max-width:120px" value="<?= $t['precio_centimos'] === null ? '' : e(soles((int)$t['precio_centimos'], false)) ?>" <?= $ro ?>></td>
-              <td data-k="Alias"><input type="text" name="t_alias[]" maxlength="60" placeholder="Por 10 · mayorista" value="<?= e((string)($t['alias'] ?? '')) ?>" <?= $ro ?>></td>
+              <td data-k="Precio"><input type="text" name="t_precio[]" inputmode="decimal" style="max-width:120px" value="<?= $t['precio_centimos'] === null ? '' : e(soles((int)$t['precio_centimos'], false)) ?>" <?= $ro ?>>
+                <input type="hidden" name="t_alias[]" value="<?= e((string)($t['alias'] ?? '')) ?>"></td>
             </tr>
           <?php endforeach; ?>
           </tbody>
@@ -334,12 +363,12 @@ $paso = $paso ?? ['paso' => '', 'ancla' => '', 'texto' => '']; ?>
 /* Añadir filas de producto (una o varias), quitarlas, y añadir tramos. */
 (function () {
   var t = document.querySelector('#lote-filas tbody'), molde = document.getElementById('fila-molde');
-  /* Las casillas «Nuevo» y «Ya lo revisé» dicen a qué fila van por su número:
-     al quitar o añadir filas se vuelven a numerar en orden. */
+  /* La casilla «Nuevo» dice a qué fila va por su número: al quitar o añadir
+     filas se vuelven a numerar en orden. */
   function numerar() {
     if (!t) return;
     Array.prototype.forEach.call(t.rows, function (r, k) {
-      r.querySelectorAll('input[name="f_nuevo[]"], input[name="f_ok[]"]').forEach(function (c) { c.value = String(k); });
+      r.querySelectorAll('input[name="f_nuevo[]"]').forEach(function (c) { c.value = String(k); });
     });
   }
   /* La pantalla no salta: lo que estaba en su sitio sigue en su sitio. */
@@ -409,15 +438,44 @@ $paso = $paso ?? ['paso' => '', 'ancla' => '', 'texto' => '']; ?>
     }
     sel.value = elegido;
   }
+  /* EL CÓDIGO DE UN REPUESTO LO PONE EL HUB (usuario, 2026-09-29): al marcar
+     «Es repuesto» el campo Código se bloquea y, si tenía algo escrito, se
+     borra. Al guardar, el repuesto recibe su propio código. Una fila que ya
+     estaba guardada enseña el suyo, bloqueado. Al desmarcar, se puede volver
+     a escribir. */
+  function bloquearCodigo(r, es) {
+    var cod = r.querySelector('input[name^=f_codigo]'), fid = r.querySelector('input[name^=f_id]');
+    if (!cod || cod.hasAttribute('data-fijo')) return;
+    var nueva = !fid || fid.value === '0';
+    if (es) {
+      if (nueva && cod.value !== '') { cod.setAttribute('data-antes', cod.value); cod.value = ''; }
+      cod.readOnly = true;
+      cod.placeholder = nueva ? 'Se pone solo' : cod.placeholder;
+      cod.title = 'El código del repuesto se pone solo al guardar';
+      cod.classList.add('campo-auto');
+    } else {
+      cod.readOnly = false;
+      if (nueva && cod.value === '' && cod.getAttribute('data-antes')) cod.value = cod.getAttribute('data-antes');
+      cod.removeAttribute('data-antes');
+      cod.placeholder = 'PRD-000000';
+      cod.removeAttribute('title');
+      cod.classList.remove('campo-auto');
+    }
+  }
   function filaMaquina(r) {
     var es = r.querySelector('.maq-es'), sel = r.querySelector('.maq-elige'), val = r.querySelector('.maq-valor');
     if (!es || !sel || !val) return;
     sel.hidden = !es.checked;
+    bloquearCodigo(r, es.checked);
     if (es.checked) { if (!sel.options.length) llenarMaquinas(sel); val.value = sel.value; }
     else val.value = '';
   }
   if (t) {
-    Array.prototype.forEach.call(t.rows, function (r) { var sel = r.querySelector('.maq-elige'); if (sel && !sel.hidden) llenarMaquinas(sel); });
+    Array.prototype.forEach.call(t.rows, function (r) {
+      var sel = r.querySelector('.maq-elige'), es = r.querySelector('.maq-es');
+      if (sel && !sel.hidden) llenarMaquinas(sel);
+      if (es && es.checked) bloquearCodigo(r, true);
+    });
     t.addEventListener('change', function (ev) {
       var r = ev.target.closest('tr'); if (!r) return;
       if (ev.target.classList.contains('maq-es')) {

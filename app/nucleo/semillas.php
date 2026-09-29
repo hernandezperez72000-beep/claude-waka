@@ -108,6 +108,9 @@ function sembrar_roles_y_permisos(): void
             'reportes.exportar'=> 'Exportar a Excel',
         ],
         'config' => [
+            /* 5b: el aviso general (texto e imagen) que llega como push al
+               celular y en ventana al entrar al HUB. */
+            'avisos.enviar'     => 'Mandar un aviso general a todos',
             'usuarios.ver'      => 'Ver usuarios',
             'usuarios.gestionar'=> 'Crear y editar usuarios',
             'equipos.gestionar' => 'Equipos y líderes',
@@ -163,7 +166,7 @@ function sembrar_roles_y_permisos(): void
         'reportes.ver', 'reportes.exportar',
         'usuarios.ver', 'usuarios.gestionar', 'equipos.gestionar', 'metas.gestionar',
         'listas.gestionar', 'frases.gestionar', 'whatsapp.gestionar',
-        'errores.gestionar', 'claves.aprobar',
+        'errores.gestionar', 'claves.aprobar', 'avisos.enviar',
         'lotes.gestionar', 'precios.editar', 'catalogo.gestionar',
         'garantias.ver',
         // Confirmar un pago sí, pedido a pedido: lo pidió el usuario para que
@@ -392,6 +395,9 @@ function sembrar_estados_pedido(): void
            marca el lote, «En despacho» al mandarlo y «Entregado» con la foto. */
         ['listo',     'Listo para entrega', 45, 0, 'lote_listo', 'verde'],
         ['en_despacho','En despacho',    55, 0, 'despacho',  'ambar'],
+        /* 5b (usuario, 2026-09-29): cuando Almacén lo alista, la etiqueta
+           cambia de «En despacho» a «Alistado». */
+        ['alistado',  'Alistado',        57, 0, 'alistado',  'verde'],
         ['entregado', 'Entregado',       60, 1, 'entrega',   'verde'],
         ['anulado',   'Anulado',         99, 1, 'anulacion', 'rojo'],
     ];

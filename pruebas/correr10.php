@@ -43,7 +43,8 @@ $cobrar = function (int $pid, int $cent) use ($ASESOR, $ADMIN, $efectivo) {
 grupo('3j · la base');
 ok('las columnas nuevas están', columna_existe('lotes', 'listo_en') && columna_existe('lotes', 'listo_por')
    && columna_existe('pedidos', 'entregado_en') && columna_existe('pedidos', 'entregado_por') && columna_existe('pedidos', 'entregado_foto'));
-es('LOS ESTADOS NUEVOS, EN SU SITIO DEL CAMINO', ['reservado', 'en_camino', 'llego', 'listo', 'pagado', 'en_despacho', 'entregado'],
+/* 5b: «Alistado» entre «En despacho» y «Entregado» (usuario, 2026-09-29). */
+es('LOS ESTADOS NUEVOS, EN SU SITIO DEL CAMINO', ['reservado', 'en_camino', 'llego', 'listo', 'pagado', 'en_despacho', 'alistado', 'entregado'],
    array_column(todas("SELECT clave FROM pedido_estados WHERE clave NOT IN ('registrado','anulado') ORDER BY orden"), 'clave'));
 ok('ya no hay botones para cambiar el estado: las funciones de antes no existen',
    !function_exists('pedido_cambiar_estado') && !function_exists('estados_siguientes') && !function_exists('transiciones_de'));
@@ -97,6 +98,8 @@ $r = pedido_entregado_marcar($S, $FOTO);
 ok('SIN ALISTAR NO SE ENTREGA', !$r['ok'] && str_contains($r['error'], 'alistar'), $r['error']);
 $quien = insertar('lista_items', ['lista_id' => (int) valor("SELECT id FROM listas WHERE clave = 'equipo_despacho'"), 'pais_id' => $PERU, 'valor' => 'Juan', 'orden' => 1]);
 ok('se alista', pedido_alistar($S, $quien, $FOTO)['ok']);
+es('5b · ALISTADO → LA ETIQUETA DICE «ALISTADO», NO «EN DESPACHO»', 'alistado', $estado($S));
+ok('y la historia lo cuenta', (bool) valor("SELECT 1 FROM pedido_eventos WHERE pedido_id = ? AND tipo = 'estado' AND texto LIKE '%Alistado%'", [$S]));
 es('queda en «Por entregar»', [1, $S], [pedidos_por_entregar_n(), (int)(pedidos_por_entregar()[0]['id'] ?? 0)]);
 $r = pedido_entregado_marcar($S, null);
 ok('SIN FOTO NO', !$r['ok'] && str_contains($r['error'], 'foto'), $r['error']);
@@ -118,7 +121,7 @@ $pgx = $cobrar($S, 1);   // un pago más después de entregar no pisa el estado
 es('UN PAGO DESPUÉS DE ENTREGAR NO LO MUEVE', 'entregado', $estado($S));
 banco_entrar($ALMACEN);
 ok('deshacer el mismo día', pedido_entregado_deshacer($S)['ok']);
-es('Y VUELVE A «EN DESPACHO»', 'en_despacho', $estado($S));
+es('Y VUELVE A «ALISTADO» (sigue alistado, solo que no entregado)', 'alistado', $estado($S));
 q("UPDATE pedidos SET entregado_en = '2020-01-01 10:00:00', entregado_foto = ? WHERE id = ?", [$FOTO, $S]);
 ok('lo de otro día ya no se deshace', !pedido_entregado_deshacer($S)['ok']);
 q('UPDATE pedidos SET entregado_en = NULL, entregado_foto = NULL WHERE id = ?', [$S]);

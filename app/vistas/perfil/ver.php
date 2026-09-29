@@ -50,6 +50,24 @@
   </form>
 
   <div>
+    <?php /* 5b · EL PUSH EN ESTE EQUIPO: que los avisos lleguen al celular con
+             el HUB cerrado. Se activa una vez por equipo (celular y computadora). */ ?>
+    <?php if (function_exists('push_listo') && push_listo()): ?>
+    <div class="tarjeta" style="margin-bottom:12px" id="tarjeta-push">
+      <div class="tarjeta__cab"><h2><?= ico('campana', 17) ?> Notificaciones</h2>
+        <span class="chip chip--gris"><?= plural(push_de((int)$u['id']), 'equipo activado', 'equipos activados') ?></span></div>
+      <p class="mini" style="margin:0 0 10px">Pagos confirmados, pre ventas nuevas, pedidos por alistar y los avisos de la empresa,
+        aunque tengas la app cerrada. Actívalas en cada equipo que uses.</p>
+      <p class="mini" id="push-estado" style="margin:0 0 10px"></p>
+      <div class="acciones">
+        <button type="button" class="btn btn--amarillo" id="push-activar" hidden>ACTIVAR EN ESTE EQUIPO</button>
+        <form method="post" action="<?= e(url('/avisos/probar')) ?>" style="display:inline">
+          <?= campo_csrf() ?>
+          <button class="btn btn--linea" type="submit">MANDARME UNA PRUEBA</button>
+        </form>
+      </div>
+    </div>
+    <?php endif; ?>
     <div class="tarjeta" style="margin-bottom:12px">
       <div class="tarjeta__cab"><h2>Tu acceso</h2></div>
       <div class="fila"><span class="fila__crece fila__s">Correo</span><span class="fila__t"><?= e($u['email']) ?></span></div>

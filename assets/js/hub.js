@@ -23,6 +23,9 @@ window.wakaSonido = function (cual) {
 
     var notas = cual === 'despacho' ? [[523.25, 0.00], [784.00, 0.13]]          // do–sol
               : cual === 'reclamo'  ? [[880.00, 0.00], [880.00, 0.16], [880.00, 0.32]]   // la–la–la
+              /* 5b · «almacen»: cuatro notas que suben, para que en el
+                 almacén se oiga distinto de todo lo demás. */
+              : cual === 'almacen'  ? [[392.00, 0.00], [523.25, 0.12], [659.25, 0.24], [783.99, 0.36]]
               : [[659.25, 0.00], [880.00, 0.09], [1174.66, 0.18]];                        // mi–la–re
 
     notas.forEach(function (n) {
@@ -352,6 +355,39 @@ window.wakaSonido = function (cual) {
     window.wakaSonido('reclamo');
   }
 
+  /* LOS PAGOS SIGUEN SONANDO CADA 3 MINUTOS (usuario, 2026-09-29: «los
+     avisos a facturación son importantes»). Mientras quede alguno sin
+     revisar, cada 3 minutos vuelve a sonar y a decir cuántos hay. La hora del
+     último aviso se comparte entre pestañas: con dos abiertas no suena doble. */
+  var RECORDAR = 180000;
+  function ultimoRecuerdo() {
+    try { return parseInt(window.localStorage.getItem('waka-pagos-recuerdo') || '0', 10) || 0; } catch (e) { return 0; }
+  }
+  function marcarRecuerdo() {
+    try { window.localStorage.setItem('waka-pagos-recuerdo', String(Date.now())); } catch (e) {}
+  }
+  if (!ultimoRecuerdo()) marcarRecuerdo();
+  var barraRec = null;
+  function recordarPendientes(n) {
+    var txt = n === 1 ? 'Tienes 1 pago por confirmar' : 'Tienes ' + n + ' pagos por confirmar';
+    if (barraRec) barraRec.remove();
+    barraRec = document.createElement('div');
+    barraRec.className = 'aviso-vivo';
+    barraRec.setAttribute('role', 'status');
+    var t = document.createElement('strong'); t.textContent = txt;
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = 'Verlos';
+    b.addEventListener('click', function () { window.location.href = raiz + 'pagos/por-validar'; });
+    var x = document.createElement('button'); x.type = 'button'; x.className = 'aviso-vivo__x';
+    x.setAttribute('aria-label', 'Cerrar el aviso'); x.textContent = '×';
+    var esta = barraRec;
+    x.addEventListener('click', function () { esta.remove(); if (barraRec === esta) barraRec = null; });
+    esta.appendChild(t); esta.appendChild(b); esta.appendChild(x);
+    (document.getElementById('avisos-pila') || document.body).appendChild(esta);
+    pitar();
+    if (window.wakaSistema) window.wakaSistema({titulo: txt, texto: 'Facturación: hay dinero esperando tu confirmación.', url: raiz + 'pagos/por-validar', tipo: 'pago'});
+    marcarRecuerdo();
+  }
+
   function preguntar() {
     // Se manda el último id visto: así el servidor puede decir cuántos ENTRARON,
     // que no es lo mismo que cuántos hay. Con siete pendientes de ayer y uno
@@ -389,8 +425,14 @@ window.wakaSonido = function (cual) {
           if (j.nuevos > 0) {
             acumulados += j.nuevos;
             avisar(acumulados);
+            marcarRecuerdo();
+            if (window.wakaSistema) window.wakaSistema({titulo: texto(acumulados), texto: '', url: raiz + 'pagos/por-validar', tipo: 'pago'});
           }
         }
+        /* El recordatorio: quedan sin revisar y hace 3 minutos que no suena nada. */
+        if (j.n > 0 && Date.now() - ultimoRecuerdo() >= RECORDAR) recordarPendientes(j.n);
+        if (j.n <= 0 && barraRec) { barraRec.remove(); barraRec = null; }
+        if (j.notifs && j.notifs.length && window.wakaNotifs) window.wakaNotifs(j.notifs);
       })
       .catch(function () {
         // Si se cae la señal no se llena la consola ni se machaca al servidor:
@@ -627,11 +669,17 @@ window.wakaSonido = function (cual) {
           rUltimo = j.racha_ultimo;
           if (j.rachas && j.rachas.length) avisarRacha(j.rachas[0].texto);
         }
+        /* 5b: el «Pago confirmado» nuevo dice de qué venta es. Si llegó en
+           esta vuelta, la barra de antes («1 venta lista para despacho»)
+           no sale además: sería el mismo aviso dos veces. */
+        var notifs = j.notifs || [];
+        var hayPagoOk = notifs.some(function (n) { return n.tipo === 'pago_ok'; });
         if (j.ultimo > ultimo) {
           // La marca sube siempre; avisar solo si de verdad entró algo nuevo.
           ultimo = j.ultimo;
-          if (j.nuevos > 0) { acumulados += j.nuevos; avisar(acumulados); }
+          if (j.nuevos > 0 && !hayPagoOk) { acumulados += j.nuevos; avisar(acumulados); }
         }
+        if (notifs.length && window.wakaNotifs) window.wakaNotifs(notifs);
         /* El aviso enseña CUÁNTOS hay ahora, no un acumulado: acumular dejaba
            la barra diciendo «paró 1» después de que el asesor lo arreglara, y
            al entrar el siguiente decía «paró 2» habiendo uno. Y cuando no
@@ -646,7 +694,8 @@ window.wakaSonido = function (cual) {
       .catch(function () { fallos++; });
   }
 
-  var CADA = 30000;
+  /* 15 s (5b): el pago confirmado le tiene que llegar al asesor «inmediato». */
+  var CADA = 15000;
   setInterval(function () {
     if (document.visibilityState === 'hidden' && fallos > 0) return;
     if (fallos > 5 && (fallos % 6) !== 0) { fallos++; return; }
@@ -864,4 +913,280 @@ window.wakaSonido = function (cual) {
   }
   /* Al volver con el formulario lleno (un error), se pinta según lo elegido. */
   document.querySelectorAll('select[data-metodo-fotos]').forEach(mostrarDni);
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   LAS NOTIFICACIONES (5b)
+
+   Lo que el HUB le dice a cada uno sin que lo pida: el pago confirmado, la
+   pre venta nueva, el pedido por alistar, la Cacería, el aviso general.
+     · Con la pantalla a la vista: una barra con su sonido; lo «emergente»
+       (el aviso general, la pre venta nueva), en una ventana encima.
+     · Con la pestaña escondida: además, la notificación del sistema.
+     · Con el celular cerrado: el push (lo manda el servidor; aquí solo se
+       activa, una vez por equipo).
+   El sondeo es el que cada uno ya hacía; quien no tenía (Almacén, Dirección,
+   Marketing) pregunta a /avisos/nuevos.
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  var cuerpo = document.body;
+  var raiz = (cuerpo && cuerpo.dataset.raiz) || '/';
+
+  function pila() {
+    var p = document.getElementById('avisos-pila');
+    if (!p) {
+      p = document.createElement('div');
+      p.id = 'avisos-pila';
+      p.className = 'avisos-pila';
+      document.body.appendChild(p);
+    }
+    return p;
+  }
+
+  /* La notificación del SISTEMA, solo si la pestaña no se ve (con la
+     pantalla delante ya está la barra) y la persona dio permiso. */
+  window.wakaSistema = function (n) {
+    try {
+      if (document.visibilityState !== 'hidden') return;
+      if (!('Notification' in window) || window.Notification.permission !== 'granted') return;
+      var op = {body: n.texto || '', icon: raiz + 'assets/img/icono-192.png', badge: raiz + 'assets/img/icono-192.png',
+                tag: 'waka-' + (n.id || n.tipo || 'aviso'), data: {url: n.url || raiz + 'inicio'}};
+      if (n.imagen) op.image = n.imagen;
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          if (reg && reg.showNotification) reg.showNotification(n.titulo, op);
+          else new window.Notification(n.titulo, op);
+        }).catch(function () {});
+      } else {
+        new window.Notification(n.titulo, op);
+      }
+    } catch (e) { /* sin notificación del sistema: la barra ya salió */ }
+  };
+
+  function barra(n) {
+    var b = document.createElement('div');
+    b.className = 'aviso-vivo aviso-vivo--notif' + (n.tipo === 'alistar' ? ' aviso-vivo--almacen' : '');
+    b.setAttribute('role', 'status');
+    var caja = document.createElement('span');
+    caja.className = 'aviso-vivo__caja';
+    var t = document.createElement('strong'); t.textContent = n.titulo;
+    caja.appendChild(t);
+    if (n.texto) { var s = document.createElement('span'); s.className = 'aviso-vivo__sub'; s.textContent = n.texto; caja.appendChild(s); }
+    b.appendChild(caja);
+    if (n.url) {
+      var v = document.createElement('button'); v.type = 'button';
+      v.textContent = n.tipo === 'pago_ok' && n.url.indexOf('por-despachar') >= 0 ? 'Despachar' : 'Ver';
+      v.addEventListener('click', function () { window.location.href = n.url; });
+      b.appendChild(v);
+    }
+    var x = document.createElement('button'); x.type = 'button'; x.className = 'aviso-vivo__x';
+    x.setAttribute('aria-label', 'Cerrar el aviso'); x.textContent = '×';
+    x.addEventListener('click', function () { b.remove(); });
+    b.appendChild(x);
+    pila().appendChild(b);
+  }
+
+  /* LA VENTANA: uno detrás de otro, con «Siguiente». */
+  var cola = [], dlg = null;
+  function ventana(lista) {
+    cola = cola.concat(lista);
+    if (dlg && dlg.open) return;
+    siguiente();
+  }
+  function siguiente() {
+    var n = cola.shift();
+    if (!n) { if (dlg) { try { dlg.close(); } catch (e) {} } return; }
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.className = 'emergente emergente--aviso';
+      dlg.id = 'notif-ventana';
+      dlg.setAttribute('aria-labelledby', 'notif-ventana-t');
+      document.body.appendChild(dlg);
+      dlg.addEventListener('cancel', function () { cola = []; });
+    }
+    dlg.innerHTML = '';
+    if (n.imagen) {
+      var im = document.createElement('img'); im.className = 'emergente__img'; im.alt = ''; im.src = n.imagen;
+      dlg.appendChild(im);
+    }
+    var c = document.createElement('div'); c.className = 'emergente__cuerpo';
+    var chip = document.createElement('span'); chip.className = 'emergente__chip';
+    chip.textContent = n.tipo === 'preventa' ? 'Pre venta' : (n.tipo === 'caceria' ? 'Cacería del Día' : 'Aviso');
+    c.appendChild(chip);
+    var h = document.createElement('strong'); h.className = 'emergente__titulo'; h.id = 'notif-ventana-t'; h.textContent = n.titulo;
+    c.appendChild(h);
+    var p = document.createElement('p'); p.className = 'emergente__txt'; p.textContent = n.texto;
+    c.appendChild(p);
+    var ac = document.createElement('div'); ac.className = 'acciones';
+    if (n.url) {
+      var ver = document.createElement('a'); ver.className = 'btn btn--negro'; ver.href = n.url;
+      ver.textContent = n.tipo === 'preventa' ? 'VER LA PRE VENTA' : 'VER';
+      ac.appendChild(ver);
+    }
+    var ok = document.createElement('button'); ok.type = 'button'; ok.className = 'btn btn--amarillo';
+    ok.textContent = cola.length ? 'SIGUIENTE' : 'ENTENDIDO';
+    ok.addEventListener('click', siguiente);
+    ac.appendChild(ok);
+    c.appendChild(ac);
+    dlg.appendChild(c);
+    if (!dlg.open) { try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); } }
+    try { ok.focus(); } catch (e) {}
+  }
+
+  /* Lo que trae cualquier sondeo pasa por aquí. */
+  window.wakaNotifs = function (lista) {
+    if (!lista || !lista.length) return;
+    var emergentes = [], sono = false;
+    lista.forEach(function (n) {
+      if (n.emergente) emergentes.push(n); else barra(n);
+      if (!sono && window.wakaSonido) { window.wakaSonido(n.sonido || 'pago'); sono = true; }
+      window.wakaSistema(n);
+    });
+    if (emergentes.length) ventana(emergentes);
+  };
+
+  if (!cuerpo || cuerpo.dataset.notif !== '1') return;
+
+  /* Lo que faltaba ver al entrar. */
+  var alEntrar = document.getElementById('notif-al-entrar');
+  if (alEntrar) {
+    try { var l0 = JSON.parse(alEntrar.textContent || '[]'); if (l0.length) ventana(l0); } catch (e) {}
+  }
+
+  /* El sondeo de quien no tenía otro. */
+  if (cuerpo.dataset.notifSondea === '1') {
+    var fallos = 0;
+    var preguntar = function () {
+      fetch(raiz + 'avisos/nuevos', {headers: {'Accept': 'application/json'}, credentials: 'same-origin'})
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (!j || !j.ok) return;
+          fallos = 0;
+          window.wakaNotifs(j.notifs || []);
+          /* El chip de «Por alistar» al día, sin recargar. */
+          if (typeof j.alistar === 'number') {
+            document.querySelectorAll('a[href$="pedidos/por-alistar"]').forEach(function (a) {
+              var ch = a.querySelector('.nv__chip, .barra__chip');
+              if (j.alistar > 0) {
+                if (!ch) { ch = document.createElement('span'); ch.className = a.closest('.barra') ? 'barra__chip' : 'nv__chip'; a.appendChild(ch); }
+                ch.textContent = String(j.alistar);
+              } else if (ch) ch.remove();
+            });
+            var cab = document.getElementById('alistar-cuantos');
+            if (cab) cab.textContent = String(j.alistar);
+          }
+        })
+        .catch(function () { fallos++; });
+    };
+    setInterval(function () {
+      if (document.visibilityState === 'hidden' && fallos > 0) return;
+      if (fallos > 5 && (fallos % 6) !== 0) { fallos++; return; }
+      preguntar();
+    }, 20000);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') preguntar();
+    });
+  }
+
+  /* ── EL PUSH: activarlo en este equipo ─────────────────────────────── */
+  var clave = cuerpo.dataset.pushClave || '';
+  var yo = cuerpo.dataset.usuario || '';
+  var puedePush = clave !== '' && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+
+  function claveBytes(b64) {
+    var s = (b64 + '===='.slice((b64.length % 4) || 4)).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = window.atob(s), out = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+  }
+  function guardarSuscripcion(sub) {
+    var j = sub.toJSON ? sub.toJSON() : sub;
+    var fd = new FormData();
+    fd.append('_t', cuerpo.dataset.t || '');
+    fd.append('endpoint', j.endpoint);
+    fd.append('p256dh', (j.keys || {}).p256dh || '');
+    fd.append('auth', (j.keys || {}).auth || '');
+    return fetch(raiz + 'avisos/suscribir', {method: 'POST', body: fd, credentials: 'same-origin'})
+      .then(function (r) {
+        if (r.ok) { try { window.localStorage.setItem('waka-push-' + yo, j.endpoint); } catch (e) {} }
+        return r.ok;
+      });
+  }
+  function suscribir() {
+    return navigator.serviceWorker.ready.then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (sub) {
+        return sub || reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: claveBytes(clave)});
+      });
+    }).then(guardarSuscripcion);
+  }
+  window.wakaPushActivar = function () {
+    if (!puedePush) return Promise.resolve(false);
+    return window.Notification.requestPermission().then(function (p) {
+      if (p !== 'granted') return false;
+      return suscribir();
+    }).catch(function () { return false; });
+  };
+  window.wakaPushEstado = function () {
+    if (!puedePush) return 'no';
+    return window.Notification.permission;   // default · granted · denied
+  };
+
+  if (puedePush) {
+    /* Con permiso ya dado: se asegura la suscripción de ESTA persona en ESTE
+       equipo (otra cuenta en el mismo celular, o el navegador la renovó). */
+    if (window.Notification.permission === 'granted') {
+      navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+        .then(function (sub) {
+          var guardada = '';
+          try { guardada = window.localStorage.getItem('waka-push-' + yo) || ''; } catch (e) {}
+          if (!sub) return suscribir();
+          if (guardada !== sub.endpoint) return guardarSuscripcion(sub);
+        }).catch(function () {});
+    } else if (window.Notification.permission === 'default') {
+      /* La franja que invita a activarlas. Se esconde 7 días con la X. */
+      var visto = 0;
+      try { visto = parseInt(window.localStorage.getItem('waka-push-no') || '0', 10) || 0; } catch (e) {}
+      if (Date.now() - visto > 7 * 86400000 && !document.getElementById('push-activar')) {
+        var f = document.createElement('div');
+        f.className = 'push-franja'; f.id = 'push-franja';
+        var tx = document.createElement('span');
+        tx.innerHTML = '<strong>Activa las notificaciones</strong> para que los avisos te lleguen al celular aunque la app esté cerrada.';
+        var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'btn btn--amarillo btn--chico'; bt.textContent = 'ACTIVAR';
+        bt.addEventListener('click', function () {
+          window.wakaPushActivar().then(function (ok) {
+            f.remove();
+            try { window.localStorage.setItem('waka-push-no', String(Date.now())); } catch (e) {}
+            if (ok && window.wakaSonido) window.wakaSonido('despacho');
+          });
+        });
+        var no = document.createElement('button'); no.type = 'button'; no.className = 'aviso-vivo__x push-franja__x';
+        no.setAttribute('aria-label', 'Ahora no'); no.textContent = '×';
+        no.addEventListener('click', function () {
+          f.remove();
+          try { window.localStorage.setItem('waka-push-no', String(Date.now())); } catch (e) {}
+        });
+        f.appendChild(tx); f.appendChild(bt); f.appendChild(no);
+        var cont = document.querySelector('.contenido');
+        if (cont) cont.insertBefore(f, cont.firstChild);
+      }
+    }
+  }
+
+  /* El botón de Mi perfil. */
+  var bp = document.getElementById('push-activar');
+  if (bp) {
+    var est = document.getElementById('push-estado');
+    var pinta = function () {
+      var e = window.wakaPushEstado();
+      if (!est) return;
+      est.textContent = e === 'granted' ? 'Activadas en este equipo.'
+        : e === 'denied' ? 'Bloqueadas en este navegador: actívalas desde el candado de la barra de direcciones.'
+        : e === 'no' ? 'Este navegador no las admite. En iPhone, primero añade Waka a la pantalla de inicio (Compartir › Añadir a inicio) y ábrelo desde ahí.'
+        : 'Todavía no están activadas en este equipo.';
+      bp.hidden = e === 'granted' || e === 'no' || e === 'denied';
+    };
+    pinta();
+    bp.addEventListener('click', function () { window.wakaPushActivar().then(pinta); });
+  }
 })();

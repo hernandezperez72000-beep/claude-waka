@@ -153,6 +153,12 @@ $rutas = [
     '/bonos/pagar'           => ['bonos/pagar',       'bonos.pagar'],
     '/equipo'                => ['bonos/equipo',      'bonos.ver'],
     '/novedades/vista'       => ['bonos/novedad',     '@sesion'],
+    /* 5b · las notificaciones: el sondeo de quien no tenía otro, el push de
+       cada equipo y el aviso general que se escribe en Configuración. */
+    '/avisos/nuevos'         => ['avisos/nuevos',     '@sesion'],
+    '/avisos/suscribir'      => ['avisos/suscribir',  '@sesion'],
+    '/avisos/probar'         => ['avisos/probar',     '@sesion'],
+    '/configuracion/notificaciones' => ['config/notificaciones', 'avisos.enviar'],
 
     /* ── Módulo 2 · pagos ────────────────────────────────────────────── */
     '/pagos/registrar'       => ['pagos/registrar',   'pagos.registrar'],

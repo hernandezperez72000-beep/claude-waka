@@ -16,8 +16,8 @@ if (PHP_VERSION_ID < 80100) {
    tarde averiguando si el fallo es del código o de la subida. Con esto se mira
    el pie y se sabe. Se cambia A MANO en cada entrega: un número que se genera
    solo acabaría diciendo la fecha del servidor y no la del código. */
-const HUB_VERSION = '5a';
-const HUB_VERSION_FECHA = '2026-09-29';
+const HUB_VERSION = '5b';
+const HUB_VERSION_FECHA = '2026-09-30';
 
 define('HUB_INICIO', microtime(true));
 define('HUB_RAIZ',   dirname(__DIR__, 2));          // carpeta pública del sitio
@@ -118,6 +118,7 @@ require_once HUB_APP . '/nucleo/repuestos.php';
 require_once HUB_APP . '/nucleo/garantias.php';
 require_once HUB_APP . '/nucleo/bonos.php';
 require_once HUB_APP . '/nucleo/rachas.php';
+require_once HUB_APP . '/nucleo/notificaciones.php';
 
 
 /** ¿Está instalado el HUB? */

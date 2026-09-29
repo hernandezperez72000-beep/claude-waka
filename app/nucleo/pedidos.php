@@ -294,6 +294,9 @@ function pedido_estado_calculado(array $p): string
 {
     if (!empty($p['anulado_en']) || (string)($p['estado'] ?? '') === 'anulado') return 'anulado';
     if (!empty($p['entregado_en'])) return 'entregado';
+    /* 5b (usuario, 2026-09-29): alistado por Almacén, la etiqueta dice
+       «Alistado» y no «En despacho». */
+    if ((int)($p['despacho_veces'] ?? 0) > 0 && !empty($p['alistado_en'])) return 'alistado';
     if ((int)($p['despacho_veces'] ?? 0) > 0) return 'en_despacho';
     if ((string)$p['tipo'] === 'preventa') {
         $s = pedido_preventa_situacion((int)$p['id'])['situacion'];
@@ -2624,6 +2627,8 @@ function pedido_despacho_marcar(int $pedido_id, bool $solo_primera = false, ?int
                      : 'Se volvió a mandar a despacho (' . $veces . '.ª vez)');
     bitacora('pedido.despacho', 'pedido', $pedido_id, ['veces' => $veces]);
     pedido_estado_auto($pedido_id);
+    /* 5b: a Almacén le suena «Nuevo pedido por alistar» (en la PC y en el celular). */
+    if (function_exists('notif_por_alistar')) notif_por_alistar($pedido_id, $veces);
 
     return ['ok' => true, 'error' => '', 'veces' => $veces];
     });

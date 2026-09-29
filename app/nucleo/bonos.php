@@ -858,6 +858,7 @@ function bono_cerrar(array $b, string $ini, string $fin, ?string $ahora = null):
                                                   'falta' => $f['falta'], 'equipo_valor' => (int)$f['valor']], JSON_UNESCAPED_UNICODE),
                         'pagado' => 0, 'cerrado_en' => $ahora,
                     ]);
+                    if ($gana) bono_notificar_ganador($b, (int)$m['usuario_id'], $pi, $ini, $fin);
                 }
             }
             return true;
@@ -877,9 +878,28 @@ function bono_cerrar(array $b, string $ini, string $fin, ?string $ahora = null):
                 'detalle' => json_encode($detalle, JSON_UNESCAPED_UNICODE),
                 'pagado' => 0, 'cerrado_en' => $ahora,
             ]);
+            if (!empty($f['gana']) && (int)($f['usuario_id'] ?? 0) > 0) {
+                bono_notificar_ganador($b, (int)$f['usuario_id'], (int)$f['premio'], $ini, $fin);
+            }
         }
         return true;
     });
+}
+
+/**
+ * 5b · EL RESUMEN AL CELULAR: a quien ganó, un push «¡Ganaste!». Dentro del
+ * HUB ya lo cuenta la pila de novedades al entrar, así que no sale en ventana.
+ */
+function bono_notificar_ganador(array $b, int $uid, int $premio, string $ini, string $fin): void
+{
+    if (!function_exists('notificar') || $uid <= 0) return;
+    notificar([
+        'pais_id' => (int)$b['pais_id'], 'para_usuario_id' => $uid, 'tipo' => 'resumen', 'emergente' => 0,
+        'titulo' => '¡Ganaste! ' . mb_substr(bono_nombre($b), 0, 60),
+        'texto' => ucfirst(bono_periodo_texto((string)$b['periodo'], $ini, $fin)) . ($premio > 0 ? ' · ' . soles_corto($premio) : '')
+                 . '. Entra a ver tu logro y compártelo.',
+        'url' => '/inicio',
+    ]);
 }
 
 /* ─────────────────────────  PAGAR  ───────────────────────── */
@@ -1160,6 +1180,8 @@ function caceria_lanzar(int $pais_id, array $d): array
         return $mal('La Cacería de hoy ya se lanzó.');
     }
     bitacora('caceria.lanzar', 'bono', (int)$b['id'], ['destino' => $destino]);
+    /* 5b: la notificación general de la Cacería (push al celular y ventana al entrar). */
+    if (function_exists('notif_caceria')) notif_caceria($pais_id, ['titulo' => $titulo, 'frase' => $frase, 'destino' => $destino]);
     return ['ok' => true, 'error' => '', 'nueva' => true];
 }
 

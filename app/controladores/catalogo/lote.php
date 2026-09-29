@@ -46,11 +46,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($lote && $accion === 'filas') {
         $filas = [];
         foreach ((array)($_POST['f_nombre'] ?? []) as $i => $x) {
-            $filas[] = ['id' => $_POST['f_id'][$i] ?? 0, 'codigo' => $_POST['f_codigo'][$i] ?? '', 'nombre' => $x,
+            $fid = (int)($_POST['f_id'][$i] ?? 0);
+            $maq = trim((string)($_POST['f_maquina'][$i] ?? ''));
+            $filas[] = ['id' => $fid,
+                        /* UN REPUESTO NUEVO NO LLEVA CÓDIGO ESCRITO (usuario,
+                           2026-09-29): el HUB le pone el suyo al guardar. Lo que
+                           se hubiera escrito antes de marcar «Es repuesto» se
+                           borra aquí también, por si la pantalla no lo hizo. */
+                        'codigo' => $maq !== '' && !$fid ? '' : ($_POST['f_codigo'][$i] ?? ''), 'nombre' => $x,
                         'modelo' => $_POST['f_modelo'][$i] ?? '', 'unidades' => $_POST['f_unidades'][$i] ?? '',
-                        'maquina' => $_POST['f_maquina'][$i] ?? '',
+                        'maquina' => $maq,
                         'nuevo' => in_array((string)$i, array_map('strval', (array)($_POST['f_nuevo'] ?? [])), true),
-                        'revisado' => in_array((string)$i, array_map('strval', (array)($_POST['f_ok'] ?? [])), true)];
+                        /* «Por confirmar» (antes la casilla «Ya lo revisé»): una
+                           fila que ya estaba y se vuelve a guardar queda confirmada. */
+                        'revisado' => $fid > 0];
         }
         $r = lote_filas_guardar($id, $filas);
         if ($r['ok']) {
@@ -101,9 +110,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($lote && $accion === 'interruptor') {
         $r = lote_interruptor($id, pedir('encender') === '1');
         if ($r['ok']) {
-            avisar('ok', pedir('encender') === '1' ? 'Lote a la venta.' : 'Lote apagado: los asesores ya no lo ven.');
-            if ($r['aviso'] !== '') avisar('info', $r['aviso']);
-            ir($al_siguiente($id));
+            /* PONER A LA VENTA NO LLEVA ABAJO (usuario, 2026-09-29): la
+               pantalla vuelve arriba, donde estaba el botón, con una ventana
+               «Pre venta activada · ya se les notificó a los asesores». */
+            if (pedir('encender') === '1') {
+                if ($r['aviso'] !== '') avisar('info', $r['aviso']);
+                ir('/stock/lote?id=' . $id . '&activado=' . (!empty($r['avisados']) ? '1' : '2'));
+            }
+            avisar('ok', 'Lote apagado: los asesores ya no lo ven.');
+            ir('/stock/lote?id=' . $id);
         }
         $errores[] = $r['error'];
         $abrir = 'form-interruptor';
@@ -149,6 +164,8 @@ pagina('catalogo/lote', [
     'abrir'     => $abrir,
     'puedo'     => puede('lotes.gestionar'),
     'paso'      => lote_siguiente_paso($lote),
+    /* 1: se acaba de poner a la venta y se avisó; 2: a la venta, sin aviso nuevo (ya se avisó hace poco). */
+    'activado'  => $lote && (int)$lote['disponible'] === 1 ? (int) pedir_int('activado', 'get', 0) : 0,
     'con_repuestos' => function_exists('repuestos_listo') && repuestos_listo(),
     'maquinas'  => $lote && function_exists('repuestos_listo') && repuestos_listo() && puede('lotes.gestionar')
                    ? maquinas_para_elegir($id, $pais) : ['lote' => [], 'catalogo' => []],

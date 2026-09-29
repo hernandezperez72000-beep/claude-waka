@@ -351,6 +351,58 @@ function esquema_sql_modulo2(): array
         KEY ix_racha_aviso (pais_id, fecha)
     ) $m";
 
+    /* ─────────────  5b · LAS NOTIFICACIONES  ─────────────
+       Todo lo que el HUB le dice a alguien sin que lo pida: a quién (una
+       persona, un rol, un permiso, una oficina o un equipo de un país), qué
+       dice y a dónde lleva. Lo visto, por persona y en el servidor. */
+    $t[] = "CREATE TABLE IF NOT EXISTS notificaciones (
+        id               INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        pais_id          SMALLINT UNSIGNED NULL,
+        para_usuario_id  INT UNSIGNED NULL,
+        para_rol         VARCHAR(40) NULL,
+        para_permiso     VARCHAR(60) NULL,
+        para_oficina_id  INT UNSIGNED NULL,
+        para_equipo_id   INT UNSIGNED NULL,
+        tipo             VARCHAR(20) NOT NULL DEFAULT 'general',
+        titulo           VARCHAR(80) NOT NULL,
+        texto            VARCHAR(255) NOT NULL DEFAULT '',
+        url              VARCHAR(255) NULL,
+        imagen           VARCHAR(120) NULL,
+        emergente        TINYINT(1) NOT NULL DEFAULT 0,
+        creado_por       INT UNSIGNED NULL,
+        creado_en        DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        KEY ix_notif_fecha (creado_en),
+        KEY ix_notif_usuario (para_usuario_id)
+    ) $m";
+
+    $t[] = "CREATE TABLE IF NOT EXISTS notificacion_vistas (
+        notificacion_id  INT UNSIGNED NOT NULL,
+        usuario_id       INT UNSIGNED NOT NULL,
+        visto_en         DATETIME NOT NULL,
+        PRIMARY KEY (notificacion_id, usuario_id),
+        KEY ix_nv_usuario (usuario_id)
+    ) $m";
+
+    /* Los equipos (celular, computadora) que activaron el push: la dirección
+       que da el navegador y sus dos claves. Un equipo que se da de baja se
+       borra solo al primer 404/410. */
+    $t[] = "CREATE TABLE IF NOT EXISTS push_suscripciones (
+        id             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        usuario_id     INT UNSIGNED NOT NULL,
+        endpoint_hash  CHAR(64) NOT NULL,
+        endpoint       VARCHAR(1024) NOT NULL,
+        p256dh         VARCHAR(120) NOT NULL,
+        auth           VARCHAR(60) NOT NULL,
+        agente         VARCHAR(120) NULL,
+        fallos         SMALLINT NOT NULL DEFAULT 0,
+        ultimo_ok      DATETIME NULL,
+        creado_en      DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY uq_push_endpoint (endpoint_hash),
+        KEY ix_push_usuario (usuario_id)
+    ) $m";
+
     return $t;
 }
 
@@ -1211,6 +1263,21 @@ function migraciones_tras_semillas(): array
     if (function_exists('entrega_arranque')) {
         try { $m = entrega_arranque(); if ($m !== '') $hecho[] = $m; }
         catch (Throwable $ex) { error_log('[HUB] entrega arranque: ' . $ex->getMessage()); }
+    }
+    /* ── 5b · lo alistado y sin entregar pasa a «Alistado» ──
+       Una sola vez, sin línea en la historia de cada pedido: no lo cambió
+       nadie, es la etiqueta nueva. */
+    if (tabla_existe('pedido_estados') && tabla_existe('ajustes') && function_exists('alistado_listo') && alistado_listo()
+        && columna_existe('pedidos', 'entregado_en') && (string) ajuste('alistado_estado_arranque', '') === '') {
+        try {
+            $ali = (int) valor("SELECT id FROM pedido_estados WHERE clave = 'alistado'");
+            $des = (int) valor("SELECT id FROM pedido_estados WHERE clave = 'en_despacho'");
+            $n_a = ($ali && $des) ? q('UPDATE pedidos SET estado_id = ? WHERE estado_id = ? AND alistado_en IS NOT NULL
+                                         AND entregado_en IS NULL AND anulado_en IS NULL AND despacho_veces > 0', [$ali, $des])->rowCount() : 0;
+            guardar_ajuste_tecnico('alistado_estado_arranque', date('Y-m-d H:i:s'), 'Lo alistado ya pasó a «Alistado». No tocar.');
+            ajustes_olvidar();
+            if ($n_a) $hecho[] = "$n_a pedido(s) ya alistados pasan a «Alistado»";
+        } catch (Throwable $ex) { error_log('[HUB] alistado estado: ' . $ex->getMessage()); }
     }
 
     /* ── «tienda.escribir» se parte en tres (3g) ─────────────────────────

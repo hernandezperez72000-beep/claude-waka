@@ -9,6 +9,8 @@ $secciones = [
     ['i'=>'EQ','n'=>'Equipos y líderes','d'=>'Tres equipos · la estrella marca al líder','ruta'=>'/configuracion/equipos','listo'=>true,'chip'=>0],
     ['i'=>'ME','n'=>'Metas por asesor','d'=>'S/ 30,000 general, con excepción individual','ruta'=>'/configuracion/metas','listo'=>true,'chip'=>0],
     ['i'=>'BO','n'=>'Bonos','d'=>'Montos, períodos, condiciones y tramos','ruta'=>'/configuracion/bonos','listo'=>true,'chip'=>0],
+    /* 5b: el aviso general (push al celular y ventana al entrar). */
+    ['i'=>'NO','n'=>'Notificaciones','d'=>'Un aviso para todos: texto e imagen, al celular y al entrar','ruta'=>'/configuracion/notificaciones','listo'=>true,'chip'=>0],
     ['i'=>'MP','n'=>'Métodos de pago','d'=>'Qué pide cada uno: voucher, foto del DNI, recargo','ruta'=>'/configuracion/metodos-pago','listo'=>true,'chip'=>0],
     ['i'=>'ED','n'=>'Equipo de despacho','d'=>'Quién alista los pedidos en el almacén','ruta'=>'/configuracion/equipo-despacho','listo'=>true,'chip'=>0],
     ['i'=>'AC','n'=>'Agencias de carga','d'=>'Quién trae los contenedores de pre venta','ruta'=>'/configuracion/agencias-carga','listo'=>true,'chip'=>0],
