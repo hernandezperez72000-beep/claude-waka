@@ -237,7 +237,7 @@ $paso = $paso ?? ['paso' => '', 'ancla' => '', 'texto' => '']; ?>
                        claro qué le hizo dudar al HUB, y GUARDAR LOS PRODUCTOS la
                        da por buena. Solo se queda así lo que el HUB no puede
                        resolver solo (una máquina que no encuentra). */ ?>
-              <?php if ((int)$f['resuelto'] === 0): ?><div class="fila__s fila__duda"><span class="chip chip--ambar">Por confirmar</span>
+              <?php if ((int)$f['resuelto'] === 0): ?><div class="fila__s fila__duda"><span class="chip chip--ambar">Falta confirmar</span>
                 <span><?= e((string)($f['aviso'] ?? '') !== '' ? (string)$f['aviso'] : 'Hay algo que confirmar en esta fila') ?><?php if ((string)($f['texto_origen'] ?? '') !== ''): ?> · decía «<?= e((string)$f['texto_origen']) ?>»<?php endif; ?>.</span>
                 <span class="mini"><?= $puedo ? 'Corrígela si hace falta y pulsa GUARDAR LOS PRODUCTOS: queda confirmada.' : 'Falta que la confirme quien llena el lote.' ?> Mientras tanto el asesor no la ve.</span></div><?php endif; ?></td>
             <td data-k="Modelo"><input type="text" name="f_modelo[]" maxlength="120" value="<?= e((string)$f['modelo']) ?>" placeholder="Única" <?= $bloq ?>></td>

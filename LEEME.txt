@@ -1,11 +1,65 @@
-HUB WAKA — Módulos 1 y 2 (parches 2e a 2x), módulo 3 (3a a 3j) y módulo 5 (5a)
+HUB WAKA — Módulos 1 y 2 (parches 2e a 2x), módulo 3 (3a a 3j) y módulo 5 (5a y 5b)
 ======================================================
 Módulo 1: acceso y usuarios.  ·  Módulo 2: clientes y pedidos.
 Módulo 3: catálogo de productos y conexión con la tienda.
 Módulo 5: bonos, metas y rachas.
 
 
-  ── QUÉ TRAE ESTA VERSIÓN (5a) ─────────────────────────────────────
+  ── QUÉ TRAE ESTA VERSIÓN (5b) ─────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (tablas de las
+  notificaciones y del push, el estado «Alistado», el permiso del aviso
+  general y el código INEI de los distritos). Después, borrarlo.
+
+  PARA ARRANCAR:
+  1. Configuración › Facturación electrónica: la serie de la guía de
+     remisión (empieza con T, creada en NUBEFACT), el ubigeo y la dirección
+     del almacén y el peso por bulto.
+  2. Cada persona, en su celular y en su computadora: Mi perfil ›
+     Notificaciones › ACTIVAR EN ESTE EQUIPO (o la franja amarilla de
+     arriba). En iPhone, primero añadir Waka a la pantalla de inicio.
+
+  LO QUE CAMBIA (lo pidió el usuario el 2026-09-29):
+  1. PRE VENTA. Ya no hay «Revisa» ni «Ya lo revisé»: la fila dice «Falta
+     confirmar» y por qué, y GUARDAR LOS PRODUCTOS la confirma. Al marcar
+     «Es repuesto» el código se bloquea y se borra: el repuesto recibe el suyo
+     al guardar (y su nombre no cambia). Se quitó «Cómo lo llama el asesor».
+     PONER A LA VENTA ya no baja la pantalla: sale «Pre venta activada · ya se
+     les notificó a los asesores» y a quien vende le llega «Nueva pre venta
+     disponible».
+  2. NOTIFICACIONES. Dentro de la plataforma (barra con sonido, y ventana al
+     entrar para los avisos generales), y al celular por push aunque esté
+     cerrado. Llegan: el pago confirmado al asesor («Pago confirmado ·
+     despachar» o «Pago pre venta · confirmado»), el pedido por alistar a
+     Almacén, el pedido entregado al asesor, el pago nuevo a Facturación, la
+     Cacería del Día y el «¡Ganaste!» de los bonos. Configuración ›
+     Notificaciones: el aviso general con título (50), texto (150), imagen
+     (1200 × 600 px, menos de 400 KB) y a quién le llega.
+  3. FACTURACIÓN. Los pagos sin revisar vuelven a sonar cada 3 minutos. En
+     Pagos por validar: primero «Sin revisar», después los comprobantes
+     solicitados y al final los validados. VER VOUCHER lo abre encima de la
+     bandeja con el N.º de operación y VALIDAR · EN ESPERA · DENEGAR al lado.
+  4. REPORTE DE PAGOS: las cifras, el detalle de lo validado, las ventas sin
+     comprobante y, al final, por día y por banco.
+  5. BOLETA, FACTURA Y GUÍA CON VISTA PREVIA: EMITIR abre el comprobante
+     como va a salir; se corrige el texto (nombre, dirección, correo, cada
+     línea, la observación) y se manda. Lo corregido queda en la bitácora.
+     Los montos no se tocan.
+  6. GUÍA DE REMISIÓN de los envíos a provincia: el HUB la arma sola con el
+     pedido; Almacén la emite desde «Por entregar» (y Facturación desde la
+     venta). El RUC de la agencia se escribe una vez y se recuerda.
+  7. ALMACÉN: el pedido alistado dice «Alistado». Nueva opción «Por
+     entregar». Arriba, cuántos hay por alistar y por entregar; suena
+     «Nuevo pedido por alistar» en la computadora y en el celular.
+  8. RÓTULO: se abre una vista previa, se elige cuántos bultos y sale una
+     hoja A4 con dos rótulos por hoja («BULTO 2 DE 3»), para imprimir.
+  9. ASESOR: la Cacería de hoy cuenta cada venta registrada (el premio,
+     por lo confirmado); el Inicio se actualiza solo; el aviso al mandar a
+     despacho ya no habla de Almacén.
+  10. La Cacería la lanzan el CEO y Administración (atajo en su Inicio).
+
+
+  ── LO QUE TRAJO LA 5a ─────────────────────────────────────────────
 
   IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (tablas nuevas de
   los bonos, las rachas y la pila de novedades). Después, borrarlo. Si

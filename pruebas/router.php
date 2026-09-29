@@ -12,7 +12,7 @@ $archivo = __DIR__ . '/../' . ltrim($ruta, '/');
      · uploads/vouchers/ → Require all denied en su propio .htaccess.
        Los vouchers llevan el banco y el monto de un cliente: se sirven solo
        por /pagos/voucher, que pregunta antes quién está pidiendo. */
-if (preg_match('#^/(app|pruebas)/#', $ruta))       { http_response_code(404); exit; }
+if (preg_match('#^/(app|pruebas|docs)/#', $ruta))  { http_response_code(404); exit; }
 if (preg_match('#^/uploads/vouchers/#', $ruta))    { http_response_code(403); exit; }
 
 if ($ruta !== '/' && is_file($archivo)) return false;

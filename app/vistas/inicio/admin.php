@@ -34,6 +34,13 @@ $donde          = $cruza ? 'en todos los países' : 'en tu país';
     <?php if (puede('pedidos.crear')): ?>
       <a class="btn btn--negro" href="<?= e(url('/pedidos/nuevo')) ?>"><?= ico('mas', 16) ?> NUEVO PEDIDO</a>
     <?php endif; ?>
+    <?php /* 5b (usuario, 2026-09-29): la Cacería del Día la lanzan el CEO y
+             Administración. Si hoy todavía no se lanzó, el atajo está aquí. */ ?>
+    <?php if (puede('bonos.lanzar') && function_exists('bono_tipo') && bonos_listo()
+              && ($cb_i = bono_tipo((int)$usuario['pais_id'], 'caceria')) && (int)$cb_i['activo'] === 1
+              && !caceria_de((int)$usuario['pais_id'], date('Y-m-d'))): ?>
+      <a class="btn btn--amarillo" href="<?= e(url('/bonos/caceria')) ?>" id="atajo-caceria"><?= ico('trofeo', 16) ?> LANZAR LA CACERÍA DE HOY</a>
+    <?php endif; ?>
     <?php /* Por cruza_paises() y no por rol: el Desarrollador también cruza, y
              con la comprobación por rol el chip decía «Perú» mientras las
              tarjetas de abajo decían «en todos los países». */ ?>

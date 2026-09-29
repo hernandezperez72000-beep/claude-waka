@@ -516,7 +516,7 @@ function lote_interruptor(int $lote_id, bool $encender): array
     $rev = (int) valor('SELECT COUNT(*) FROM lote_lineas WHERE lote_id = ? AND resuelto = 0', [$lote_id]);
     $partes = [];
     if ($c['sin'] > 0) $partes[] = plural($c['sin'], 'producto sin precio', 'productos sin precio');
-    if ($rev > 0) $partes[] = plural($rev, 'fila por revisar', 'filas por revisar');
+    if ($rev > 0) $partes[] = plural($rev, 'fila por confirmar', 'filas por confirmar');
     $aviso = $encender && $partes ? 'Tienes ' . implode(' y ', $partes) . '. Hasta que lo arregles, eso no lo ven los asesores.' : '';
     return ['ok' => true, 'error' => '', 'aviso' => $aviso, 'avisados' => $avisados];
 }
@@ -648,7 +648,7 @@ function lote_siguiente_paso(?array $l): array
     $filas = lote_filas($id);
     if (!$filas) return $r('productos', 'productos', 'Pon los productos que trae el lote.');
     foreach ($filas as $k => $f) {
-        if ((int)$f['resuelto'] === 0) return $r('revisar', 'fila-' . (int)$f['id'], 'Revisa las filas marcadas «Revisa».');
+        if ((int)$f['resuelto'] === 0) return $r('revisar', 'fila-' . (int)$f['id'], 'Hay filas que faltan confirmar: corrígelas si hace falta y guarda los productos.');
     }
     if ((string)$l['estado'] !== 'recibido') {
         foreach (lote_productos($id) as $p) {

@@ -97,6 +97,9 @@ ok('AL ENTRAR SALE LO EMERGENTE (el aviso general)', in_array('Emergente', array
 q('UPDATE notificaciones SET creado_en = ? WHERE id = ?', [date('Y-m-d H:i:s', time() - 120), $nx]);
 $cuenta_nueva = banco_usuario('asesor');
 ok('a una cuenta creada después no le llega lo de antes', !in_array('Emergente', $tit($cuenta_nueva), true));
+for ($i = 0; $i < 130; $i++) notificar(['pais_id' => $PERU, 'para_rol' => 'almacen', 'tipo' => 'alistar', 'titulo' => 'Para almacén ' . $i, 'texto' => 'x', 'sin_push' => 1]);
+notificar(['pais_id' => $PERU, 'para_usuario_id' => $ASESOR, 'tipo' => 'pago_ok', 'titulo' => 'El mío', 'texto' => 'x', 'sin_push' => 1]);
+ok('CIEN AVISOS PARA OTRO ROL NO TAPAN EL SUYO', in_array('El mío', $tit($ASESOR), true));
 $vaciar();
 
 grupo('5b · pre venta: activarla avisa a quien vende');
@@ -255,6 +258,9 @@ ok('se suscribe un equipo', push_suscribir($ASESOR, 'https://fcm.googleapis.com/
 push_suscribir($ASESOR, 'https://updates.push.services.mozilla.com/wpush/v2/equipo-2', $k2, $a2);
 ok('una suscripción con claves que no son no', !push_suscribir($ASESOR, 'https://fcm.googleapis.com/x/y/z', 'abc', 'def')['ok']);
 ok('ni una dirección que no es https', !push_suscribir($ASESOR, 'http://fcm.googleapis.com/fcm/send/x', $k1, $a1)['ok']);
+ok('NI UNA QUE NO ES DE UN SERVICIO DE PUSH (el servidor no llama a cualquier sitio)', !push_suscribir($ASESOR, 'https://192.168.0.10/admin/borrar', $k1, $a1)['ok']
+   && !push_suscribir($ASESOR, 'https://fcm.googleapis.com.malo.test/x', $k1, $a1)['ok']);
+ok('los de Apple y Windows, sí', push_servicio_conocido('https://web.push.apple.com/abc') && push_servicio_conocido('https://wns2-par02p.notify.windows.com/w/?token=x'));
 es('dos equipos', 2, push_de($ASESOR));
 push_suscribir($ASESOR, 'https://fcm.googleapis.com/fcm/send/equipo-1', $k1, $a1);
 es('suscribir otra vez el mismo no lo duplica', 2, push_de($ASESOR));

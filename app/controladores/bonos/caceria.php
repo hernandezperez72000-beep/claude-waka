@@ -3,7 +3,7 @@ declare(strict_types=1);
 seccion_activa('bonos');
 
 /**
- * LANZAR LA CACERÍA DEL DÍA (módulo 5, acción del CEO). Tres pasos: título y
+ * LANZAR LA CACERÍA DEL DÍA (módulo 5; la lanzan el CEO y Administración, 5b). Tres pasos: título y
  * frase (con «Otra frase»), la escalera de hoy (cambiable solo por hoy) y a
  * quién le llega. Una vez al día; después se corrigen título y frase. Cierra
  * sola a medianoche y el resultado sale al día siguiente en la pila.
@@ -19,7 +19,7 @@ $errores = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $r = caceria_lanzar($pais, $_POST);
     if ($r['ok']) {
-        avisar('ok', $r['nueva'] ? 'Lanzada. Ya les sale a los asesores al entrar.' : 'Corregido.');
+        avisar('ok', $r['nueva'] ? 'Lanzada. Les llega a los asesores al celular y les sale al entrar.' : 'Corregido.');
         ir('/bonos');
     }
     $errores[] = $r['error'];

@@ -236,7 +236,11 @@ actualizar('pedidos', $anulada, ['anulado_en' => '2026-09-22 13:00:00']);       
 foreach (range(1, 5) as $i) $venta($C, 320 + $i, $S(500), '2026-09-22 10:00:00', [['2026-09-22', $S(500)]]);
 $ev = bono_evaluar($CB, '2026-09-22', '2026-09-22', '2026-09-22');
 es('SOLO PARA A QUIEN SE LANZÓ (el equipo de A y B)', [$A, $B], array_keys($ev['filas']));
-es('A: 4 cuentan, 1 espera', [4, 1], [$fila($ev, $A)['valor'], $fila($ev, $A)['extra']]);
+/* 5b (usuario, 2026-09-29: «la cacería no se refleja»): durante el día se
+   ven las 5 registradas; el premio sale de las 4 confirmadas. */
+es('A: se ven 5 (4 confirmadas y 1 que espera)', [5, 4, 1], [$fila($ev, $A)['valor'], $fila($ev, $A)['confirmadas'], $fila($ev, $A)['extra']]);
+$ev_c = bono_evaluar($CB, '2026-09-22', '2026-09-22', '2026-09-23');
+es('AL CERRAR SOLO CUENTAN LAS CONFIRMADAS', 4, $fila($ev_c, $A)['valor']);
 ok('y el asesor lo ve', str_contains($fila($ev, $A)['texto'], '1 esperan que confirmen'));
 es('A: la escalera DE ESE DÍA (4 → S/60)', $S(60), $fila($ev, $A)['premio']);
 es('B: la pre venta y la anulada no cuentan', 1, $fila($ev, $B)['valor']);

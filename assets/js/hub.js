@@ -1190,3 +1190,31 @@ window.wakaSonido = function (cual) {
     bp.addEventListener('click', function () { window.wakaPushActivar().then(pinta); });
   }
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   EL INICIO DEL ASESOR, SIEMPRE AL DÍA (5b)
+
+   «El contador de ventas no cambia en la pantalla principal» (usuario,
+   2026-09-29). La pantalla se quedaba con las cifras de cuando se abrió: al
+   volver con «atrás» el navegador la saca de su memoria, y la app instalada
+   vuelve del fondo sin pedirla otra vez. El Inicio no tiene nada que escribir,
+   así que recargarlo no borra nada: se recarga al volver y, si se queda a la
+   vista, cada dos minutos.
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  if (!document.getElementById('inicio-vivo')) return;
+  var cargada = Date.now(), escondida = 0;
+  function recargar() {
+    if (document.querySelector('dialog[open]')) return;   // no se corta una ventana abierta (la pila, un logro)
+    window.location.reload();
+  }
+  window.addEventListener('pageshow', function (ev) { if (ev.persisted) recargar(); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') { escondida = Date.now(); return; }
+    if (escondida && Date.now() - escondida > 15000) recargar();
+  });
+  setInterval(function () {
+    if (document.visibilityState === 'visible' && Date.now() - cargada > 120000) recargar();
+  }, 30000);
+})();

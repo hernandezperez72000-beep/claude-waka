@@ -99,7 +99,7 @@ $pedida = $est === 'pedida'; ?>
     <?php if ($vigencia): ?>
       <div class="tarjeta" id="garantia-vigencia">
         <div class="tarjeta__cab"><h2>Vigencia</h2>
-          <span class="chip chip--<?= e(garantia_vigencia_tono($vigencia['estado'])) ?>"><?= e($vigencia['texto']) ?></span></div>
+          <span class="chip chip--largo chip--<?= e(garantia_vigencia_tono($vigencia['estado'])) ?>"><?= e($vigencia['texto']) ?></span></div>
         <p class="mini" style="margin:0"><?= e($vigencia['detalle']) ?></p>
         <?php if ((int)$g['fuera_plazo'] === 1): ?>
           <p class="mini" style="margin:6px 0 0"><strong>Se pidió fuera de plazo</strong><?= $g['vence_en'] ? ': venció el ' . e(fecha_corta((string)$g['vence_en'])) : '' ?>.</p>

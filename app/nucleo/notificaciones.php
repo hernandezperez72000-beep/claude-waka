@@ -166,11 +166,23 @@ function notif_para_mi(array $u, bool $solo_emergentes = false, int $tope = 5, b
     if (!notif_listo()) return [];
     $tipos = notif_tipos();
     $desde = date('Y-m-d H:i:s', time() - 72 * 3600);
-    $cand = todas('SELECT n.* FROM notificaciones n
-                    WHERE n.creado_en >= ?' . ($solo_emergentes ? ' AND n.emergente = 1' : '') . '
-                      AND (n.para_usuario_id IS NULL OR n.para_usuario_id = ?)
+    /* Lo que no es para esta persona se descarta YA en la consulta: si no,
+       cien avisos a Almacén de un día llenarían el tope y al asesor no le
+       llegaría el suyo. El permiso se mira contra los que tiene su rol. */
+    $mios = function_exists('permisos_del_rol') ? permisos_del_rol((int)($u['rol_id'] ?? 0)) : [];
+    $w = ['n.creado_en >= ?', '(n.para_usuario_id IS NULL OR n.para_usuario_id = ?)',
+          '(n.para_rol IS NULL OR n.para_rol = ?)',
+          '(n.para_oficina_id IS NULL OR n.para_oficina_id = ?)', '(n.para_equipo_id IS NULL OR n.para_equipo_id = ?)'];
+    $par = [$desde, (int)$u['id'], (string)($u['rol'] ?? ''), (int)($u['oficina_id'] ?? 0), (int)($u['equipo_id'] ?? 0)];
+    if (($u['rol'] ?? '') !== 'desarrollador') {
+        $w[] = $mios ? '(n.para_permiso IS NULL OR n.para_permiso IN (' . implode(',', array_fill(0, count($mios), '?')) . '))' : 'n.para_permiso IS NULL';
+        $par = array_merge($par, $mios);
+    }
+    if ($solo_emergentes) $w[] = 'n.emergente = 1';
+    $par[] = (int)$u['id'];
+    $cand = array_reverse(todas('SELECT n.* FROM notificaciones n WHERE ' . implode(' AND ', $w) . '
                       AND NOT EXISTS (SELECT 1 FROM notificacion_vistas v WHERE v.notificacion_id = n.id AND v.usuario_id = ?)
-                    ORDER BY n.id LIMIT 60', [$desde, (int)$u['id'], (int)$u['id']]);
+                    ORDER BY n.id DESC LIMIT 100', $par));
     $out = [];
     $solo_push = [];
     foreach ($cand as $n) {
@@ -510,11 +522,26 @@ function notif_carga_push(array $n): string
     ], JSON_UNESCAPED_UNICODE);
 }
 
+/**
+ * SOLO LOS SERVICIOS DE PUSH DE LOS NAVEGADORES. La dirección la da el
+ * navegador, pero llega desde fuera: sin esta lista, cualquiera con cuenta
+ * podría hacer que el servidor mande peticiones a donde quisiera.
+ */
+function push_servicio_conocido(string $endpoint): bool
+{
+    $h = mb_strtolower((string) parse_url($endpoint, PHP_URL_HOST));
+    foreach (['fcm.googleapis.com', 'android.googleapis.com', 'updates.push.services.mozilla.com', 'push.services.mozilla.com',
+              'notify.windows.com', 'push.apple.com', 'web.push.apple.com'] as $ok) {
+        if ($h === $ok || str_ends_with($h, '.' . $ok)) return true;
+    }
+    return false;
+}
+
 /** Guarda la suscripción de este equipo. → ['ok', 'error'] */
 function push_suscribir(int $uid, string $endpoint, string $p256dh, string $auth, string $agente = ''): array
 {
     if (!push_listo()) return ['ok' => false, 'error' => 'Falta terminar la actualización.'];
-    if (!preg_match('~^https://[^\s]{10,1000}$~', $endpoint)) return ['ok' => false, 'error' => 'Suscripción no válida.'];
+    if (!preg_match('~^https://[^\s]{10,1000}$~', $endpoint) || !push_servicio_conocido($endpoint)) return ['ok' => false, 'error' => 'Suscripción no válida.'];
     $k = b64u_dec($p256dh); $a = b64u_dec($auth);
     if (strlen($k) !== 65 || $k[0] !== "\x04" || strlen($a) < 16) return ['ok' => false, 'error' => 'Suscripción no válida.'];
     $h = hash('sha256', $endpoint);

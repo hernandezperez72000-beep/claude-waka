@@ -57,10 +57,15 @@ $pct = fn($x) => max(0, min(100, (int) round((float)$x)));
           <div class="caceria__t"><?= e((string)$cac['titulo']) ?></div>
           <?php if (trim((string)$cac['frase']) !== ''): ?><div class="caceria__f"><?= e((string)$cac['frase']) ?></div><?php endif; ?>
           <div class="caceria__n"><span class="num"><?= (int)$f['valor'] ?></span> <span class="mini"><?= (int)$f['valor'] === 0 ? 'Hoy arrancas de cero' : plural((int)$f['valor'], 'gestión', 'gestiones', false) ?></span></div>
-          <?php if ((int)$f['extra'] > 0): ?><div class="mini"><?= plural((int)$f['extra'], 'venta espera', 'ventas esperan') ?> que confirmen el pago para contar.</div><?php endif; ?>
+          <?php if ((int)$f['extra'] > 0): ?><div class="mini"><?= (int)$f['extra'] === 1 ? '1 de ellas espera' : (int)$f['extra'] . ' de ellas esperan' ?> que Facturación confirme el pago: el premio se paga por lo confirmado.</div><?php endif; ?>
           <div class="escalera">
-            <?php $marcada = false; foreach ($esc as $e): $ok = (int)$f['valor'] >= (int)$e['desde']; $toca = !$ok && !$marcada; if ($toca) $marcada = true; ?>
-              <div class="escalera__p <?= $ok ? 'escalera__p--ok' : ($toca ? 'escalera__p--toca' : '') ?>">
+            <?php /* Confirmado: lleno. Alcanzado con ventas que esperan el pago: a
+                     medias (5b). El siguiente, marcado. */
+                  $marcada = false; foreach ($esc as $e): $conf = (int)($f['confirmadas'] ?? $f['valor']);
+                  $ok = $conf >= (int)$e['desde']; $espera = !$ok && (int)$f['valor'] >= (int)$e['desde'];
+                  $toca = !$ok && !$espera && !$marcada; if ($toca) $marcada = true; ?>
+              <div class="escalera__p <?= $ok ? 'escalera__p--ok' : ($espera ? 'escalera__p--espera' : ($toca ? 'escalera__p--toca' : '')) ?>"
+                   <?= $espera ? 'title="Llegaste: falta que Facturación confirme los pagos"' : '' ?>>
                 <span><?= (int)$e['desde'] ?> gestiones</span><strong><?= e(soles_corto((int)$e['premio'])) ?></strong></div>
             <?php endforeach; ?>
           </div>

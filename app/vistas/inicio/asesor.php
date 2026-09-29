@@ -1,4 +1,8 @@
 <?php /** Inicio del asesor: su día. */ ?>
+<?php /* 5b (usuario, 2026-09-29: «el contador de ventas no cambia»): las cifras
+         se vuelven a leer al regresar a esta pantalla (atrás del navegador, la
+         app que vuelve del fondo) y cada dos minutos si está a la vista. */ ?>
+<div id="inicio-vivo" hidden></div>
 <header class="cabecera">
   <div>
     <div class="cabecera__sub"><?= e($fecha) ?></div>
@@ -151,7 +155,7 @@
       </div>
       <div class="cifra">
         <span class="cifra__k">Pedidos de hoy</span>
-        <span class="cifra__v"><?= (int)$pedidos_hoy ?></span>
+        <span class="cifra__v" id="cifra-pedidos-hoy"><?= (int)$pedidos_hoy ?></span>
         <span class="cifra__d"><?= $pedidos_hoy ? 'buen ritmo' : 'todavía ninguno' ?></span>
       </div>
       <div class="cifra">

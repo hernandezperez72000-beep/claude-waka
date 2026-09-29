@@ -45,7 +45,7 @@ $num = fn(string $x) => 'S/ ' . number_format((float)$x, 2, '.', ',');
         <input type="text" value="<?= e((string)$c['doc']) ?>" disabled title="El documento sale de la ficha del cliente"></label>
       <label class="doc-campo doc-campo--ancho"><span><?= $tipo === 'factura' ? 'Dirección fiscal' : 'Dirección' ?></span>
         <input type="text" name="c_direccion" maxlength="100" value="<?= e((string)$c['direccion'] === '-' ? '' : (string)$c['direccion']) ?>" placeholder="Opcional en una boleta"></label>
-      <label class="doc-campo"><span>Correo (le llega el PDF)</span>
+      <label class="doc-campo doc-campo--ancho"><span>Correo (le llega el PDF)</span>
         <input type="email" name="c_email" maxlength="120" value="<?= e((string)$c['email']) ?>"></label>
     </div>
     <p class="mini" style="margin:6px 0 0">El documento se corrige en la ficha del cliente: aquí solo el texto.</p>

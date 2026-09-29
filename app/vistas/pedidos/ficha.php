@@ -1010,7 +1010,7 @@ HABLAR CON FACTURACIÓN</a>
     <?php if (!empty($vigencia)): ?>
       <div class="tarjeta" id="tarjeta-garantia">
         <div class="tarjeta__cab"><h2>Garantía</h2>
-          <span class="chip chip--<?= e(garantia_vigencia_tono($vigencia['estado'])) ?>" id="vigencia"><?= e($vigencia['texto']) ?></span></div>
+          <span class="chip chip--largo chip--<?= e(garantia_vigencia_tono($vigencia['estado'])) ?>" id="vigencia"><?= e($vigencia['texto']) ?></span></div>
         <?php if ($garantia_txt !== ''): ?><div class="dato"><span class="dato__k">Prometida</span><span class="dato__t"><?= e($garantia_txt) ?></span></div><?php endif; ?>
         <?php if ($vigencia['detalle'] !== ''): ?><p class="mini" style="margin:0 0 8px"><?= e($vigencia['detalle']) ?></p><?php endif; ?>
         <?php $gar_ver = puede('garantias.ver'); ?>

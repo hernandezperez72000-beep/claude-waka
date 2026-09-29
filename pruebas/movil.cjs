@@ -81,6 +81,10 @@ const RUTAS = [
   '/bonos?v=mios', '/bonos/rachas', '/bonos/caceria', '/equipo', '/configuracion/bonos', '/configuracion/metas',
   '/configuracion/bonos?id={bono0}', '/configuracion/bonos?id={bono1}', '/configuracion/bonos?id={bono2}', '/configuracion/bonos?id={bono3}',
   '/configuracion/bonos?id={bono4}', '/configuracion/bonos?id={bono5}', '/configuracion/bonos?id={bono6}',
+  /* 5b · Por entregar, las notificaciones, la vista previa del rótulo, de la
+     guía y de la boleta, y el perfil con el push. */
+  '/pedidos/por-entregar', '/configuracion/notificaciones', '/pedidos/rotulo?id={pedlisto}&vista=1',
+  '/pedidos/guia?id={pv3j}', '/pedidos/emitir?id={ped}&tipo=boleta',
 ];
 /* Lo que deja correr3 para el 3i (si no está, esas rutas se saltan). */
 let G3I = {};

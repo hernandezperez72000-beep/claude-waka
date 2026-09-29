@@ -487,15 +487,20 @@ function bono_evaluar(array $bono, string $inicio, string $fin, ?string $hoy = n
         $g = bono_gestiones($ids, $inicio, $fin, $r);
         foreach ($ids as $uid) {
             $n = (int)$g[$uid]['cuentan'];
+            /* LO QUE SE VE DURANTE EL DÍA (5b, usuario 2026-09-29: «la cacería
+               no se refleja en Bonos»): cada venta registrada hoy, como dice la
+               tarjeta 3 del módulo 5. El premio sigue saliendo de lo que
+               Facturación confirmó, y al cerrar solo cuenta eso. */
+            $vistas = $cerrado ? $n : $n + (int)$g[$uid]['esperan'];
             $premio = 0; $sig = null;
             foreach ($esc as $e) { if ($n >= (int)$e['desde']) $premio = (int)$e['premio']; elseif (!$sig) $sig = $e; }
             $primero = (int)($esc[0]['desde'] ?? 1);
             $obj = $sig ? (int)$sig['desde'] : (int)(end($esc)['desde'] ?? 1);
-            $fila = ['usuario_id' => $uid, 'nombre' => $nombre($uid), 'valor' => $n, 'extra' => (int)$g[$uid]['esperan'],
+            $fila = ['usuario_id' => $uid, 'nombre' => $nombre($uid), 'valor' => $vistas, 'confirmadas' => $n, 'extra' => (int)$g[$uid]['esperan'],
                      'objetivo' => $obj, 'pct' => $obj > 0 ? min(100, $n * 100 / $obj) : 0, 'puesto' => null,
                      'gana' => $premio > 0, 'premio' => $premio,
                      'frase' => bono_frase($premio > 0, $primero > 0 ? $n * 100 / $primero : 0, $cerrado),
-                     'texto' => plural($n, 'gestión', 'gestiones') . ($g[$uid]['esperan'] > 0 && !$cerrado ? ' · ' . $g[$uid]['esperan'] . ' esperan que confirmen el pago' : ''),
+                     'texto' => plural($vistas, 'gestión', 'gestiones') . ($g[$uid]['esperan'] > 0 && !$cerrado ? ' · ' . $g[$uid]['esperan'] . ' esperan que confirmen el pago' : ''),
                      'falta' => $sig ? 'Te faltan ' . ((int)$sig['desde'] - $n) . ' para ' . soles_corto((int)$sig['premio']) : '',
                      'siguiente' => $sig];
             $out['filas'][$uid] = $fila;

@@ -220,7 +220,7 @@ ok('el aviso del interruptor cuenta lo que falta revisar', (function () use ($L1
     q('UPDATE lote_lineas SET resuelto = 0 WHERE id = ?', [$NAR]);
     $r = lote_interruptor($L1, true);
     q('UPDATE lote_lineas SET resuelto = 1 WHERE id = ?', [$NAR]);
-    return str_contains($r['aviso'], '1 fila por revisar');
+    return str_contains($r['aviso'], '1 fila por confirmar');
 })());
 
 grupo('3h · cada país con lo suyo');

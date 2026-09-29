@@ -24,6 +24,7 @@ RewriteRule ^ index.php [QSA,L]
 # Vale igual si el HUB se instala en una subcarpeta (/hub/app/…).
 RedirectMatch 404 (^|/)app/
 RedirectMatch 404 (^|/)pruebas/
+RedirectMatch 404 (^|/)docs/
 
 # Cabeceras de seguridad
 <IfModule mod_headers.c>

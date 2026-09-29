@@ -83,6 +83,15 @@ LAS TRES TANDAS
                      el modo team, la meta general y lo que encontró la
                      auditoría.
 
+  correr12.php (121) LO QUE PIDIÓ EL USUARIO AL PROBAR LA 5a (5b): a quién
+                     le llega cada notificación y que no se repita, el aviso
+                     de la pre venta, el pago confirmado, el pedido por
+                     alistar, «Alistado», el aviso general con sus límites, el
+                     PUSH DE VERDAD (se cifra con RFC 8291 y aquí se descifra
+                     como lo haría el celular; la firma VAPID se verifica), el
+                     rótulo por bultos en A4, la guía de remisión con su
+                     vista previa y la boleta corregida antes de mandarla.
+
   correr3.php  (110)  HTTP de verdad: un servidor PHP, cookies, redirecciones,
                      CSRF y códigos de estado. Es donde se comprueba que el
                      aislamiento vive en el SERVIDOR: escribir la dirección de
