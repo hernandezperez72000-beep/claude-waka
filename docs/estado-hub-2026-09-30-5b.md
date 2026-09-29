@@ -5,7 +5,7 @@ Se suma a `estado-hub-2026-09-29-5a.md` y a `decisiones-5a.md`.
 ## Versión 5b (`HUB_VERSION = '5b'`)
 - **Pide `actualizar.php`**: tablas `notificaciones`, `notificacion_vistas`, `push_suscripciones`; columna `ubigeo.codigo_inei`; estado `alistado` (orden 57); permiso `avisos.enviar` (Dirección y Administración); migración única `alistado_estado_arranque` (lo alistado y sin entregar pasa a «Alistado»).
 - Para arrancar: serie de guía (T…), ubigeo y dirección del almacén y peso por bulto en Configuración › Facturación electrónica. Cada persona activa el push en cada equipo (Mi perfil › Notificaciones).
-- Banco: correr 120 · correr2 1410 · correr4 82 · correr5 71 · correr6 99 · correr7 159 · correr8 122 · correr9 145 · correr10 121 · correr11 240 · **correr12 123** · avisos `[]` · correr3 (ver el cierre de la sesión).
+- Banco: correr 120 · correr2 1410 · correr4 82 · correr5 71 · correr6 99 · correr7 159 · correr8 122 · correr9 145 · correr10 121 · correr11 240 · **correr12 124** · avisos `[]` · correr3 1570 · pantallas limpias a 390/760/1101/1280/1366.
 
 ## Lo que pidió el usuario el 2026-09-29 y cómo quedó
 1. **«Revisa» / «Ya lo revisé»**: sin casilla. La fila dice «Falta confirmar» con el motivo; GUARDAR confirma toda fila que ya estaba (`revisado = fid > 0` en el controlador). Lo que el HUB no resuelve solo (máquina que no está, producto ya en catálogo) sigue sin confirmar.

@@ -83,7 +83,7 @@ LAS TRES TANDAS
                      el modo team, la meta general y lo que encontró la
                      auditoría.
 
-  correr12.php (121) LO QUE PIDIÓ EL USUARIO AL PROBAR LA 5a (5b): a quién
+  correr12.php (124) LO QUE PIDIÓ EL USUARIO AL PROBAR LA 5a (5b): a quién
                      le llega cada notificación y que no se repita, el aviso
                      de la pre venta, el pago confirmado, el pedido por
                      alistar, «Alistado», el aviso general con sus límites, el
