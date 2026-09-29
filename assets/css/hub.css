@@ -1,0 +1,1857 @@
+/* ============================================================
+   HUB Waka — hoja de estilo única.
+   Sin frameworks: el HUB tiene que abrir rápido en el celular
+   de un asesor con señal regular.
+   ============================================================ */
+
+/* ── Tipografía ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* ── Paleta ─────────────────────────────────────────────────
+   El amarillo de marca #FAD91A NO sirve como relleno de dato:
+   contraste 1.36:1. Queda para botones, estados activos y podio.
+   Para barras y gráficos van --serie / --serie-2, ya validados. */
+:root {
+  --marca:      #FAD91A;
+  --marca-tinta:#000000;
+
+  --bg:      #FAFAF6;
+  --tarjeta: #FFFFFF;
+  --suave:   #F1F1E9;
+  --campo:   #FBFBF7;
+  --barra:   #FFFFFF;
+  --linea:   #E6E6DE;
+  --linea-suave: #F0F0E8;
+
+  --tx:   #000000;
+  --tx-2: #55554E;
+  --tx-3: #8A8A82;
+
+  --verde: #1F7A55;
+  --verde-bg: #E3F1EA;
+  --ambar: #7A5B00;
+  --ambar-bg: #FBF0D2;
+  --rojo:  #9A3B3B;
+  --rojo-bg: #F6E4E4;
+
+  --serie:   #B58C00;
+  --serie-2: #2A6FB8;
+  --pista:   #EFEFE7;
+
+  --radio: 16px;
+  --radio-chico: 12px;
+  --sombra: 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* El calendario y el reloj de <input type=date|time> los pinta el NAVEGADOR,
+   no esta hoja: sin declarar color-scheme salían con fondo blanco y el iconito
+   negro sobre negro, y la hora no se leía. Es la única forma de decírselo. */
+:root[data-theme="oscuro"] { color-scheme: dark; }
+:root[data-theme="claro"]  { color-scheme: light; }
+
+:root[data-theme="oscuro"] {
+  --bg:      #0F0F0D;
+  --tarjeta: #161614;
+  --suave:   #1B1B18;
+  --campo:   #161614;
+  --barra:   #131311;
+  --linea:   #262622;
+  --linea-suave: #212120;
+
+  --tx:   #F2F2EC;
+  --tx-2: #A3A39A;
+  --tx-3: #8A8A82;
+
+  --verde: #5CC79B;
+  --verde-bg: #12291F;
+  --ambar: #E0BC5A;
+  --ambar-bg: #2E2413;
+  --rojo:  #E08A8A;
+  --rojo-bg: #2E1717;
+
+  --serie:   #A9901C;
+  --serie-2: #4E8FCF;
+  --pista:   #232320;
+  --sombra: none;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tx);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1,h2,h3,h4 { margin: 0; font-weight: 700; letter-spacing: -0.4px; }
+.muted { color: var(--tx-3); }
+.mini  { font-size: 11.5px; color: var(--tx-3); line-height: 1.45; }
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .92em;
+       background: var(--suave); padding: 1px 5px; border-radius: 5px; }
+
+/* ── Estructura ─────────────────────────────────────────── */
+.app { display: flex; min-height: 100vh; }
+
+.lateral {
+  width: 232px; flex-shrink: 0; background: #000; color: #9B9B93;
+  display: flex; flex-direction: column; padding: 22px 14px 16px;
+  position: sticky; top: 0; height: 100vh;
+}
+.lateral__logo { width: 128px; margin: 0 6px 20px; filter: invert(1); }
+.nv { display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+      border-radius: 11px; font-size: 13.5px; font-weight: 500; color: #9B9B93; }
+.nv:hover { background: #1A1A16; color: #E4E4DA; }
+.nv.on { background: var(--marca); color: #000; font-weight: 600; }
+.nv.on:hover { background: var(--marca); }
+.nv svg { flex-shrink: 0; }
+.nv__chip { margin-left: auto; background: var(--marca); color: #000;
+            font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+.nv.on .nv__chip { background: #000; color: var(--marca); }
+.nv__ojo { margin-left: auto; opacity: .55; }
+.lateral__lista { display: flex; flex-direction: column; gap: 3px; flex-grow: 1; }
+.lateral__yo { display: flex; align-items: center; gap: 11px; padding: 12px 10px;
+               border-radius: 12px; background: #16160F; }
+.lateral__yo b { color: #F2F2EC; font-size: 12.5px; font-weight: 600; display: block; }
+.lateral__yo span { color: #8A8A82; font-size: 11px; }
+.lateral__pie { padding: 12px 8px 0; font-size: 9.5px; line-height: 1.45; color: #6E6E66; }
+.lateral__pie b { color: #8A8A7E; font-weight: 600; display: block; }
+
+.principal { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
+.contenido { padding: 22px 28px 40px; flex-grow: 1; }
+
+.cabecera { display: flex; align-items: flex-end; justify-content: space-between;
+            gap: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--linea);
+            margin-bottom: 18px; }
+.cabecera h1 { font-size: 24px; font-weight: 700; }
+.cabecera__sub { font-size: 13px; font-weight: 500; color: var(--tx-3); }
+.cabecera__acciones { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+
+/* ── Barra inferior (celular) ───────────────────────────── */
+.barra { display: none; }
+@media (max-width: 900px) {
+  .lateral { display: none; }
+  .contenido { padding: 16px 18px 88px; }
+  .cabecera { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .barra {
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: var(--barra); border-top: 1px solid var(--linea);
+    padding: 6px 2px calc(10px + env(safe-area-inset-bottom));
+  }
+  .barra a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+             padding: 8px 0; font-size: 9px; font-weight: 500; color: var(--tx-3);
+             position: relative; }
+  .barra a.on { color: var(--tx); font-weight: 600; }
+  .barra__ico { width: 42px; height: 25px; border-radius: 999px;
+                display: inline-flex; align-items: center; justify-content: center; }
+  .barra a.on .barra__ico { background: var(--marca); color: #000; }
+  .barra__chip { position: absolute; top: 3px; right: calc(50% - 22px);
+                 background: var(--marca); color: #000; font-size: 9px; font-weight: 700;
+                 padding: 1px 5px; border-radius: 999px; }
+}
+
+/* ── Tarjetas y rejillas ────────────────────────────────── */
+.tarjeta { background: var(--tarjeta); border: 1.5px solid var(--linea);
+           border-radius: var(--radio); padding: 17px 19px; box-shadow: var(--sombra); }
+.tarjeta + .tarjeta { margin-top: 12px; }
+.tarjeta__cab { display: flex; align-items: baseline; justify-content: space-between;
+                gap: 12px; margin-bottom: 12px; }
+.tarjeta__cab h2 { font-size: 15px; }
+
+.rejilla { display: grid; gap: 12px; }
+.rejilla--2 { grid-template-columns: repeat(2, 1fr); }
+.rejilla--3 { grid-template-columns: repeat(3, 1fr); }
+.rejilla--4 { grid-template-columns: repeat(4, 1fr); }
+.rejilla--panel { grid-template-columns: 1fr 380px; align-items: start; }
+@media (max-width: 1100px) { .rejilla--panel { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .rejilla--3, .rejilla--4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+.cifra { background: var(--tarjeta); border: 1.5px solid var(--linea);
+         border-radius: var(--radio); padding: 15px 17px; display: flex;
+         flex-direction: column; gap: 3px; }
+.cifra__k { font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; color: var(--tx-3); }
+.cifra__v { font-size: 25px; font-weight: 800; letter-spacing: -0.9px;
+            font-variant-numeric: tabular-nums; }
+.cifra__d { font-size: 11.5px; font-weight: 600; color: var(--tx-3); }
+.cifra__v.verde { color: var(--verde); } .cifra__d.verde { color: var(--verde); }
+.cifra__v.ambar { color: var(--ambar); } .cifra__d.ambar { color: var(--ambar); }
+@media (max-width: 760px) { .cifra__v { font-size: 19px; } }
+
+/* ── Tira negra (la bandeja de administración) ──────────── */
+.tira { background: #000; border-radius: 18px; padding: 18px 22px; display: flex;
+        align-items: center; gap: 18px; flex-wrap: wrap; }
+.tira__k { color: var(--marca); font-size: 10.5px; font-weight: 700;
+           letter-spacing: 1.4px; text-transform: uppercase; }
+.tira__t { color: #fff; font-size: 21px; font-weight: 800; letter-spacing: -0.6px; }
+.tira__chips { display: flex; flex-wrap: wrap; gap: 8px; flex-grow: 1; }
+.tira__chip { background: #1E1E1A; color: #E4E4DA; border-radius: 999px;
+              padding: 9px 15px; font-size: 12.5px; font-weight: 600; }
+.tira__chip.urgente { background: var(--marca); color: #000; }
+@media (max-width: 760px) { .tira { padding: 15px 17px; gap: 10px; } .tira__t { font-size: 16px; } }
+
+/* ── Botones y chips ────────────────────────────────────── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+       border: 0; border-radius: 999px; padding: 13px 22px; font-size: 13px;
+       font-weight: 700; letter-spacing: .6px; cursor: pointer; }
+.btn--amarillo { background: var(--marca); color: #000; }
+.btn--negro    { background: #000; color: var(--marca); }
+.btn--rojo     { background: var(--rojo); color: #fff; }
+.btn--linea    { background: var(--tarjeta); color: var(--tx);
+                 border: 1.5px solid var(--linea); font-weight: 700; letter-spacing: 0; }
+.btn--ancho    { width: 100%; }
+/* Botón de fila: el mismo botón, cabiendo dentro de una celda de tabla. */
+.btn--chico    { padding: 7px 14px; font-size: 12px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+/* Un campo apagado tiene que PARECER apagado. Sin esto se ve igual que uno
+   editable, y quien lo intenta cambiar cree que la pantalla no responde. */
+input[disabled], select[disabled], textarea[disabled] {
+  opacity: .6; cursor: not-allowed; background: var(--suave);
+}
+:root[data-theme="oscuro"] .btn--negro { background: var(--marca); color: #000; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
+        padding: 5px 12px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.chip--gris   { background: var(--suave); color: var(--tx-2); }
+.chip--verde  { background: var(--verde-bg); color: var(--verde); }
+.chip--ambar  { background: var(--ambar-bg); color: var(--ambar); }
+.chip--rojo   { background: var(--rojo-bg); color: var(--rojo); }
+.chip--marca  { background: var(--marca); color: #000; }
+.chip--linea  { border: 1.5px solid var(--linea); background: var(--tarjeta); color: var(--tx); font-weight: 600; }
+
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.filtros a { border: 1.5px solid var(--linea); background: var(--tarjeta);
+             border-radius: 999px; padding: 8px 15px; font-size: 12.5px; font-weight: 600; }
+.filtros a.on { background: var(--marca); border-color: var(--marca); color: #000; font-weight: 700; }
+
+/* ── Avatar ──────────────────────────────────────────────
+   Sin foto se muestran las iniciales, nunca un ícono genérico. */
+.av { border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+      background: var(--suave); color: var(--tx-2); font-weight: 700; flex-shrink: 0;
+      overflow: hidden; object-fit: cover; }
+.av--32 { width: 32px; height: 32px; font-size: 11px; }
+.av--40 { width: 40px; height: 40px; font-size: 12.5px; }
+.av--46 { width: 46px; height: 46px; font-size: 14px; }
+.av--64 { width: 64px; height: 64px; font-size: 19px; }
+.av--96 { width: 96px; height: 96px; font-size: 28px; }
+.av--marca { background: var(--marca); color: #000; }
+
+/* ── Listas y tablas ────────────────────────────────────── */
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th { background: var(--suave); font-size: 10px; font-weight: 800; letter-spacing: 1px;
+            text-transform: uppercase; color: var(--tx-3); text-align: left;
+            padding: 10px 14px; white-space: nowrap; }
+.tabla td { padding: 11px 14px; border-bottom: 1px solid var(--linea-suave); font-size: 13px; }
+.tabla tr:last-child td { border-bottom: 0; }
+.tabla .der { text-align: right; }
+.tabla .num { font-variant-numeric: tabular-nums; }
+/* `overflow-x: auto` y NO `hidden`. El `hidden` estaba solo para que la tabla
+   no se saliera de las esquinas redondeadas, y funcionaba mientras la caja
+   podía crecer todo lo que quisiera —la página se deslizaba de lado y los
+   botones seguían a un scroll de distancia—. En cuanto `.rejilla > *` pasó a
+   `min-width: 0`, la caja dejó de crecer y ese `hidden` empezó a RECORTAR: en
+   un portátil de 1366 px, la ficha del pedido se comía «Validar», «Ver
+   voucher» y «Quitar» sin dejar ni una barra que avisara. Un fallo que no se
+   ve es peor que el que se veía. Con `auto`, si la tabla no cabe se desliza
+   ella dentro de su tarjeta, y se nota (auditoría, 2026-09-14). */
+.tabla__caja { background: var(--tarjeta); border: 1.5px solid var(--linea);
+               border-radius: var(--radio); overflow-x: auto; overflow-y: hidden; }
+.apagada td { opacity: .55; }
+
+/* En el celular las tablas se convierten en tarjetas.
+   Nunca scroll horizontal. */
+@media (max-width: 760px) {
+  .tabla, .tabla tbody, .tabla tr, .tabla td { display: block; width: 100%; }
+  .tabla thead { display: none; }
+  .tabla tr { border-bottom: 1px solid var(--linea); padding: 12px 14px; }
+  .tabla tr:last-child { border-bottom: 0; }
+  .tabla td { border: 0; padding: 2px 0; display: flex; justify-content: space-between;
+              align-items: center; gap: 12px; }
+  .tabla td::before { content: attr(data-k); font-size: 11px; font-weight: 600;
+                      color: var(--tx-3); flex-shrink: 0; }
+  .tabla td.principal { display: block; padding-bottom: 6px; }
+  .tabla td.principal::before { display: none; }
+  .tabla .der { text-align: right; }
+}
+
+.fila { display: flex; align-items: center; gap: 12px; padding: 11px 0;
+        border-bottom: 1px solid var(--linea-suave); }
+.fila:last-child { border-bottom: 0; }
+.fila__t { font-size: 13px; font-weight: 600; }
+.fila__s { font-size: 11px; font-weight: 500; color: var(--tx-3); }
+.fila__crece { flex-grow: 1; min-width: 0; }
+.recorta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Barras de progreso ─────────────────────────────────── */
+.pista { height: 9px; border-radius: 999px; background: var(--pista); overflow: hidden;
+         position: relative; }
+.pista__llena { height: 100%; border-radius: 999px; background: var(--serie);
+                position: relative; z-index: 1; }
+.pista__llena.marca { background: var(--marca); }
+.pista--fina { height: 7px; }
+
+/* ── Formularios ────────────────────────────────────────── */
+.form { display: flex; flex-direction: column; gap: 14px; }
+.form label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px;
+              font-weight: 700; flex: 1; }
+/* input[type=search] y [type=date] entran aquí desde el módulo 2: sin ellos,
+   el buscador de distrito y las fechas del pedido salían con el borde crudo
+   del navegador al lado de campos redondeados. */
+.form input[type=text], .form input[type=email], .form input[type=password],
+.form input[type=tel], .form input[type=number], .form input[type=search],
+.form input[type=date], .form input[type=time], .form select, .form textarea {
+  border: 1.5px solid var(--linea); background: var(--campo); color: var(--tx);
+  border-radius: var(--radio-chico); padding: 13px 15px; font-size: 14px;
+  font-weight: 500; width: 100%;
+}
+.form input:focus, .form select:focus, .form textarea:focus {
+  outline: 0; border-color: var(--marca); box-shadow: 0 0 0 3px rgba(250,217,26,.22);
+}
+.form textarea { min-height: 120px; resize: vertical; line-height: 1.55; }
+.form__fila { display: flex; gap: 12px; }
+.form__fila .corto { max-width: 120px; }
+@media (max-width: 620px) { .form__fila { flex-direction: column; } .form__fila .corto { max-width: none; } }
+.form .ayuda { font-size: 11px; font-weight: 500; color: var(--tx-3); }
+.form .check { flex-direction: row; align-items: center; gap: 10px; font-weight: 600; }
+.form .check input { width: 18px; height: 18px; accent-color: var(--marca); }
+fieldset.bloque { border: 1.5px solid var(--linea); border-radius: var(--radio);
+                  padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+fieldset.bloque legend { font-size: 11px; font-weight: 800; letter-spacing: 1.4px;
+                         text-transform: uppercase; color: var(--tx-3); padding: 0 6px; }
+.acciones { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* ── Avisos ─────────────────────────────────────────────── */
+.aviso { border-radius: var(--radio-chico); padding: 13px 16px; font-size: 12.5px;
+         font-weight: 500; line-height: 1.5; display: flex; gap: 11px; align-items: flex-start; }
+.aviso--amarillo { background: #FEFBEA; border: 1.5px solid #F0E2A8; color: #6E5C00; }
+.aviso--verde { background: var(--verde-bg); color: var(--verde); }
+.aviso--rojo  { background: var(--rojo-bg);  color: var(--rojo); }
+.aviso--gris  { background: var(--suave); color: var(--tx-2); }
+:root[data-theme="oscuro"] .aviso--amarillo { background: #1C1A10; border-color: #3A3418; color: #E0BC5A; }
+.avisos { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+/* ── Estados vacíos ─────────────────────────────────────
+   Ninguna pantalla se queda en blanco. */
+.vacio { text-align: center; padding: 48px 24px; display: flex; flex-direction: column;
+         align-items: center; gap: 12px; }
+.vacio__ico { width: 62px; height: 62px; border-radius: 999px; background: var(--suave);
+              color: var(--tx-3); display: inline-flex; align-items: center;
+              justify-content: center; font-size: 22px; font-weight: 800; }
+.vacio__ico.marca { background: var(--marca); color: #000; }
+.vacio h3 { font-size: 16px; }
+.vacio p { margin: 0; font-size: 12.5px; color: var(--tx-2); max-width: 380px; line-height: 1.55; }
+
+/* ── Pantallas sin menú (acceso, bienvenida) ────────────── */
+.pantalla-sola { background: var(--bg); }
+.sola { min-height: 100vh; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 28px 22px; gap: 20px; }
+.sola__caja { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
+.sola__logo { width: 150px; margin: 0 auto 4px; }
+:root[data-theme="oscuro"] .sola__logo { filter: invert(1); }
+
+/* La bienvenida es una pantalla completa, no una columna pegada a un borde:
+   el saludo y la frase del día son lo único que hay que leer, así que el
+   bloque va centrado y el texto crece con la pantalla. */
+.bienvenida { min-height: 100dvh; display: flex; flex-direction: column;
+              align-items: center; padding: 34px 26px 40px; text-align: center; }
+.bienvenida--dia   { background: var(--marca); color: #000; }
+.bienvenida--noche { background: #000; color: #F2F2EC; }
+.bienvenida__logo { width: clamp(132px, 13vw, 190px); flex-shrink: 0; }
+.bienvenida--dia .bienvenida__logo { filter: none; }
+.bienvenida--noche .bienvenida__logo { filter: invert(1); }
+
+/* El medio se come el espacio sobrante y centra lo suyo: así el saludo queda
+   en el eje de la pantalla en cualquier alto, sin números mágicos. */
+/* El ancho del bloque es generoso; quien se limita es cada línea por separado,
+   y en `ch` sobre SU propio tamaño de letra: si se limita aquí arriba, la
+   frase acaba partida en una columna de dos palabras. */
+.bienvenida__medio { flex-grow: 1; display: flex; flex-direction: column;
+                     align-items: center; justify-content: center;
+                     gap: clamp(12px, 1.6vw, 20px);
+                     width: 100%; max-width: min(92vw, 900px); padding: 30px 0; }
+.bienvenida__fecha { font-size: clamp(12px, 1.15vw, 15px); font-weight: 600;
+                     letter-spacing: .4px; opacity: .6; white-space: nowrap; }
+.bienvenida__saludo { font-size: clamp(38px, 7.2vw, 96px); font-weight: 800;
+                      letter-spacing: -.035em; line-height: 1;
+                      max-width: 15ch; text-wrap: balance; }
+.bienvenida__frase { font-size: clamp(17px, 2.1vw, 30px); font-weight: 500;
+                     line-height: 1.4; opacity: .85;
+                     max-width: 24ch; text-wrap: balance; }
+.bienvenida__linea { font-size: clamp(13px, 1.25vw, 17px); font-weight: 600; opacity: .7; }
+
+.bienvenida__pie { display: flex; flex-direction: column; align-items: center;
+                   gap: 12px; flex-shrink: 0; }
+.bienvenida__btn { font-size: clamp(13px, 1.05vw, 15px); padding: 16px 42px; }
+.bienvenida--dia .btn--negro   { background: #000; color: var(--marca); }
+.bienvenida--noche .btn--negro { background: var(--marca); color: #000; }
+
+/* El saludo manda: la frase no puede ser más ancha que él en pantallas
+   estrechas, o se parte en una columna de dos palabras. */
+@media (max-width: 620px) {
+  .bienvenida { padding: 28px 22px 34px; }
+  .bienvenida__medio { max-width: 100%; }
+  .bienvenida__saludo { max-width: 100%; }
+  .bienvenida__frase { max-width: 30ch; }
+}
+
+/* ── Instalador ─────────────────────────────────────────── */
+.inst { max-width: 620px; margin: 0 auto; padding: 34px 20px 60px;
+        display: flex; flex-direction: column; gap: 18px; }
+.inst__cab { display: flex; align-items: center; justify-content: space-between; }
+.inst__logo { width: 130px; }
+.inst__paso { font-size: 10.5px; font-weight: 800; letter-spacing: 2px;
+              text-transform: uppercase; color: var(--tx-3); }
+.inst h1 { font-size: 24px; margin-bottom: 8px; }
+.inst .tarjeta { display: flex; flex-direction: column; gap: 14px; }
+.inst__ok { width: 56px; height: 56px; border-radius: 999px; background: var(--marca);
+            color: #000; display: inline-flex; align-items: center; justify-content: center;
+            font-size: 26px; font-weight: 800; }
+.chequeos { list-style: none; margin: 0; padding: 0; }
+.chequeos li { display: flex; align-items: center; gap: 11px; padding: 9px 0;
+               border-bottom: 1px solid var(--linea-suave); font-size: 13px; }
+.chequeos__i { width: 22px; height: 22px; border-radius: 999px; display: inline-flex;
+               align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+.chequeos .ok  .chequeos__i { background: var(--verde-bg); color: var(--verde); }
+.chequeos .mal .chequeos__i { background: var(--rojo-bg);  color: var(--rojo); }
+.chequeos__t { flex-grow: 1; font-weight: 600; }
+.chequeos__d { font-size: 11px; color: var(--tx-3); max-width: 45%;
+               overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Página de error ────────────────────────────────────── */
+.error-http { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+              padding: 30px; }
+.error-http__caja { max-width: 420px; text-align: center; display: flex;
+                    flex-direction: column; align-items: center; gap: 14px; }
+.error-http__n { font-size: 12px; font-weight: 800; letter-spacing: 2.5px;
+                 color: var(--tx-3); text-transform: uppercase; }
+.error-http h1 { font-size: 24px; }
+.error-http p { margin: 0; color: var(--tx-2); font-size: 13.5px; line-height: 1.55; }
+
+/* ── Impresión ──────────────────────────────────────────── */
+@media print {
+  .lateral, .barra, .cabecera__acciones, .btn { display: none !important; }
+  .contenido { padding: 0; }
+  .tarjeta { border: 1px solid #ddd; box-shadow: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   AVISO EMERGENTE DE CONTRASEÑA TEMPORAL
+   Se muestra UNA sola vez, así que no puede pasar desapercibido
+   entre el resto de la pantalla. Se pinta desde el HTML, no desde
+   JavaScript: si el JS falla, la contraseña se sigue viendo y se
+   puede cerrar con el enlace de abajo.
+   ───────────────────────────────────────────────────────────── */
+.velo {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(12, 12, 8, .62);
+  display: grid; place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+:root[data-theme="oscuro"] .velo { background: rgba(0, 0, 0, .74); }
+
+.clave-caja {
+  background: var(--tarjeta);
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio);
+  box-shadow: 0 24px 60px -20px rgba(0,0,0,.5);
+  width: 100%; max-width: 470px;
+  padding: 26px 26px 22px;
+  animation: clave-entra .18s ease-out;
+}
+/* Sin desvanecido: esta contraseña se enseña una sola vez, y una animación
+   que arranca en opacidad cero deja el aviso invisible si el navegador
+   tropieza. Solo un desplazamiento corto, que siempre acaba visible. */
+@keyframes clave-entra {
+  from { transform: translateY(9px); }
+  to   { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .clave-caja { animation: none; } }
+
+.clave-caja__icono {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--marca); color: #000;
+  display: grid; place-items: center;
+  margin-bottom: 14px;
+}
+.clave-caja h2 { font-size: 20px; font-weight: 700; margin: 0 0 5px; letter-spacing: -.2px; }
+.clave-caja__quien { font-size: 13.5px; color: var(--tx-2); margin: 0 0 18px; }
+
+.clave-valor {
+  background: var(--suave);
+  border: 1.5px dashed var(--linea);
+  border-radius: var(--radio-chico);
+  padding: 15px 16px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.clave-valor code {
+  font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+  font-size: 25px; font-weight: 600; letter-spacing: 1px;
+  color: var(--tx); word-break: break-all; user-select: all;
+}
+.clave-valor__rotulo {
+  display: block; font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--tx-3); margin-bottom: 8px;
+}
+
+.clave-caja__botones { display: grid; gap: 9px; margin-bottom: 16px; }
+@media (min-width: 430px) { .clave-caja__botones { grid-template-columns: 1fr 1fr; } }
+
+.clave-caja__ojo {
+  background: var(--ambar-bg); color: var(--ambar);
+  border-radius: var(--radio-chico);
+  padding: 12px 14px; font-size: 12.5px; line-height: 1.5;
+  margin-bottom: 18px;
+}
+.clave-caja__ojo strong { font-weight: 700; }
+
+.clave-caja__cerrar { text-align: center; }
+.clave-caja__cerrar a {
+  font-size: 13px; font-weight: 600; color: var(--tx-2);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   MÓDULO 2 — clientes y pedidos
+   ════════════════════════════════════════════════════════════ */
+
+/* ── QUE `hidden` GANE SIEMPRE ────────────────────────────────
+   El navegador esconde [hidden] con una regla de elemento, así que
+   CUALQUIER clase con `display` la gana. En el formulario de pedido eso
+   dejaba a la vista el aviso de «este método no cuenta al instante» sin
+   haber elegido método, y los campos de factura en una ficha de boleta:
+   .aviso y .form__fila traen display:flex. Se vio mirando la pantalla,
+   no en las pruebas. */
+[hidden] { display: none !important; }
+
+/* ── Filas de dato: rótulo a la izquierda, valor a la derecha ──
+   No confundir con .tira, que es la tarjeta negra de la bandeja.
+   Aquí se pintan las fichas: son muchas líneas seguidas y tienen
+   que leerse de un vistazo, no llamar la atención. */
+.dato { display: flex; align-items: baseline; gap: 14px; justify-content: space-between;
+        padding: 9px 0; border-bottom: 1px solid var(--linea-suave); }
+.dato:last-child { border-bottom: 0; }
+.dato__k { color: var(--tx-3); font-size: 11.5px; font-weight: 600; flex-shrink: 0; }
+.dato__t { color: var(--tx); font-size: 13px; font-weight: 600; text-align: right;
+           word-break: break-word; }
+.dato__crece { flex-grow: 1; min-width: 0; }
+.dato .mini { font-weight: 500; }
+
+/* ── Elegir entre dos caminos: tipo de venta, forma de entrega ──
+   Se ven los dos a la vez, con su explicación, porque el asesor
+   decide aquí y equivocarse cambia todo el resto del formulario. */
+.opciones { display: flex; gap: 10px; flex-wrap: wrap; }
+.opcion { flex: 1 1 220px; display: flex; gap: 11px; align-items: flex-start; cursor: pointer;
+          border: 1.5px solid var(--linea); border-radius: var(--radio-chico);
+          padding: 13px 15px; background: var(--campo); transition: border-color .12s; }
+.opcion:hover { border-color: var(--tx-3); }
+.opcion input { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--marca); flex-shrink: 0; }
+.opcion span { display: flex; flex-direction: column; gap: 3px; }
+.opcion strong { font-size: 13px; font-weight: 700; }
+.opcion em { font-style: normal; font-size: 11.5px; color: var(--tx-3); line-height: 1.45; }
+.opcion:has(input:checked) { border-color: var(--marca); background: var(--suave); }
+
+/* Un desplegable para lo que NO es la acción normal: dejar en espera, denegar,
+   corregir un comprobante. Se esconde a propósito — un botón rojo del mismo
+   tamaño al lado del negro invita a pulsarlo por error, y aquí hay dinero. */
+.desplegable { border: 1.5px solid var(--linea); border-radius: 12px; background: var(--campo); }
+.desplegable > summary { cursor: pointer; padding: 11px 14px; font-size: 12.5px; font-weight: 700;
+  color: var(--tx-2); list-style: none; user-select: none; }
+.desplegable > summary::-webkit-details-marker { display: none; }
+.desplegable > summary::after { content: '+'; float: right; font-size: 15px; line-height: 1; }
+.desplegable[open] > summary::after { content: '−'; }
+.desplegable[open] > summary { border-bottom: 1px solid var(--linea-suave); }
+.desplegable > *:not(summary) { padding: 0 14px 14px; }
+.desplegable > form:not(summary) { padding: 12px 14px 14px; }
+
+/* ── Líneas de producto del pedido ────────────────────────── */
+.linea { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.linea input { border: 1.5px solid var(--linea); background: var(--campo); color: var(--tx);
+               border-radius: 10px; padding: 11px 12px; font: inherit; font-size: 16px; }
+.linea__desc   { flex: 3 1 180px; min-width: 0; }
+.linea__modelo { flex: 2 1 130px; min-width: 0; }
+.linea__sku    { flex: 1 1 90px;  min-width: 0; }
+.linea__cant   { flex: 0 0 78px; text-align: center; }
+.linea__precio { flex: 0 0 116px; text-align: right; }
+.linea .quitar-linea { flex-shrink: 0; cursor: pointer; font-size: 16px; line-height: 1;
+                       padding: 8px 12px; }
+@media (max-width: 720px) {
+  .linea { flex-wrap: wrap; border: 1.5px solid var(--linea); border-radius: var(--radio-chico);
+           padding: 10px; }
+  .linea__desc { flex: 1 1 100%; }
+  .linea__sku  { flex: 1 1 100%; }
+  .linea__modelo { flex: 1 1 100%; }
+}
+.total-vivo { margin-top: 10px; text-align: right; font-size: 12.5px; color: var(--tx-2); }
+.total-vivo strong { font-size: 17px; color: var(--tx); margin-left: 8px; }
+
+/* ── La banda de «esto pide una acción» ──────────────────────
+   Va arriba del todo de la ficha y tiene que ganarle a la vista periférica:
+   antes era un aviso gris a mitad de la página y el asesor no lo veía. Borde
+   más grueso y espacio propio; el color lo pone aviso--rojo o aviso--amarillo. */
+.aviso--accion { border-width: 2px; margin-bottom: 16px; align-items: flex-start;
+                 padding: 16px 18px; }
+.aviso--accion .acciones { display: flex; gap: 9px; flex-wrap: wrap; }
+/* ── La banda que LLEVA SU BOTÓN ─────────────────────────────
+   Clase propia y no un añadido a `.aviso--accion`: envolver aquella partía el
+   icono del aviso de «pago denegado» a su propio renglón y le sumaba 37 px,
+   en la pantalla que el proyecto rediseñó justo para que el asesor la viera
+   (auditoría, 2026-09-14). El icono y el texto van SIEMPRE juntos; lo único
+   que baja de renglón en el celular es el botón.
+   El corte es 900 px, el mismo al que desaparece el menú lateral: a 768 px —un
+   iPad de pie— ya hay barra de abajo, y el botón seguía colgando al final de
+   la frase. */
+.aviso--conbtn { border-width: 2px; align-items: center; flex-wrap: wrap; }
+.aviso--conbtn > span:nth-of-type(2) { flex: 1 1 60%; min-width: 0; }
+.aviso--conbtn > .btn { margin-left: auto; flex-shrink: 0; }
+.aviso--verde.aviso--conbtn { border: 2px solid var(--verde); }
+@media (max-width: 900px) {
+  .aviso--conbtn { padding: 12px 14px; }
+  .aviso--conbtn > .btn { margin-left: 0; width: 100%; margin-top: 8px; }
+}
+
+/* ── El vuelto del efectivo ──────────────────────────────────
+   No es un campo: es el resultado de una cuenta, y por eso no se puede
+   escribir dentro. Se pinta con la misma caja que un campo para que la fila
+   no baile, pero sin borde de foco ni cursor de texto. */
+.vuelto { border: 1.5px solid var(--linea); background: var(--campo);
+          border-radius: var(--radio-chico); padding: 12px 14px;
+          font-size: 17px; font-weight: 800; color: var(--tx-3); }
+.vuelto--ok    { color: var(--verde); border-color: var(--verde); background: var(--verde-bg); }
+.vuelto--falta { color: var(--rojo);  border-color: var(--rojo);  background: var(--rojo-bg); }
+#gps-obliga { color: var(--rojo); font-weight: 800; }
+
+/* CADA DECISIÓN, EN SU FRANJA, separada por una línea. La pregunta del
+   comprobante es una decisión distinta de «ya está guardado», y sin la línea
+   se leía como un botón más de la fila de abajo. Lo mismo pasaba en la ventana
+   del pago: cinco botones seguidos y nada que dijera cuáles eran la pregunta y
+   cuáles la salida (usuario, 2026-09-14).
+   `.tapa__pide` es el nombre viejo de lo mismo y se queda como alias: las dos
+   ventanas lo usan y renombrarlo en las dos a la vez no compra nada. */
+.tapa__franja,
+.tapa__pide { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linea-suave); }
+.tapa__franja__t,
+.tapa__pide__t { display: flex; align-items: center; justify-content: center; gap: 7px;
+                 font-size: 13.5px; font-weight: 800; margin-bottom: 10px; }
+.tapa__franja form,
+.tapa__pide form { margin: 0; }
+
+/* La fila de «solicitar comprobante» dentro de la tarjeta del cliente: chips,
+   no botones, porque no es la acción principal de esa tarjeta. */
+.pide-fila { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 8px; }
+.pide-fila form { margin: 0; }
+.pide-fila button { font-family: inherit; cursor: pointer; }
+
+/* La versión al pie del menú: tiene que poder leerse cuando hace falta y no
+   llamar la atención el resto del tiempo. */
+.lateral__version { display: block; margin-top: 4px; opacity: .65; }
+
+/* ── Buscador con sugerencias (cliente, distrito) ──────────── */
+.sugerencias { position: relative; z-index: 20; margin-top: -6px; margin-bottom: 10px;
+               border: 1.5px solid var(--linea); border-radius: var(--radio-chico);
+               background: var(--tarjeta); box-shadow: var(--sombra); overflow: hidden;
+               max-height: 280px; overflow-y: auto; }
+.sugerencia { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left;
+              padding: 11px 14px; border: 0; background: none; cursor: pointer;
+              border-bottom: 1px solid var(--linea-suave); font: inherit; color: var(--tx); }
+.sugerencia:last-child { border-bottom: 0; }
+.sugerencia:hover, .sugerencia:focus { background: var(--suave); }
+.sugerencia strong { font-size: 13px; font-weight: 700; }
+.sugerencia span { font-size: 11.5px; color: var(--tx-3); }
+.sugerencia--vacia { color: var(--tx-3); cursor: default; font-size: 12.5px; }
+/* Agotado en la web con el control de stock encendido (3e): se ve, no se elige. */
+.sugerencia--agotada, .sugerencia--agotada:hover { opacity: .55; cursor: not-allowed; background: none; }
+
+/* ── El textarea de la ficha del cliente y del pedido ──────── */
+.form textarea { border: 1.5px solid var(--linea); background: var(--campo); color: var(--tx);
+                 border-radius: var(--radio-chico); padding: 12px 13px; font: inherit;
+                 font-size: 16px; resize: vertical; }
+
+/* Los desplegables que van DENTRO de una tabla (asignar equipo, por ejemplo)
+   no están en un .form, así que salían con el estilo crudo del navegador al
+   lado de campos redondeados. */
+.tabla select, .tabla input[type=text], .tabla input[type=number] {
+  border: 1.5px solid var(--linea); background: var(--campo); color: var(--tx);
+  border-radius: 10px; padding: 8px 11px; font: inherit; font-size: 13px;
+  max-width: 100%;
+}
+
+/* La franja de "esperando confirmación" detrás de la barra de meta.
+   Se ve, pero se ve distinta: es dinero registrado que todavía no cuenta. */
+.pista__espera { position: absolute; top: 0; bottom: 0; left: 0; z-index: 0;
+                 border-radius: 999px;
+                 background: repeating-linear-gradient(135deg,
+                   var(--linea) 0 5px, transparent 5px 10px); }
+
+/* El aviso de que entró un pago. Va fijo abajo a la derecha, encima de todo,
+   y NO recarga nada: facturación puede estar escribiendo un número de
+   operación y una recarga automática se lo borraría a media palabra. */
+.aviso-vivo { position: fixed; right: 18px; bottom: 18px; z-index: 90;
+              display: flex; align-items: center; gap: 12px;
+              background: #000; color: #fff; border-radius: 14px;
+              padding: 13px 14px 13px 18px; max-width: min(92vw, 420px);
+              box-shadow: 0 10px 30px rgba(0,0,0,.28); font-size: 13px; }
+.aviso-vivo strong { font-weight: 700; }
+.aviso-vivo button { background: var(--marca); color: #000; border: 0;
+                     border-radius: 999px; padding: 8px 15px; font: inherit;
+                     font-weight: 700; cursor: pointer; flex-shrink: 0; }
+.aviso-vivo__x { background: none !important; color: #8A8A82 !important;
+                 font-size: 20px !important; line-height: 1; padding: 0 4px !important; }
+@media (max-width: 760px) {
+  /* Encima de la barra de pestañas, no debajo. */
+  .aviso-vivo { left: 12px; right: 12px; bottom: calc(var(--barra-alto, 68px) + 12px);
+                max-width: none; }
+}
+
+/* ── La pantalla de facturar: cada dato con su botón ────────────
+   Se copia campo por campo porque esos datos se escriben uno a uno en el
+   sistema de facturación. Un bloque de texto no llena un formulario. */
+.campo { display: flex; align-items: center; gap: 12px; padding: 9px 0;
+         border-bottom: 1px solid var(--linea-suave); }
+.campo:last-child { border-bottom: 0; }
+.campo__k { color: var(--tx-3); font-size: 11.5px; font-weight: 600;
+            flex: 0 0 130px; }
+.campo__v { flex: 1 1 auto; min-width: 0; font-size: 13.5px; font-weight: 600;
+            word-break: break-word; }
+.campo__b { flex-shrink: 0; border: 1.5px solid var(--linea); background: var(--tarjeta);
+            color: var(--tx-2); border-radius: 999px; padding: 6px 13px;
+            font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+.campo__b:hover { border-color: var(--tx-3); color: var(--tx); }
+.campo__grupo { border: 1.5px solid var(--linea); border-radius: var(--radio-chico);
+                padding: 12px 14px; margin-bottom: 10px; }
+.campo__grupo:last-child { margin-bottom: 0; }
+.campo__titulo { font-size: 11px; font-weight: 800; letter-spacing: 1.2px;
+                 text-transform: uppercase; color: var(--tx-3); margin-bottom: 6px; }
+@media (max-width: 620px) {
+  .campo { flex-wrap: wrap; gap: 6px 10px; }
+  .campo__k { flex: 1 1 100%; }
+  .campo__v { flex: 1 1 auto; }
+}
+
+/* ── LA LÍNEA DE TIEMPO DE UNA VENTA ──────────────────────────────────────
+   Registrado → Pago → Comprobante → Despacho → Entregado. Se calcula sola de
+   los datos que el HUB ya tiene, así que no hay nada que marcar y nada que se
+   pueda quedar sin marcar. En pantalla ancha va en fila; en el móvil se apila,
+   que es donde el asesor la mira de verdad. */
+.hitos { display: flex; gap: 0; list-style: none; margin: 0 0 14px; padding: 0;
+         flex-wrap: wrap; }
+.hito  { flex: 1 1 150px; min-width: 140px; position: relative;
+         padding: 0 10px 0 0; display: flex; flex-direction: column; gap: 2px; }
+.hito__punto { width: 11px; height: 11px; border-radius: 50%; margin-bottom: 7px;
+               background: var(--linea); border: 2px solid var(--tarjeta);
+               box-shadow: 0 0 0 1.5px var(--linea); }
+/* La raya que une un hito con el siguiente. El último no la lleva. */
+.hito::after { content: ''; position: absolute; left: 13px; top: 4px; right: 0;
+               height: 1.5px; background: var(--linea); z-index: 0; }
+.hito:last-child::after { display: none; }
+.hito__t { font-size: 12.5px; font-weight: 700; color: var(--tx-2); }
+.hito__s { font-size: 11px; color: var(--tx-2); line-height: 1.4; }
+.hito--ok .hito__punto { background: var(--verde); box-shadow: 0 0 0 1.5px var(--verde); }
+.hito--ok .hito__t     { color: var(--tx); }
+.hito--ok::after       { background: var(--verde); opacity: .45; }
+/* Un adelanto confirmado no es lo mismo que el pago completo: se ve a medias
+   a propósito, o «Adelanto confirmado» en verde se leería como «ya cobré». */
+.hito--medio .hito__punto { background: var(--ambar); box-shadow: 0 0 0 1.5px var(--ambar); }
+.hito--medio::after       { background: var(--linea); }
+
+@media (max-width: 700px) {
+  .hitos { flex-direction: column; gap: 10px; }
+  .hito  { flex: none; padding: 0 0 0 20px; }
+  .hito__punto { position: absolute; left: 0; top: 3px; margin: 0; }
+  .hito::after { left: 5px; top: 14px; right: auto; bottom: -12px;
+                 width: 1.5px; height: auto; }
+}
+
+/* ── UN CHIP QUE ABRE UN MENÚ ─────────────────────────────────────────────
+   Los mensajes al cliente eran cinco chips en fila peleando por el mismo sitio
+   que las acciones del equipo. Ahora van dentro de uno solo. <details> y no JS:
+   sin JavaScript sigue abriendo. */
+.menu-chip { position: relative; display: inline-block; }
+.menu-chip > summary { list-style: none; cursor: pointer; display: inline-flex;
+                       align-items: center; gap: 6px; }
+.menu-chip > summary::-webkit-details-marker { display: none; }
+.menu-chip[open] > summary { border-color: var(--tx); }
+.menu-chip__caja { position: absolute; z-index: 30; right: 0; margin-top: 6px;
+                   min-width: 230px; background: var(--tarjeta);
+                   border: 1.5px solid var(--linea); border-radius: 12px;
+                   padding: 6px; box-shadow: 0 12px 28px rgba(0,0,0,.14); }
+/* Las opciones son enlaces O botones dentro de su formulario: lo que CAMBIA
+   algo (solicitar el comprobante) tiene que ir por POST y con su testigo, y lo
+   que solo lleva a otra pantalla es un enlace. Se pintan igual a propósito:
+   para quien mira el menú son la misma clase de cosa. */
+.menu-chip__caja a,
+.menu-chip__caja button { display: flex; align-items: center; gap: 9px; width: 100%;
+                     padding: 9px 10px; border-radius: 8px; font-size: 13px;
+                     font-weight: 600; color: var(--tx); text-decoration: none;
+                     text-align: left; border: 0; background: none;
+                     font-family: inherit; cursor: pointer; }
+.menu-chip__caja form { margin: 0; display: block; }
+/* Se pintan al pasar el cursor: sin esto no se ve que son pulsables. */
+.menu-chip__caja a:hover,
+.menu-chip__caja button:hover { background: var(--campo); }
+.menu-chip__caja svg { color: var(--tx-2); flex: none; }
+
+/* El menú de una FILA de la tabla: el mismo de la cabecera, pero pegado a su
+   fila y sin ocupar ancho cuando está cerrado. */
+.menu-fila { display: inline-block; position: relative; }
+.menu-fila > summary { padding: 4px 9px; }
+.menu-chip__mal { color: var(--rojo) !important; }
+.menu-chip__mal:hover { background: var(--rojo-bg) !important; }
+/* La estrella marca lo único que falta hacer con el pedido. */
+.estrella { color: var(--marca); font-size: 15px; line-height: 1; }
+
+/* Y los chips de acción también reaccionan al cursor, por lo mismo. */
+.chip--linea:hover, .chip--marca:hover { filter: brightness(.96); }
+.cabecera__acciones a.chip { transition: filter .12s ease, border-color .12s ease; }
+
+/* ── LA FRANJA QUE SE ABRE BAJO UNA FILA DE LA BANDEJA ────────────────────
+   Las tres salidas de un pago tienen que verse a la vez, pero dos de ellas
+   piden escribir por qué. Meter dos casillas más en la fila daría motivos de
+   una palabra; abrir una franja debajo deja sitio para una frase. */
+.fila-mas > td { background: var(--campo); border-top: 0; }
+.fila-mas__caja { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+                  padding: 12px 4px; }
+.fila-mas__f { display: flex; gap: 8px; align-items: flex-end; flex: 1 1 320px; }
+.fila-mas__f label { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.fila-mas__f input[type=text] {
+  border: 1.5px solid var(--linea); background: var(--tarjeta); color: var(--tx);
+  border-radius: var(--radio-chico); padding: 9px 12px; font-size: 13px; width: 100%;
+}
+.fila-mas__f input:focus { outline: 0; border-color: var(--marca);
+                           box-shadow: 0 0 0 3px rgba(250,217,26,.22); }
+@media (max-width: 700px) { .fila-mas__f { flex: 1 1 100%; } }
+
+/* ── El voucher que sobrevivió al rebote ──────────────────────────────
+   Un <input type=file> no se puede volver a llenar, así que cuando el
+   formulario vuelve con un error el archivo ya no está en el campo aunque
+   el HUB sí lo tenga guardado. Sin este cartel, la pantalla parece decir
+   que no hay voucher. */
+.voucher-tengo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radio-chico);
+  background: var(--verde-bg);
+  border: 1px solid var(--verde);
+  font-size: 12px;
+}
+.voucher-tengo__n { font-weight: 600; color: var(--verde); }
+.voucher-tengo__a { color: var(--tx-2); }
+.voucher-tengo__q { display: flex; align-items: center; gap: 5px; cursor: pointer; margin-left: auto; }
+.voucher-tengo__q input { width: auto; margin: 0; }
+
+/* ── Los pagos que facturación paró ───────────────────────────────────
+   Va con el motivo escrito delante: un aviso que dice «hay un problema»
+   sin decir cuál obliga a entrar a buscarlo, y entonces no avisa. */
+.trabados { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.trabados li { font-size: 12.5px; line-height: 1.45; }
+.trabados a { text-decoration: underline; font-weight: 600; }
+.trabados b { font-weight: 600; }
+.trabados__n { display: block; color: var(--tx-2); font-style: italic; }
+
+/* El aviso en vivo de algo que FRENA no puede leerse igual que el de algo
+   que desbloquea: el del despacho dice «ya puedes» y este dice «párate».
+   El color va fijo y claro, no var(--rojo): la tarjeta es negra en los dos
+   temas, y el rojo del tema claro sobre negro no se lee. */
+.aviso-vivo--alto strong { color: #FF9C93; }
+/* El reclamo: alguien espera respuesta. El mismo rojo claro, legible sobre negro. */
+.aviso-vivo--reclamo strong { color: #FF9C93; }
+.aviso-vivo--reclamo { border-left: 4px solid #FF9C93; }
+
+/* Dos avisos a la vez se pisaban: los dos van fijos en la misma esquina. Se
+   apilan en un contenedor y el más nuevo queda abajo, al alcance del pulgar. */
+.avisos-pila { position: fixed; right: 18px; bottom: 18px; z-index: 90;
+               display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.avisos-pila > .aviso-vivo { position: static; right: auto; bottom: auto; }
+@media (max-width: 760px) {
+  .avisos-pila { left: 12px; right: 12px; bottom: calc(var(--barra-alto, 68px) + 12px); }
+  .avisos-pila > .aviso-vivo { max-width: none; width: 100%; }
+}
+
+/* ── Los seis pasos del pedido ────────────────────────────────────
+   La cabecera de cada paso NO es un <legend>: el título de un fieldset vive
+   en el borde y en el celular se queda flotando arriba, dejando debajo una
+   caja vacía que parece un campo por llenar. Es un div propio, con el número
+   en un círculo — así los seis pasos dejan de leerse iguales.
+   Lo pidió el usuario el 2026-09-11. */
+.pasos { display: flex; flex-direction: column; gap: 12px; }
+/* El nombre del grupo para quien usa lector de pantalla. Se ve en pantalla la
+   cabecera de al lado, que es la misma frase; dejar el fieldset sin <legend>
+   lo convertía en un grupo anónimo. */
+.solo-lectores { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+                 overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+                 white-space: nowrap; border: 0; }
+.paso > .paso__cab:focus-visible { outline: 2px solid var(--marca); outline-offset: 3px;
+                                   border-radius: 8px; }
+fieldset.paso { padding-top: 14px; }
+.paso__cab { display: flex; align-items: center; gap: 10px; }
+.paso__n { width: 26px; height: 26px; border-radius: 999px; flex-shrink: 0;
+           background: var(--suave); color: var(--tx-3);
+           font-size: 12.5px; font-weight: 800; line-height: 1;
+           display: flex; align-items: center; justify-content: center; }
+.paso__t { font-size: 13.5px; font-weight: 700; }
+.paso__v { font-size: 12.5px; font-weight: 600; color: var(--tx-2);
+           overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.paso__f { flex-grow: 1; }
+/* El círculo dice por dónde vas: gris lo que no tocaste, amarillo lo que estás
+   llenando, verde con un check lo que ya está. */
+.paso--lleno > .paso__cab > .paso__n { background: var(--verde-bg); color: var(--verde); }
+.paso--abierto > .paso__cab > .paso__n { background: var(--marca); color: #000; }
+
+/* La barra del móvil: el total y lo que queda por cobrar, encima del botón.
+   En escritorio no existe: ahí el resumen vive en el lateral. */
+.barra-movil { display: none; }
+
+/* En escritorio el resumen ACOMPAÑA. Terminabas de llenar el formulario abajo
+   del todo y tenías que subir a buscar el botón de registrar.
+   Va por una clase PROPIA y no por `.rejilla--panel > div:last-of-type`: esa
+   rejilla la usan dieciséis pantallas, y pegar su segunda columna dejaba
+   inalcanzable lo de abajo —«Anular el pedido» en la ficha— en cuanto la
+   columna era más alta que la ventana. */
+@media (min-width: 1101px) {
+  .lateral-pega { position: sticky; top: 14px; }
+}
+
+@media (max-width: 820px) {
+  .paso > .paso__cab { cursor: pointer; }
+  .paso > .paso__cab::after { content: '▾'; font-size: 13px; color: var(--tx-3);
+                              transition: transform .12s ease; }
+  .paso--abierto > .paso__cab::after { transform: rotate(180deg); }
+  /* El valor de un paso plegado va debajo del título, no pegado a él: en 390px
+     no caben en la misma línea y se cortaba justo lo que hay que leer. */
+  .paso__cab { flex-wrap: wrap; }
+  .paso__v { width: 100%; padding-left: 36px; margin-top: -2px; white-space: normal; }
+  .paso__f { display: none; }
+
+  /* Con errores no se pliega nada (.pasos--todos): el mensaje puede señalar
+     un campo que estaría dentro de un paso cerrado. Se escribe como una
+     excepción al selector que esconde, y no como una regla que vuelve a
+     enseñar, para no tener que adivinar el display de cada hijo. */
+  .pasos:not(.pasos--todos) .paso:not(.paso--abierto) > *:not(.paso__cab) { display: none; }
+  .pasos:not(.pasos--todos) .paso:not(.paso--abierto) { padding: 12px 16px; gap: 0; }
+  .pasos--todos .paso > .paso__cab::after { content: ''; }
+  .pasos--todos .paso > .paso__cab { cursor: default; }
+
+  /* 16px o Safari en iPhone hace zoom solo al tocar el campo, y al volver
+     deja la pantalla descuadrada. */
+  .form input, .form select, .form textarea { font-size: 16px; }
+
+  .barra-movil { display: flex; flex-direction: column; gap: 10px;
+                 position: sticky; z-index: 20;
+                 bottom: calc(var(--barra-alto, 68px) + env(safe-area-inset-bottom));
+                 background: var(--bg); border-top: 1.5px solid var(--linea);
+                 padding: 12px 0 12px;
+                 margin-top: 14px; }
+  .barra-movil__c { display: flex; align-items: baseline; gap: 8px; }
+  .barra-movil__crece { flex-grow: 1; }
+  .barra-movil__k { font-size: 12px; font-weight: 700; color: var(--tx-2); }
+  .barra-movil__t { font-size: 19px; font-weight: 800; }
+  .barra-movil__s { font-size: 14px; font-weight: 800; color: #7A5B00; }
+  /* El botón de abajo del lateral sobra cuando existe la barra de abajo —pero
+     SOLO en el formulario del pedido, que es la única pantalla que la tiene.
+     Escrito como `.rejilla--panel > div:last-of-type > .acciones` escondía los
+     botones de otras cuatro pantallas en el celular: copiar el mensaje del
+     grupo de despacho, «ya lo mandé», guardar un cliente y crear una cuenta. */
+  .lateral-pega > .acciones { display: none; }
+}
+
+/* ── El aviso de «pedido registrado» ──────────────────────────────
+   Va encima del pedido y no como una franja más: es lo primero que ve el
+   asesor después de cerrar una venta, y tiene que decirle que salió bien,
+   cuánto queda y qué hace ahora. Se cierra tocando fuera, con Esc o con «Ver
+   el pedido» — el pedido ya está guardado, así que cerrarlo no pierde nada. */
+.tapa { position: fixed; inset: 0; z-index: 120; background: rgba(0,0,0,.38);
+        display: flex; align-items: center; justify-content: center; padding: 18px; }
+.tapa__caja { background: var(--tarjeta); border: 1.5px solid var(--linea);
+              border-radius: var(--radio); padding: 24px 24px 20px;
+              width: 100%; max-width: 520px; box-shadow: 0 18px 44px rgba(0,0,0,.18);
+              max-height: 92vh; overflow-y: auto;
+              /* UN SOLO EJE. Todo lo que va dentro de una ventana cae sobre el
+                 mismo centro: el icono encima del título, las cifras, los
+                 avisos y los botones. Antes el icono iba al LADO del título,
+                 los botones a la izquierda y el pie centrado — tres
+                 alineaciones distintas en una caja de 520 px, y se notaba
+                 (usuario, 2026-09-14). Va aquí, en `.tapa`, y no en cada
+                 pantalla: «Pedido registrado» y la ventana del pago son la
+                 misma figura, y centrarlas por separado es garantizar que
+                 dentro de tres meses se vean distinto. */
+              text-align: center; }
+/* El cab deja de ser una fila: el icono va ENCIMA. */
+.tapa__cab { display: block; }
+.tapa__ico { width: 56px; height: 56px; border-radius: 999px; background: var(--verde-bg);
+             color: var(--verde); display: flex; align-items: center; justify-content: center;
+             flex-shrink: 0; margin: 0 auto 12px; }
+.tapa__t { font-size: 20px; font-weight: 800; letter-spacing: -.2px; }
+.tapa__s { font-size: 13px; font-weight: 600; color: var(--tx-2); margin-top: 2px; }
+/* Los botones de una ventana van centrados, como todo lo demás. `.acciones` es
+   una clase general y fuera de aquí sigue alineando a la izquierda. */
+.tapa .acciones { display: flex; gap: 9px; flex-wrap: wrap; justify-content: center; }
+.tapa__cifras { display: flex; gap: 10px; margin-top: 18px; }
+.tapa__cifras > div { flex: 1; border: 1.5px solid var(--linea); border-radius: var(--radio-chico);
+                      padding: 11px 13px; min-width: 0; }
+.tapa__cifras span { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .8px;
+                     text-transform: uppercase; color: var(--tx-3); }
+.tapa__cifras strong { font-size: 19px; font-weight: 800; }
+.tapa__falta { color: var(--ambar); }
+.tapa__ok    { color: var(--verde); }
+/* La ventana de «qué acaba de pasar con el pago» usa la misma tapa, así que
+   solo añade lo que aquella no tenía: el color del icono según el desenlace y
+   la equis de cerrar. */
+.tapa__caja  { position: relative; }
+.tapa__ico--ok    { background: var(--verde-bg); color: var(--verde); }
+.tapa__ico--falta { background: var(--ambar-bg); color: var(--ambar); }
+.tapa__x { position: absolute; top: 10px; right: 12px; width: 30px; height: 30px;
+           display: flex; align-items: center; justify-content: center;
+           border-radius: 999px; font-size: 22px; line-height: 1; font-weight: 700;
+           color: var(--tx-3); text-decoration: none; }
+.tapa__x:hover { background: var(--campo); color: var(--tx); }
+@media (max-width: 520px) {
+  .tapa { align-items: flex-end; padding: 0; }
+  .tapa__caja { border-radius: 20px 20px 0 0; max-width: none;
+                padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+  .tapa__cifras { flex-wrap: wrap; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EL CELULAR · lo que salió de auditar las 98 pantallas de los cuatro roles
+   a 390 px, con un navegador de verdad midiendo cada elemento (2026-09-14).
+   Está todo junto y aquí abajo A PROPÓSITO: son reglas que corrigen a las de
+   arriba, y separadas se vuelven a perder. Cada una lleva el número del
+   hallazgo que arregla.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* 1 · UNA COLUMNA DE REJILLA NO PUEDE EMPUJAR LA PÁGINA.
+   Por defecto una celda de grid trae `min-width: auto`, que quiere decir «no
+   me encojas por debajo de mi contenido». Con una tabla dentro, esa celda
+   medía 521 px en una pantalla de 390 y la página entera se deslizaba de
+   lado: la ficha del pedido llegaba a 539 px de ancho y la de facturar a 413.
+   Es la causa de los dos desbordes más grandes que encontró la auditoría, y
+   se arregla con una línea. */
+.rejilla > * { min-width: 0; }
+
+@media (max-width: 900px) {
+  /* 2 · LOS BOTONES DE LA CABECERA ENVUELVEN.
+     `.cabecera__acciones` llevaba `flex-shrink: 0` y ningún wrap, así que con
+     tres botones («Datos para facturar», «Despacho en espera del pago»,
+     «Textos rápidos») medía 512 px y se salía por la derecha. */
+  .cabecera__acciones { flex-wrap: wrap; flex-shrink: 1; min-width: 0; }
+
+  /* 4 · EL DEDO NO ES UN RATÓN.
+     Los chips que SON botones medían 29-31 px de alto. Se suben a 42, que es
+     lo mínimo que se acierta con el pulgar sin mirar. Solo los que se pulsan:
+     un chip que únicamente rotula un estado se queda como está. */
+  button.chip, a.chip, summary.chip { min-height: 42px; }
+  .btn--chico { min-height: 42px; padding-top: 9px; padding-bottom: 9px; }
+  /* Los filtros suben a 42 px de alto como todo lo que se pulsa, pero se
+     aprietan de lado: con el relleno de escritorio, los nueve filtros de
+     «Pedidos» ocupaban cinco renglones y empujaban la lista fuera de la
+     primera pantalla. Se aprieta el ancho, no el alto — el alto es el dedo. */
+  .filtros { gap: 6px; }
+  .filtros a { min-height: 42px; display: inline-flex; align-items: center;
+               padding: 8px 13px; font-size: 12px; }
+
+  /* 6 · LOS CAMPOS, A 16 px.
+     Por debajo de 16, Safari en el iPhone HACE ZOOM al tocar el campo y deja
+     la pantalla movida: el asesor escribe el monto y se pierde. Estaba
+     decidido desde el diseño y se había perdido en tres pantallas —la ficha
+     del pedido, facturar y la bandeja— donde los campos iban a 13 y 14 px. */
+  /* Van con la especificidad subida A PROPÓSITO. Un `input` a secas pierde
+     contra `.tabla input[type=text]`, y ahí estaban justo los campos que más
+     duele que salten: el N.º de operación de la bandeja, el motivo de denegar
+     y el de quitar un pago. La auditoría los pilló todavía en 13 px después
+     del primer intento. Los de estilo en línea (`/mas`, `/pedidos/mensaje`)
+     llevan `!important` porque contra un `style=` no hay especificidad que
+     valga. */
+  input, select, textarea,
+  .form input[type=text], .form input[type=email], .form input[type=password],
+  .form input[type=tel], .form input[type=number], .form input[type=search],
+  .form input[type=date], .form input[type=time], .form select, .form textarea,
+  .tabla select, .tabla input[type=text], .tabla input[type=number],
+  .fila-mas__f input[type=text], .buscador input, input[type=search] {
+    font-size: 16px;
+  }
+  /* Solo `select` y `textarea`, y solo los que llevan el tamaño escrito en el
+     atributo `style`: contra un `style=` no hay especificidad que valga, así
+     que hace falta el `!important`. Los `input` NO entran aquí: el de subir la
+     foto en «Mi perfil» lleva su tamaño en línea y el navegador le calcula el
+     ancho a partir de la letra de su botón «Elegir archivo» — a 16 px se salía
+     30 px de la pantalla. Un campo de archivo no se escribe, se pulsa, así que
+     el zoom de Safari tampoco le aplica. */
+  select[style], textarea[style] { font-size: 16px !important; }
+  input[type=file] { max-width: 100%; }
+  /* 8 · Y un desplegable de 19 px de alto no se puede tocar. */
+  select { min-height: 44px; }
+}
+
+@media (max-width: 760px) {
+  /* 3 · LA CELDA-TARJETA ENVUELVE.
+     En el celular cada `td` se vuelve una fila de la tarjeta, con
+     `display: flex`. Sin `flex-wrap`, la celda de acciones de la bandeja de
+     pagos —chip del voucher + N.º de operación + Validar + En espera +
+     Denegar— se salía de la pantalla: «En espera» quedaba en el píxel 484 y
+     «Denegar» en el 575, sobre 390, y la página no se desliza de lado.
+     Desde el celular, Facturación solo podía VALIDAR: no podía dejar en
+     espera ni denegar un voucher que no cuadra, que es justo el control que
+     frena al voucher falso. Lo reportó el usuario el 2026-09-14. */
+  .tabla td { flex-wrap: wrap; }
+  /* Una celda de acciones se lee como un grupo, no como botones sueltos en
+     los dos extremos: al envolver, `space-between` los separaba. */
+  .tabla td.acciones-fila { justify-content: flex-end; gap: 8px; }
+  .tabla td.acciones-fila::before { margin-right: auto; }
+  /* Y el campo de la operación se queda ancho en vez de quedar aplastado
+     entre dos botones: si no cabe entero, baja él solo a su renglón. */
+  .tabla td input[type=text] { flex: 1 1 150px; min-width: 130px; }
+
+  /* 7 · Los enlaces sueltos dentro de una tabla también se tocan con el dedo.
+     En la bitácora son 612 nombres de 20 px de alto. */
+  .tabla td > a, .tabla td .mini a { min-height: 34px; display: inline-flex;
+                                     align-items: center; }
+  /* Y si ese enlace es un chip de acción, 42 como los demás: «VER VOUCHER»
+     abre la prueba del pago y se quedaba en 34 al lado de tres botones de 42,
+     porque `.tabla td > a` gana por especificidad. */
+  .tabla td > a.chip, .tabla td .mini a.chip { min-height: 42px; }
+}
+
+/* 5 · LA BARRA DE ABAJO, LEGIBLE.
+   Los rótulos iban a 9 px, que en un celular no se lee: se suben a 10.5 y se
+   aprieta el interlineado para que «Pagos por validar», el rótulo más largo
+   del menú, quepa en dos renglones sin empujar la barra. El rótulo corto lo
+   pone el propio menú (`menu.php`), no este archivo. */
+@media (max-width: 900px) {
+  .barra a { font-size: 10.5px; line-height: 1.15; }
+  .barra__chip { font-size: 10px; }
+  /* Y la altura real de la barra, que con los rótulos a 11 px pasó de 72 a 75.
+     La usan tres `calc()` para no tapar lo que va pegado abajo; estaba sin
+     declarar en ninguna parte y los tres caían al 68 de reserva. */
+  :root { --barra-alto: 76px; }
+}
+
+/* 9 · Los rótulos de las cifras iban a 10.5 px en mayúsculas. Suben a 11.5:
+   son los que dicen QUÉ es el número que hay debajo. */
+@media (max-width: 900px) {
+  .cifra__k, .tira__k { font-size: 11.5px; }
+}
+
+/* 10 · LOS ÚLTIMOS CUATRO QUE QUEDABAN POR DEBAJO DEL DEDO.
+   El «Copiar» de cada dato de facturar (68×31), la ✕ de cerrar la ventana
+   (30×30), y los enlaces chiquitos de «Ver su ficha» (67×17) y «Ver el
+   reporte». Los cuatro se pulsan; los cuatro suben a 42. */
+@media (max-width: 900px) {
+  .campo__b { min-height: 42px; }
+  .tapa__x  { width: 42px; height: 42px; top: 8px; right: 10px; }
+  a.mini, .mini a { min-height: 34px; display: inline-flex; align-items: center; }
+  /* Y los dos rótulos que quedaban en 10.5 px: el de la barra de abajo y el
+     que dice qué es cada cifra de la ventana. Once es el suelo. */
+  .barra a { font-size: 11px; }
+  .tapa__cifras span { font-size: 11px; }
+}
+
+/* ── EL RESUMEN DE LA VENTA, ANTES DE CONFIRMAR (parche 2r) ───────────────
+   Va dentro de una `.tapa`, que centra todo lo suyo; estas filas son lo único
+   que se alinea a los lados, porque son pares dato-valor y leerlos centrados
+   obliga a buscar dónde empieza cada uno. */
+.resumen   { margin-top: 16px; text-align: left; border-top: 1.5px solid var(--linea); }
+.resumen__f { display: flex; gap: 12px; align-items: baseline;
+              padding: 7px 0; border-bottom: 1px solid var(--linea); }
+.resumen__k { flex: 0 0 104px; font-size: 11px; font-weight: 800; letter-spacing: .4px;
+              text-transform: uppercase; color: var(--tx-3); }
+.resumen__v { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 700;
+              color: var(--tx); overflow-wrap: anywhere; }
+
+/* ── El cashback del cliente, resaltado en la ficha (parche 2t) ───────────
+   Verde de «dinero a favor», el mismo de los pagos confirmados: no el
+   amarillo de marca, que está reservado para botones (ver paleta-datos). */
+.cashback-cifra { display: flex; flex-direction: column; gap: 2px;
+                  background: var(--verde-bg); border-radius: var(--radio-chico);
+                  padding: 12px 14px; margin-bottom: 8px; }
+.cashback-cifra__v { font-size: 26px; font-weight: 800; color: var(--verde); line-height: 1.1; }
+.cashback-cifra__k { font-size: 12px; font-weight: 700; color: var(--tx-2); }
+
+/* ── El saldo por cobrar, cuando hay saldo (parche 2w) ───
+   La cifra por la que se vuelve al pedido. Se resalta solo si es mayor que
+   cero: un saldo en cero no es una deuda y no tiene por qué gritar. */
+.saldo-cifra { display: inline-block; font-size: 17px; font-weight: 800;
+               color: var(--ambar); background: var(--ambar-bg);
+               border-radius: var(--radio-chico); padding: 2px 9px;
+               font-variant-numeric: tabular-nums; }
+
+/* ── Barra de filtros de los reportes (parche 2w) ────────
+   Los filtros se leían como un formulario grande y empujaban el detalle fuera
+   de la pantalla. Aquí son una sola tira de campos chicos, con su rótulo
+   encima en pequeño, que ocupa lo que ocupa una fila. */
+.barra-filtros { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 10px;
+                 padding: 10px 12px; margin-bottom: 12px;
+                 background: var(--tarjeta); border: 1.5px solid var(--linea);
+                 border-radius: var(--radio); }
+.barra-filtros label { display: flex; flex-direction: column; gap: 2px; margin: 0;
+                       font-size: 11.5px; font-weight: 700; letter-spacing: 0.4px;
+                       text-transform: uppercase; color: var(--tx-3); }
+.barra-filtros input, .barra-filtros select {
+  min-height: 36px; padding: 6px 9px; font-size: 13px; font-weight: 600; width: auto; }
+.barra-filtros .barra-filtros__b { display: flex; gap: 8px; margin-left: auto; align-items: flex-end; }
+.barra-filtros .btn { min-height: 36px; padding: 8px 14px; font-size: 12px; }
+@media (max-width: 760px) {
+  .barra-filtros { gap: 8px; }
+  .barra-filtros label { flex: 1 1 46%; }
+  .barra-filtros input, .barra-filtros select { width: 100%; }
+  .barra-filtros .barra-filtros__b { margin-left: 0; flex: 1 1 100%; }
+}
+
+/* ── Cifras compactas (parche 2w) ────────────────────────
+   Las mismas tarjetas de siempre, en una fila que no empuja el detalle. */
+.cifra--compacta { padding: 10px 13px; gap: 1px; }
+.cifra--compacta .cifra__v { font-size: 19px; }
+.cifra--compacta .cifra__d { font-size: 11.5px; }
+@media (max-width: 760px) { .cifra--compacta .cifra__v { font-size: 16px; } }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARCHE 2X · REPASO VISUAL DE TODAS LAS PANTALLAS
+   (usuario, 2026-09-22: «arregla fallas visuales, flechas casi saliendo
+   del contenedor, y que cada bloque se note que es otro bloque y se
+   pueda diferenciar a simple vista sin tener que leer todo»).
+
+   Va al final a propósito: son correcciones sobre reglas que ya
+   existen, y escritas aquí se leen juntas —qué se arregló y por qué—
+   en vez de repartidas por toda la hoja.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · CADA BLOQUE, UN BLOQUE ──────────────────────────
+   Dos tarjetas seguidas se leían como una sola mancha: mismo borde,
+   mismo relleno y el título con el mismo peso que el texto de dentro.
+   Ahora el título de cada tarjeta lleva su filete y una marca corta de
+   color, y entre tarjetas hay más aire. Se nota de un vistazo dónde
+   acaba una acción y empieza la otra. */
+.tarjeta + .tarjeta { margin-top: 16px; }
+.tarjeta__cab { align-items: center; gap: 10px; margin-bottom: 14px;
+                padding-bottom: 10px; border-bottom: 1px solid var(--linea-suave); }
+.tarjeta__cab h2 { font-size: 15px; display: flex; align-items: center; gap: 9px; }
+.tarjeta__cab h2::before { content: ''; width: 4px; height: 15px; border-radius: 999px;
+                           background: var(--marca); flex-shrink: 0; }
+/* Una tarjeta de cifra no lleva cabecera: la marca no tiene qué separar. */
+.cifra .tarjeta__cab { border-bottom: 0; padding-bottom: 0; }
+
+/* Los nombres de sección de un formulario pesaban MENOS que la etiqueta
+   de cada campo: eran gris claro de 11 px sobre la línea del borde. */
+fieldset.bloque legend { font-size: 12px; letter-spacing: .8px; color: var(--tx);
+                         background: var(--tarjeta); }
+
+/* ── 2 · LAS FLECHAS, DENTRO DE SU CAJA ──────────────────
+   El triángulo del acordeón caía en su propia línea, pegado al margen,
+   y el «+» de los desplegables quedaba contra el borde. Ahora los dos
+   van anclados a la derecha, a la altura del título. */
+.paso > .paso__cab { position: relative; padding-right: 24px; }
+@media (max-width: 820px) {
+  .paso > .paso__cab::after { position: absolute; right: 0; top: 4px; font-size: 15px; }
+}
+.desplegable > summary { position: relative; padding-right: 34px; }
+.desplegable > summary::after { float: none; position: absolute; right: 14px; top: 50%;
+                                transform: translateY(-50%); font-size: 16px; color: var(--tx-3); }
+.desplegable[open] > summary::after { transform: translateY(-50%); }
+
+/* Y la flecha de los desplegables del navegador —los <select>— estaba
+   a 6 px del borde mientras el texto sangra 15. Se pinta la nuestra. */
+.form select, .barra-filtros select {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%238A8A82' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.barra-filtros select { padding-right: 30px; background-position: right 10px center; }
+
+/* ── 3 · LOS CAMPOS QUE SE QUEDARON SIN ESTILO ───────────
+   `type=url` (la ruta de NUBEFACT) salía con el borde crudo del
+   navegador al lado de campos redondeados, y el de archivo enseñaba el
+   «Choose File / No file chosen» del sistema en inglés. */
+.form input[type=url] {
+  border: 1.5px solid var(--linea); background: var(--campo); color: var(--tx);
+  border-radius: var(--radio-chico); padding: 13px 15px; font-size: 14px;
+  font-weight: 500; width: 100%;
+}
+.form input[type=file] { font-size: 12.5px; font-weight: 600; color: var(--tx-2);
+                         border: 1.5px dashed var(--linea); background: var(--campo);
+                         border-radius: var(--radio-chico); padding: 11px 13px; width: 100%; }
+.form input[type=file]::file-selector-button {
+  border: 0; border-radius: 999px; background: var(--suave); color: var(--tx);
+  font-size: 12px; font-weight: 700; padding: 8px 14px; margin-right: 12px; cursor: pointer;
+}
+
+/* ── 4 · EL DINERO NO SE PARTE EN DOS LÍNEAS ─────────────
+   En la lista de pedidos casi todas las celdas enseñaban «S/» arriba y
+   «500.00» abajo, y unas filas sí y otras no: la columna se leía como
+   un error de la pantalla, no como una cifra. */
+.tabla td.num, .tabla th.der { white-space: nowrap; }
+.tabla td.principal .fila__t { white-space: nowrap; }
+
+@media (max-width: 760px) {
+  /* Y en el celular, el código y la fecha salían pegados
+     —«P-0005922/09/2026»— porque el enlace de la celda es en línea. */
+  .tabla td.principal > a { display: flex; flex-direction: column;
+                            align-items: flex-start; justify-content: center;
+                            gap: 2px; min-height: 38px; }
+  .tabla td.principal > a .fila__s { color: var(--tx-3); }
+  /* El aviso de cada pestaña de abajo no se corta con el borde. */
+  .barra a { padding: 11px 0 8px; }
+  .barra__chip { top: 1px; }
+}
+
+/* ── 5 · AIRE ENTRE GRUPOS DE UN FORMULARIO ──────────────
+   La ayuda gris de un campo quedaba a 4 px de la etiqueta del campo
+   siguiente y a 24 del suyo: los grupos se leían al revés. */
+.form { gap: 18px; }
+.form .form__fila { gap: 14px; }
+
+/* ── 6 · «COPIAR» DEJA DE SER EL PROTAGONISTA ────────────
+   Con NUBEFACT el HUB emite solo, así que copiar dato por dato es la
+   excepción. Eran trece botones idénticos con más peso que las cifras
+   que acompañan: ahora son discretos y se encienden al pasar por
+   encima o al tocarlos. */
+.campo__b { border-color: transparent; background: transparent; color: var(--tx-3);
+            font-size: 11px; padding: 6px 10px; }
+.campo:hover .campo__b, .campo__b:focus-visible { border-color: var(--linea); color: var(--tx-2); }
+@media (max-width: 760px) { .campo__b { border-color: var(--linea); } }
+
+/* ── 7 · EN EL CELULAR, CADA FILA ES UNA TARJETA ─────────
+   Una lista de cincuenta ventas separadas por una línea de 1 px es una
+   sola mancha: no se ve dónde acaba una y empieza la siguiente. Ahora
+   cada fila es su propia tarjeta, con su borde y su aire. */
+@media (max-width: 760px) {
+  .tabla__caja { background: transparent; border: 0; border-radius: 0; }
+  .tabla tr { background: var(--tarjeta); border: 1.5px solid var(--linea);
+              border-radius: var(--radio); padding: 13px 15px; margin-bottom: 10px;
+              box-shadow: var(--sombra); }
+  .tabla tr:last-child { border-bottom: 1.5px solid var(--linea); margin-bottom: 0; }
+  .tabla td.principal { padding-bottom: 8px; margin-bottom: 6px;
+                        border-bottom: 1px solid var(--linea-suave); }
+}
+
+/* ── 8 · TARJETAS DE UNA MISMA FILA, A LA MISMA ALTURA ───
+   `.tarjeta + .tarjeta` existe para separar tarjetas APILADAS, pero
+   dentro de una rejilla se lo comía como margen superior: la segunda y
+   la tercera cifra de un reporte bajaban 16 px y quedaban más cortas
+   que la primera. En una rejilla separa la propia rejilla con su gap. */
+.rejilla > .tarjeta + .tarjeta { margin-top: 0; }
+.rejilla > * { align-self: stretch; }
+.rejilla--panel > * { align-self: start; }
+
+/* ── 9 · LOS FILTROS, POR GRUPOS ─────────────────────────
+   Once píldoras seguidas con tres amarillas encendidas de grupos
+   distintos: había que leerlas todas para saber qué estabas mirando.
+   Entre grupo y grupo va ahora una raya; en el celular, donde no caben
+   en una línea, el corte manda cada grupo a su propio renglón. */
+.filtros__sep { width: 1px; min-height: 24px; align-self: center;
+                background: var(--linea); margin: 0 5px; }
+@media (max-width: 760px) {
+  .filtros__sep { flex: 1 0 100%; width: auto; min-height: 0; height: 0;
+                  background: transparent; margin: 0; }
+}
+
+/* ── 10 · UN CHIP QUE NO COMPITE ─────────────────────────
+   En Usuarios había tres chips idénticos por fila —Editar, Apagar,
+   Nueva contraseña— repetidos once veces: la fila entera era una
+   hilera de botones y ninguno decía cuál es el normal. Los de segunda
+   fila usan este, que se ve cuando lo buscas y no antes. */
+.chip--suave { background: transparent; border: 1.5px solid transparent;
+               color: var(--tx-3); font-weight: 600; }
+.chip--suave:hover, .chip--suave:focus-visible { border-color: var(--linea); color: var(--tx-2); }
+
+/* ── 11 · LA CABECERA DE LA TARJETA EN EL CELULAR ────────
+   El título y su explicación se repartían el ancho y el título salía
+   en tres renglones de dos palabras. En pantalla angosta la
+   explicación baja a su propia línea. */
+@media (max-width: 760px) {
+  .tarjeta__cab { flex-wrap: wrap; align-items: flex-start; }
+  .tarjeta__cab > .mini, .tarjeta__cab > span.mini { flex: 1 0 100%; }
+}
+/* Y la marca de color se alinea con la PRIMERA línea del título, no con
+   el centro: en un título de dos líneas quedaba a media altura. */
+.tarjeta__cab h2 { align-items: flex-start; }
+.tarjeta__cab h2::before { margin-top: 3px; }
+
+/* ── 12 · LA LÍNEA DE PRODUCTO CON SU BUSCADOR (módulo 3a-1) ──
+   El desplegable de sugerencias cuelga del campo del nombre, no del
+   formulario: en una venta de cuatro líneas, cada una busca lo suyo. */
+.linea__buscar { position: relative; flex: 3 1 180px; min-width: 0; }
+.linea__buscar .linea__desc { width: 100%; }
+.linea__sug { position: absolute; left: 0; right: 0; top: calc(100% + 2px);
+              margin: 0; z-index: 30; }
+.linea__var { flex: 2 1 130px; min-width: 0; border: 1.5px solid var(--linea);
+              background: var(--campo); color: var(--tx); border-radius: 10px;
+              padding: 10px 12px; font: inherit; font-size: 13px; }
+.linea__precio[readonly] { background: var(--suave); color: var(--tx-2); }
+@media (max-width: 760px) {
+  .linea__buscar { flex: 1 1 100%; }
+  .linea__var { flex: 1 1 100%; }
+}
+
+/* ── 13 · EL PAGO QUE SE ACABA DE VALIDAR (módulo 3a.1) ──
+   Se pinta en verde un momento y se apaga solo. Sin una palabra: es
+   «aquí está lo que acabas de validar» (usuario, 2026-09-23). */
+.fila--recien { background: var(--verde-bg); animation: recien 3.4s ease-out 1 forwards; }
+.fila--recien td { border-bottom-color: var(--verde); }
+@keyframes recien { 0%, 45% { background: var(--verde-bg); } 100% { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .fila--recien { animation: none; } }
+
+/* Los filtros plegados de la lista de pedidos: el desplegable no se ve
+   como una tarjeta más, solo como una línea que se abre. */
+.filtros-mas { border: 0; background: transparent; }
+/* 3h.1: «Más filtros» pasaba por texto suelto. Ahora es un botón: con borde,
+   fondo y su «+», del ancho de lo que dice. */
+.filtros-mas > summary { display: inline-flex; align-items: center; gap: 8px;
+                         padding: 8px 38px 8px 14px; border: 1.5px solid var(--tx);
+                         border-radius: 999px; background: var(--tarjeta); color: var(--tx);
+                         font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+.filtros-mas > summary:hover { background: var(--suave); }
+.filtros-mas > summary::after { right: 14px; }
+.filtros-mas[open] > summary { border-bottom: 1.5px solid var(--tx); margin-bottom: 10px; }
+.filtros-mas > *:not(summary) { padding: 0; }
+
+/* ── 14 · LO QUE HAY QUE HACER AHORA (módulo 3a.1) ───────
+   Una franja arriba de la ficha con la única acción que toca, y su
+   botón. Solo sale cuando hay algo que hacer: un cartel que está
+   siempre acaba siendo parte del fondo. */
+.accion-ahora { display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+                border-radius: var(--radio); padding: 16px 18px; margin-bottom: 14px;
+                border: 1.5px solid var(--marca); background: var(--ambar-bg); }
+.accion-ahora__ico { display: inline-flex; color: var(--ambar); flex-shrink: 0; }
+.accion-ahora__t { flex: 1 1 260px; font-size: 15px; font-weight: 800; letter-spacing: -0.2px; }
+.accion-ahora .btn { flex-shrink: 0; }
+.accion-ahora--gris { border-color: var(--linea); background: var(--suave); }
+.accion-ahora--gris .accion-ahora__ico { color: var(--tx-3); }
+.accion-ahora--gris .accion-ahora__t { font-weight: 700; font-size: 14px; }
+/* Aprobar o rechazar un descuento (3d): dos botones y la nota. */
+.accion-ahora__desc { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; flex: 1 1 100%; }
+.accion-ahora__desc .desc-rechazo { display: flex; gap: 8px; flex: 1 1 280px; min-width: 0; }
+.accion-ahora__desc .desc-rechazo input[type=text] { flex: 1 1 auto; min-width: 0;
+  border: 1.5px solid var(--linea); background: var(--campo); color: var(--tx);
+  border-radius: var(--radio-chico); padding: 11px 14px; font-size: 14px; font-weight: 500; }
+.accion-ahora__desc .desc-rechazo input[type=text]:focus {
+  outline: 0; border-color: var(--marca); box-shadow: 0 0 0 3px rgba(250,217,26,.22); }
+@media (max-width: 620px) {
+  .accion-ahora { padding: 14px 15px; gap: 10px; }
+  .accion-ahora__t { font-size: 14.5px; }
+  .accion-ahora .btn { width: 100%; }
+  .accion-ahora__desc form { width: 100%; }
+  .accion-ahora__desc .desc-rechazo { flex-direction: column; }
+}
+
+/* El logo, ahora, es el botón de «volver al inicio». */
+.lateral__inicio { display: block; border-radius: 10px; }
+.lateral__inicio:focus-visible { outline: 2px solid var(--marca); outline-offset: 3px; }
+.lateral__inicio:hover .lateral__logo { opacity: .82; }
+
+/* Las cifras de la ventana de «Pedido registrado» tampoco se parten:
+   «S/» en una línea y «500.00» en la siguiente se lee como un error. */
+.tapa__cifras strong { white-space: nowrap; }
+
+/* ── Traer de la tienda (módulo 3b) ─────────────────────────────
+   Los nombres de la tienda son largos («CAMILLA HEAD SPA LUXURY CON
+   CALENTADOR…») y en el celular la tarjeta los cortaba por la derecha.
+   Aquí el nombre ES el dato que se revisa: se parte en líneas. */
+.tabla--envuelve td.principal .fila__t { white-space: normal; overflow-wrap: anywhere; }
+/* El stock de la web (3b.5): «12 en stock» no se parte en dos líneas. */
+.tabla td [data-stock] { white-space: nowrap; }
+
+/* ── La foto del producto (3b.3) ─────────────────────────────────
+   Miniatura de la tienda, 240 px guardados, 40 px en listas. El hueco gris
+   cuando no hay foto mantiene la columna alineada. */
+.foto-prod { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 8px; object-fit: cover;
+             background: var(--suave); border: 1px solid var(--linea-suave); display: block; }
+.foto-prod--vacia { display: inline-block; }
+.foto-prod--grande { width: 96px; height: 96px; flex-basis: 96px; border-radius: 14px; }
+.foto-prod--linea { float: left; margin-right: 10px; }
+.con-foto { display: flex; gap: 10px; align-items: center; }
+.con-foto__txt { min-width: 0; display: flex; flex-direction: column; }
+.cabecera .crece { flex: 1 1 auto; min-width: 0; }
+.sugerencia--foto { flex-direction: row; align-items: center; gap: 10px; }
+.sugerencia__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+/* En el celular, la celda del producto se apila en columna: la foto va AL
+   LADO del nombre, no encima. */
+.tabla td.principal > a.con-foto { flex-direction: row; align-items: center; }
+/* La lista de productos del pedido se abría del ancho del campo, que en
+   computadora es estrecho: con la foto al lado, el nombre se partía en cuatro
+   líneas. Un mínimo que cabe en cualquier pantalla. */
+.linea__sug { min-width: min(340px, calc(100vw - 32px)); }
+.sugerencia span.sugerencia__txt { color: var(--tx); font-size: inherit; }
+.sugerencia .foto-prod--vacia { width: 40px; height: 40px; }
+/* En el celular el campo no empieza en el borde: con el mínimo de ancho la
+   lista se salía 16 px por la derecha a 360 px. Ahí, el ancho del campo. */
+@media (max-width: 620px) { .linea__sug { min-width: 0; } }
+
+/* ── Descuentos por aprobar (3d) ─────────────────────── */
+.desc-botones { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+@media (max-width: 620px) {
+  .desc-botones { justify-content: stretch; }
+  .desc-botones form { flex: 1 1 0; }
+  .desc-botones .btn { width: 100%; }
+}
+
+/* El stock de la web de una venta, en la ficha (3e). */
+.stock-venta { display: flex; align-items: center; gap: 6px; margin: 8px 0 6px; }
+.stock-venta--verde { color: var(--verde); }
+.stock-venta--ambar { color: var(--ambar); }
+.stock-venta--rojo  { color: var(--rojo); font-weight: 600; }
+.stock-venta--gris  { color: var(--tx-3); }
+/* «Ya lo arreglé» en la cola del stock de la web (3e). */
+.resolver > summary { list-style: none; }
+.resolver > summary::-webkit-details-marker { display: none; }
+.resolver__op { display: flex; gap: 8px; align-items: center; min-height: 40px; font-size: 13px; text-align: left; }
+
+/* ── LAS FOTOS DEL PAGO (3f): TOMAR FOTO y ELEGIR ARCHIVO ──────────────
+   Los campos de archivo del navegador no se ven: el botón es la etiqueta, y
+   tocarla abre la cámara o los archivos. */
+.foto-campo { display: flex; flex-direction: column; gap: 6px; margin-top: 10px;
+              padding: 12px; border: 1.5px dashed var(--linea); border-radius: var(--radio-chico);
+              background: var(--campo); }
+.foto-campo[hidden] { display: none; }
+.foto-campo__t { font-size: 13px; font-weight: 700; color: var(--tx); }
+.foto-campo__b { display: flex; flex-wrap: wrap; gap: 8px; }
+.foto-campo__btn { position: relative; display: inline-flex; align-items: center; gap: 6px;
+                   min-height: 40px; cursor: pointer; }
+.foto-campo__in { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden;
+                  pointer-events: none; }
+.foto-campo__btn:focus-within { outline: 2px solid var(--marca); outline-offset: 2px; }
+.foto-campo__n { font-size: 12.5px; font-weight: 700; color: var(--verde); }
+.foto-campo__n:empty { display: none; }
+.foto-campo--lista { border-style: solid; border-color: var(--verde); }
+@media (max-width: 520px) { .foto-campo__btn { flex: 1 1 100%; justify-content: center; } }
+
+/* ── Configuración › Métodos de pago (3f) ─────────────────────────── */
+.metodos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.metodo { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.metodo--apagado { opacity: .7; }
+.metodo__cab { display: flex; align-items: center; gap: 8px; }
+.metodo__nombre { flex: 1; min-width: 0; font-size: 15px; font-weight: 800; color: var(--tx);
+                  background: transparent; border: 1.5px solid transparent; border-radius: var(--radio-chico);
+                  padding: 6px 8px; margin-left: -8px; }
+.metodo__nombre:hover, .metodo__nombre:focus { border-color: var(--linea); background: var(--campo); outline: none; }
+.metodo__ops { display: flex; flex-direction: column; gap: 4px; }
+.metodo__op { display: flex; align-items: center; gap: 9px; min-height: 36px; font-size: 13.5px; font-weight: 600; color: var(--tx); cursor: pointer; }
+.metodo__op input { width: 18px; height: 18px; accent-color: var(--marca); }
+.metodo__rec { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13.5px; font-weight: 600; min-height: 40px; }
+.metodo__rec__c { display: inline-flex; align-items: center; gap: 6px; }
+.metodo__rec input { width: 72px; min-height: 36px; text-align: right; padding: 6px 10px; font-size: 13.5px; font-weight: 700;
+                     border: 1.5px solid var(--linea); border-radius: var(--radio-chico); background: var(--campo); color: var(--tx); }
+.metodo__pie { display: flex; justify-content: flex-end; }
+
+/* ── El resumen de una venta encima de la bandeja de pagos (3f) ────── */
+.tapa__caja--ancha { max-width: 600px; }
+.resumen-venta { margin-top: 16px; text-align: left; border: 1.5px solid var(--linea);
+                 border-radius: var(--radio-chico); padding: 4px 12px; }
+.resumen-venta--pagos { margin-top: 12px; }
+.resumen-venta__l { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--linea-suave); }
+.resumen-venta__l:last-child { border-bottom: 0; }
+.resumen-venta__d { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.resumen-venta__d .fila__t { overflow-wrap: anywhere; }
+.resumen-venta .stock-venta { margin: 8px 0 6px; }
+.chip--ver { margin-top: 6px; display: inline-flex; }
+
+/* ── LA BARRA DE FILTROS, CON LA MISMA PIEL QUE EL RESTO (3f) ──────────
+   «Los filtros de fecha, asesor y comprobante están muy cuadrados y se ven
+   fuera de contexto» (usuario, 2026-09-26). Los campos de la barra no tenían
+   estilo propio y salían con el borde crudo del navegador. Ahora: campos
+   redondeados con el fondo de los campos del HUB, rótulo pequeño encima y el
+   foco en el amarillo de la marca. Dentro de una tarjeta, la barra deja su
+   propio borde (una caja dentro de otra) y queda como una franja suave. */
+.barra-filtros input, .barra-filtros select {
+  border: 1.5px solid var(--linea); background-color: var(--campo); color: var(--tx);
+  border-radius: 999px; padding: 8px 14px; min-height: 40px; font-family: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease; }
+.barra-filtros select { padding-right: 34px; background-position: right 13px center; }
+.barra-filtros input:hover, .barra-filtros select:hover { border-color: var(--tx-3); }
+.barra-filtros input:focus, .barra-filtros select:focus {
+  outline: none; border-color: var(--marca); box-shadow: 0 0 0 3px rgba(250, 217, 26, .28); }
+.barra-filtros label { font-size: 11.5px; letter-spacing: .6px; gap: 5px; padding-left: 4px; }
+.barra-filtros .btn { min-height: 40px; border-radius: 999px; padding: 8px 20px; }
+.tarjeta .barra-filtros { background: var(--campo); border-color: transparent; padding: 12px 14px;
+                          border-radius: var(--radio-chico); }
+.tarjeta .barra-filtros input, .tarjeta .barra-filtros select { background-color: var(--tarjeta); }
+
+/* ── POR ALISTAR (3g) ─────────────────────────────────────────────────
+   Una tarjeta por pedido. Lo que lleva, grande y con el MODELO resaltado:
+   es donde se equivocan al preparar. */
+.alistar { display: flex; flex-direction: column; gap: 12px; }
+.alistar__lineas { list-style: none; margin: 4px 0 0; padding: 0; }
+.alistar__lineas li { display: flex; gap: 10px; align-items: baseline; padding: 8px 0;
+                      border-bottom: 1px solid var(--linea-suave); font-size: 15px; }
+.alistar__lineas li:last-child { border-bottom: 0; }
+.alistar__cant { font-weight: 800; min-width: 34px; }
+.alistar__desc { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.alistar__modelo { display: inline-block; margin-left: 6px; padding: 2px 9px; border-radius: 999px;
+                   background: var(--marca); color: #111; font-size: 12.5px; font-weight: 800; }
+.alistar__ind { margin-top: 10px; }
+.alistar__ind summary { cursor: pointer; font-weight: 700; font-size: 13px; min-height: 34px;
+                        display: flex; align-items: center; }
+.alistar__txt { background: var(--campo); border-radius: var(--radio-chico); padding: 10px 12px;
+                font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.alistar__form { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--linea); }
+
+/* ── PRE VENTA Y LOTES (3h) ──────────────────────────────────────────── */
+.barco { margin: 4px 0 2px; }
+.barco__ruta { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: var(--tx-3); margin-bottom: 4px; }
+.barco__pista { position: relative; height: 10px; border-radius: 999px; background: var(--pista); margin: 38px 18px 8px; }
+.barco__lleno { height: 100%; border-radius: 999px; background: var(--marca); }
+.barco--gris .barco__lleno { background: var(--tx-3); }
+.barco--verde .barco__lleno { background: var(--verde); }
+.barco--mostaza .barco__lleno { background: var(--serie); }
+.barco__icono { position: absolute; top: -33px; transform: translateX(-50%); color: var(--tx); animation: barco-flota 3.2s ease-in-out infinite; }
+@keyframes barco-flota { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -2px); } }
+@media (prefers-reduced-motion: reduce) { .barco__icono { animation: none; } }
+.barco__txt { font-size: 12.5px; color: var(--tx-2, var(--tx)); }
+.lotes { display: flex; flex-direction: column; gap: 12px; }
+.lote-tarjeta { display: block; color: inherit; text-decoration: none; }
+.lote-tarjeta__datos { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 8px; }
+.canal--verde { background: var(--verde-bg); color: var(--verde); }
+.canal--amarillo { background: var(--ambar-bg); color: var(--ambar); }
+.canal--rojo { background: var(--rojo-bg); color: var(--rojo); }
+.fila--revisa td { background: rgba(250, 217, 26, .12); }
+.form--fila { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.lote-precio { border-top: 1px solid var(--linea); padding-top: 12px; margin-top: 12px; }
+.lote-precio:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.lote-precio__cab { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-bottom: 8px; }
+.tabla--form input[type=text] { width: 100%; min-width: 0; }
+.pv-productos { display: flex; flex-direction: column; margin-top: 10px; }
+.pv-prod { padding: 12px 0; border-top: 1px solid var(--linea-suave); }
+.pv-prod--agotado { opacity: .6; }
+.pv-prod__cab { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.pv-prod__cab strong { font-size: 15px; }
+.pv-prod__quedan { margin-left: auto; font-weight: 800; font-size: 13px; }
+.pv-prod__quedan.rojo { color: var(--rojo); }
+.pv-prod__precios { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.pv-tramo { display: inline-flex; flex-direction: column; background: var(--campo); border-radius: var(--radio-chico); padding: 6px 12px; min-width: 96px; }
+.pv-tramo__k { font-size: 11.5px; color: var(--tx-3); font-weight: 700; }
+.pv-tramo strong { font-size: 15px; }
+.pv-prod__colores { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+/* ── EL BOTÓN DE PRE VENTA (3h.1) ─────────────────────────────────────────
+   Va primero en la fila, así que su menú abre hacia la derecha: hacia la
+   izquierda se saldría de la pantalla en el celular. */
+.menu-preventa > summary.btn { gap: 7px; }
+.menu-preventa[open] > summary.btn { filter: brightness(.95); }
+.menu-preventa .menu-chip__caja { left: 0; right: auto; }
+
+/* ── LAS FILAS DEL LOTE (3h.1): añadir una o varias, y quitar ────────────── */
+.lote-mas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0 6px; }
+.lote-mas__n { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--tx-2); }
+.lote-mas__n input { width: 52px; text-align: center; padding: 7px 6px; border: 1.5px solid var(--linea);
+                     border-radius: 10px; background: var(--campo); font: inherit; color: var(--tx); }
+.lote-fila__quitar { text-align: right; white-space: nowrap; }
+@media (max-width: 760px) {
+  .tabla td.lote-fila__quitar { justify-content: flex-end; padding-top: 6px; }
+}
+
+/* 3h.1: «Registrar nuevo cliente» iba pegado al buscador en escritorio. */
+#caja-buscar-cliente #abrir-alta { margin-top: 12px; }
+
+/* El comprobante, aparte de la línea de tiempo (3h.1): un indicador. */
+.hito-comp { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: -4px 0 14px; }
+.hito-comp__k { font-size: 11px; font-weight: 700; color: var(--tx-2); text-transform: uppercase; letter-spacing: .04em; }
+/* Cuando va solo (el asesor, Almacén), queda pegado a la derecha en la
+   computadora: ahí el menú abre hacia la izquierda para no salirse. */
+@media (min-width: 761px) {
+  .menu-preventa:last-child .menu-chip__caja { left: auto; right: 0; }
+}
+
+/* ── 3j · Por entregar ───────────────────────────────────────────── */
+.entregar { border-top: 1px solid var(--linea-suave); }
+.entregar > summary { list-style: none; cursor: pointer; }
+.entregar > summary::-webkit-details-marker { display: none; }
+.entregar[open] > summary .chip { opacity: .5; }
+.entregar__form { padding: 6px 0 12px; }
+.despacho-flete { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; margin: 0 8px 6px 0; flex-wrap: wrap; }
+.despacho-flete input { width: 96px; padding: 6px 8px; }
+/* «Opcional», bien a la vista (3j): el costo del envío de la pre venta. */
+.opcional-marca { display: inline-block; margin: 2px 0 4px; padding: 2px 8px; border-radius: 999px;
+  background: var(--marca); color: #000; font-size: 11.5px; font-weight: 700; }
+
+/* ── 3j · el siguiente paso del lote y la ventana del error ──────────── */
+.paso-sig { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 14px;
+  padding: 10px 14px; border-radius: var(--radio-chico); background: var(--marca); color: var(--marca-tinta);
+  text-decoration: none; font-weight: 700; }
+.paso-sig[hidden] { display: none; }
+.paso-sig__k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; opacity: .75; }
+.paso-sig__t { flex: 1 1 200px; font-size: 13.5px; }
+.paso-sig__ir { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #000; color: var(--marca); }
+.paso-activo { outline: 3px solid var(--marca); outline-offset: 3px; border-radius: var(--radio-chico);
+  animation: paso-latido 1.6s ease-in-out 3; }
+@keyframes paso-latido { 50% { outline-color: rgba(250,217,26,.35); } }
+@media (prefers-reduced-motion: reduce) { .paso-activo { animation: none; } }
+#viaje, #productos, #precios, .lote-precio, #form-estado, #form-listo, #form-interruptor, #lote-filas tr { scroll-margin-top: 90px; }
+.emergente { max-width: min(440px, calc(100vw - 32px)); border: 1.5px solid var(--linea); border-radius: var(--radio);
+  background: var(--tarjeta); color: var(--tx); padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.emergente::backdrop { background: rgba(0,0,0,.45); }
+.emergente__cab { display: flex; align-items: center; gap: 8px; color: var(--rojo); font-size: 15px; }
+.emergente__txt { margin: 10px 0 14px; font-size: 14px; line-height: 1.45; }
+.campo-error { outline: 3px solid var(--rojo) !important; outline-offset: 2px; }
+.aviso-flota { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 90;
+  max-width: calc(100vw - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.18); transition: opacity .5s; }
+.aviso-flota--fuera { opacity: 0; }
+.lote-precio__ok { font-size: 12.5px; font-weight: 700; color: var(--tx-3); align-self: center; }
+.lote-precio__ok--si { color: var(--verde); }
+.lote-precios-todos { margin-top: 12px; }
+.maq-elige { display: block; margin-top: 6px; max-width: 220px; }
+.maq-elige[hidden] { display: none; }
+
+/* ── 3j · pestañas (Pedidos: Stock / Pre venta) ─────────────────────── */
+.pestanas { display: flex; gap: 6px; margin: 0 0 12px; border-bottom: 1.5px solid var(--linea); }
+.pestanas__p { padding: 10px 16px; font-weight: 700; font-size: 13.5px; color: var(--tx-2); text-decoration: none;
+  border-bottom: 3px solid transparent; margin-bottom: -1.5px; display: inline-flex; align-items: center; gap: 6px; }
+.pestanas__p.on { color: var(--tx); border-bottom-color: var(--marca); }
+.pestanas__n { font-size: 11px; background: var(--suave); border-radius: 999px; padding: 1px 7px; color: var(--tx-2); }
+.pestanas__p.on .pestanas__n { background: var(--marca); color: #000; }
+.espera-preventa { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+
+/* ── 3j · Enviados (Por despachar) ──────────────────────────────────── */
+.enviados__filtros { margin: 0 0 8px; border: 0; background: transparent; padding: 0; }
+.enviados__q input { min-width: 200px; }
+.enviado { border-top: 1px solid var(--linea-suave); padding: 10px 0; }
+.enviado__cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.enviado__lleva { margin: 4px 0; }
+.enviado__fotos { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.enviado__cod { display: inline-flex; align-items: center; min-height: 34px; min-width: 44px; color: inherit; }
+
+/* ══════════════ MÓDULO 5 · BONOS, METAS Y RACHAS ══════════════ */
+.chip--negro { background: #000; color: var(--marca); border-color: #000; }
+.racha-chip { display: inline-flex; align-items: center; gap: 5px; text-decoration: none; }
+.bono-sub { font-size: 13px; font-weight: 800; margin: 14px 0 6px; }
+.con-sufijo { display: inline-flex; align-items: center; gap: 6px; }
+.con-sufijo input { width: 90px; }
+.garra { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  background: var(--marca); color: #000; border-radius: var(--radio); padding: 14px 16px; margin: 0 0 14px; }
+.garra__t { font-weight: 700; font-size: 14.5px; flex: 1 1 220px; }
+.garra--grande .garra__t strong { font-size: 20px; }
+.bonos { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.bono { min-width: 0; }
+.bono--fuera { opacity: .55; }
+.bono__per { margin: -4px 0 8px; }
+.bono__cifra { margin: 4px 0 6px; }
+.bono__cifra .num { font-size: 22px; font-weight: 800; }
+.bono__falta { font-size: 13px; margin: 8px 0 0; font-weight: 600; }
+.bono__linea { margin-top: 6px; }
+.bono-total { margin: 12px 0 0; font-size: 14px; }
+.escalera { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.escalera__p { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: var(--radio-chico);
+  background: var(--suave); font-size: 12.5px; }
+.escalera__p--ok { background: var(--verde-bg); color: var(--verde); }
+.escalera__p--toca { background: var(--marca); color: #000; }
+.escalera__p--mio { outline: 2px solid var(--linea); }
+.caceria__t { font-size: 18px; font-weight: 800; }
+.caceria__f { font-size: 13px; color: var(--tx-2); margin-top: 2px; }
+.caceria__n { margin: 10px 0 2px; display: flex; align-items: baseline; gap: 8px; }
+.caceria__n .num { font-size: 40px; font-weight: 800; line-height: 1; }
+.caceria-franja { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  background: #000; color: #fff; border-radius: var(--radio); padding: 14px 16px; margin-bottom: 14px; }
+.caceria-franja__t { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 220px; }
+.caceria-franja__t .mini { color: #bbb; }
+.caceria-franja strong { color: var(--marca); font-size: 16px; }
+.manada { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.manada__m { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 7px 10px;
+  border-radius: var(--radio-chico); background: var(--suave); font-size: 12.5px; }
+.manada__m--falta { background: var(--rojo-bg); color: var(--rojo); }
+.manada__falta { flex-basis: 100%; font-size: 11.5px; font-weight: 700; }
+.fila--yo, tr.fila--yo td { background: #FFF7C7; }
+:root[data-theme="oscuro"] .fila--yo, :root[data-theme="oscuro"] tr.fila--yo td { background: #2A2610; }
+.tarjeta--negra { background: #000; color: #fff; border-color: #000; }
+.tarjeta--negra .mini { color: #bbb; }
+.team { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: var(--radio-chico); color: #fff; text-decoration: none; }
+.team + .team { margin-top: 4px; }
+.team--mio { background: var(--marca); color: #000; }
+.team__p { font-weight: 800; width: 30px; }
+.team__n { flex: 1; min-width: 0; font-weight: 700; display: flex; flex-direction: column; }
+.team__l { font-size: 11.5px; font-weight: 600; opacity: .8; }
+.team__v { text-align: right; font-weight: 800; display: flex; flex-direction: column; }
+.team__m { font-size: 11.5px; font-weight: 600; opacity: .7; }
+.tarjeta--enlace { text-decoration: none; }
+.racha-grande { text-align: center; position: relative; padding: 22px 16px; }
+.racha-grande--marca { background: var(--marca); color: #000; border-color: var(--marca); }
+.racha-grande--negra { background: #000; color: var(--marca); border-color: #000; }
+.racha-grande__logo { width: 34px; height: 34px; position: absolute; top: 12px; left: 12px; border-radius: 50%; background: #fff; padding: 3px; }
+.racha-grande__x { font-size: 64px; font-weight: 800; line-height: 1; }
+.racha-grande__n { font-size: 18px; font-weight: 800; margin-top: 4px; text-transform: uppercase; }
+.racha-grande__d { font-size: 13px; margin: 6px 0 10px; }
+.semana { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.semana__d { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; border-radius: var(--radio-chico);
+  background: var(--suave); font-size: 11.5px; font-weight: 700; }
+.semana__d--si { background: var(--marca); color: #000; }
+.semana__d--hoy { outline: 2px solid #000; }
+.semana__n { font-size: 15px; }
+.racha-pop { position: absolute; z-index: 5; top: 12px; left: 50%; transform: translateX(-50%); width: min(360px, calc(100% - 24px));
+  border-radius: var(--radio); padding: 12px 40px 12px 56px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  display: flex; flex-direction: column; animation: racha-entra .45s ease-out; }
+.racha-pop--2 { background: #FFF7C7; color: #000; }
+.racha-pop--3 { background: var(--marca); color: #000; }
+.racha-pop--4, .racha-pop--5 { background: #000; color: var(--marca); }
+.racha-pop--5 { padding-top: 18px; padding-bottom: 18px; }
+.racha-pop__logo { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: #fff; padding: 3px; }
+.racha-pop__x { font-size: 28px; line-height: 1; }
+.racha-pop--5 .racha-pop__x { font-size: 40px; }
+.racha-pop__n { font-weight: 800; text-transform: uppercase; font-size: 13px; }
+.racha-pop__d { font-size: 12px; opacity: .85; }
+.racha-pop__x2 { position: absolute; top: 6px; right: 6px; min-width: 34px; min-height: 34px; border: 0; background: transparent; color: inherit; font-size: 20px; cursor: pointer; }
+@keyframes racha-entra { from { opacity: 0; transform: translate(-50%, -12px) scale(.96); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+/* (La tapa ya es fija a toda la pantalla: la racha se ubica arriba, sin tocar la ventana.) */
+.aviso-vivo--racha { background: #000; color: var(--marca); }
+/* La pila de novedades: una sola, nunca dos encima. */
+.pila-nov { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.pila-nov__caja { background: var(--tarjeta); color: var(--tx); width: min(440px, 100%); border-radius: var(--radio); padding: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+.pila-nov__cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.pila-nov__puntos { display: flex; gap: 6px; }
+.pila-nov__puntos span { width: 8px; height: 8px; border-radius: 50%; background: var(--linea); }
+.pila-nov__puntos span.on { background: #000; }
+.pila-nov__x { min-width: 38px; min-height: 38px; border: 0; background: var(--suave); border-radius: 50%; font-size: 20px; cursor: pointer; color: var(--tx); }
+.pila-nov__tira { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0; scrollbar-width: none; margin-bottom: 12px; }
+.pila-nov__tira::-webkit-scrollbar { display: none; }
+.pila-nov__t { flex: 0 0 92%; scroll-snap-align: start; border-radius: var(--radio-chico); padding: 16px; margin-right: 8%; min-height: 180px; }
+.pila-nov__t:last-child { flex-basis: 100%; margin-right: 0; }
+.pila-nov__t--verde { background: var(--verde-bg); color: var(--verde); }
+.pila-nov__t--gris { background: var(--suave); color: var(--tx); }
+.pila-nov__t--amarillo { background: var(--marca); color: #000; }
+.pila-nov__sub { font-size: 12px; font-weight: 700; opacity: .8; }
+.pila-nov__tit { font-size: 24px; margin: 6px 0 8px; line-height: 1.15; }
+.pila-nov__l { font-size: 14px; margin: 0 0 6px; }
+/* Wakaciones: la única pantalla amarilla a pantalla completa del HUB. */
+.wakaciones { position: fixed; inset: 0; z-index: 90; background: var(--marca); color: #000; overflow-y: auto;
+  display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 16px; gap: 10px; }
+.wakaciones__escena { position: relative; width: 220px; height: 150px; flex-shrink: 0; }
+.wakaciones__sol { position: absolute; top: 4px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 10px rgba(255,255,255,.35); animation: wak-sol 8s linear infinite; }
+.wakaciones__isla { position: absolute; bottom: 20px; left: 30px; width: 140px; height: 40px; border-radius: 50% 50% 0 0; background: #000; }
+.wakaciones__palma { position: absolute; bottom: 55px; left: 88px; width: 8px; height: 70px; background: #000; border-radius: 4px; transform: rotate(-8deg); }
+.wakaciones__palma::before { content: ''; position: absolute; top: -12px; left: -28px; width: 64px; height: 22px; border-radius: 50%; border-top: 8px solid #000; }
+.wakaciones__ola { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; background: repeating-linear-gradient(90deg, #000 0 18px, transparent 18px 36px); opacity: .25; animation: wak-ola 3s linear infinite; }
+.wakaciones__logo { width: 130px; }
+.wakaciones__t { font-size: clamp(26px, 7vw, 44px); line-height: 1.05; margin: 4px 0; max-width: 600px; animation: wak-texto .8s ease-out both; }
+.wakaciones__trofeo { background: #000; color: #fff; border-radius: var(--radio); padding: 18px 22px; width: min(420px, 100%); animation: wak-texto .8s .3s ease-out both; }
+.wakaciones__monto { font-size: clamp(34px, 10vw, 54px); font-weight: 800; color: var(--marca); line-height: 1; }
+.wakaciones__seis { font-size: 12px; letter-spacing: .12em; margin-top: 4px; }
+.wakaciones__orgullo { font-size: 14px; font-weight: 700; margin-top: 10px; }
+.wakaciones__premio { font-size: 15px; font-weight: 600; max-width: 420px; }
+@keyframes wak-sol { to { transform: rotate(360deg); } }
+@keyframes wak-ola { to { background-position: 36px 0; } }
+@keyframes wak-texto { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .wakaciones *, .racha-pop { animation: none !important; } }
+.logro { max-width: min(420px, calc(100vw - 32px)); }
+.logro__lienzo { width: 100%; max-width: 240px; height: auto; display: block; margin: 10px auto; border-radius: 10px; background: #000; }
+html.con-pila { overflow: hidden; }
+
+/* 5a · zonas de toque: el título del podio abre el modo team y cada bono de
+   la lista abre su ficha; en el celular, al menos 34 px de alto. */
+.enlace-toque { display: inline-flex; align-items: center; min-height: 34px; }
+.bono-fila .fila__crece { display: flex; flex-direction: column; justify-content: center; min-height: 34px; }
+/* «Lo que ya se cerró»: en el celular el texto va arriba, a todo el ancho, y
+   los chips y «Compartir» debajo. */
+.fila--cierre { flex-wrap: wrap; }
+.fila--cierre .fila__crece { display: flex; flex-direction: column; }
+@media (max-width: 640px) { .fila--cierre .fila__crece { flex: 1 1 100%; min-width: 0; } }

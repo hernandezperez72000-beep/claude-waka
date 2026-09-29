@@ -1,0 +1,1837 @@
+HUB WAKA — Módulos 1 y 2 (parches 2e a 2x), módulo 3 (3a a 3j) y módulo 5 (5a)
+======================================================
+Módulo 1: acceso y usuarios.  ·  Módulo 2: clientes y pedidos.
+Módulo 3: catálogo de productos y conexión con la tienda.
+Módulo 5: bonos, metas y rachas.
+
+
+  ── QUÉ TRAE ESTA VERSIÓN (5a) ─────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (tablas nuevas de
+  los bonos, las rachas y la pila de novedades). Después, borrarlo. Si
+  todavía no subiste la 3j, esta la incluye.
+
+  PARA ARRANCAR (los 7 bonos nacen APAGADOS):
+  1. En Usuarios, a cada asesor ponle su nivel de cuota (Arranque,
+     Impulso, Firme…). Sin nivel no compite en La Yapa.
+  2. En Configuración › Bonos revisa cada bono (montos, nombre y nombre
+     anterior) y enciéndelo. Cuenta desde el período que va.
+  3. En Configuración › Metas pon la meta general del mes (vale desde
+     este mes hasta que la cambies) y las de quien sea distinto.
+
+  BONOS, METAS Y RACHAS. Todo se mide por lo COBRADO (pagos confirmados).
+  1. LOS 7 BONOS, CONFIGURABLES SIN PROGRAMADOR: La Yapa Quincenal (por
+     niveles, con Rápido y Dúo), la Cacería del Día, Alfa de la Semana
+     (con los tramos para todo el que llegue), Sin Freno, Alfa de la
+     Quincena, La Manada (S/500 por integrante, un solo equipo gana) y
+     Wakaciones. Cada uno: montos, nombre, nombre anterior (se puede
+     enseñar entre paréntesis) y su interruptor.
+  2. MIS BONOS (el asesor, en «Más» › Bonos): cada bono con cómo va y
+     su frase (Dale con todo / No pierdas el ritmo / Ya la hiciste /
+     Ya fue), la franja «Métele garra» (cuánto le falta, cuántos días y
+     cuántas ventas de su ticket) y «Lo que ya se cerró» con COMPARTIR.
+  3. CÓMO VAN LOS BONOS (Dirección y Administración, en «Más» › Bonos):
+     quién va ganando, el más cerca, «si todo cierra como va hoy, se
+     paga S/…», lo pagado del mes y «Por pagar». Administración marca
+     PAGADO (se deshace el mismo día). Dirección elige el país.
+  4. LA CACERÍA DEL DÍA: el CEO la lanza desde Bonos (título, frase con
+     «Otra frase», la escalera de hoy y a quién le llega: todos, una
+     oficina o un equipo). Una por día; después solo se corrige el
+     texto. Cuenta ventas de stock del día; al cerrar, solo las que
+     Facturación confirmó y no se anularon.
+  5. EL CIERRE ES SOLO: cada período se cierra al terminar, con 12 horas
+     de espera para que Facturación confirme lo del último día (se
+     cambia en Configuración › Bonos). Un período cerrado guarda sus
+     reglas y cifras: cambiar un bono después no lo toca. Si se cambia
+     un monto durante esas horas, lo que terminó se cierra con el de
+     antes. Apagar un bono: lo que va de ese período ya no cuenta; lo
+     ya terminado se paga igual. Volver a encenderlo no paga lo de en
+     medio.
+  6. EL NIVEL DE CUOTA tiene historia: un cambio rige desde la quincena
+     siguiente (la primera vez, desde la que va).
+  7. LAS RACHAS, TRES CONTADORES: clientes distintos hoy (x2, x3…), días
+     seguidos vendiendo y los clientes de la semana (Sin Freno). En el
+     Inicio sale la racha y su tarjeta; al registrar una venta salta
+     «x3 · En racha» encima de «Pedido registrado». Rachas enseña la
+     escalera, la semana y quién está en racha ahora.
+  8. EL AVISO AL EQUIPO, DENTRO DEL HUB (el aviso al teléfono llega con
+     Recepción): desde x3, solo la marca más alta del día en su oficina,
+     y un récord propio siempre. Sin sonido. Se apaga para todos en
+     Configuración › Bonos y cada uno en su perfil.
+  9. LA PILA DE NOVEDADES al entrar: primero lo que cerró (ganaste /
+     esta vez no), una racha que se cortó ayer y la Cacería de hoy. Una
+     sola X, puntos y SIGUIENTE; cada tarjeta se ve una vez (también en
+     otra computadora). Si ganó Wakaciones, sale sola y a pantalla
+     completa.
+  10. COMPARTIR MI LOGRO: una imagen de historia con el logo, el logro,
+      el nombre y la fecha. COMPARTIR abre el menú del teléfono; GUARDAR
+      IMAGEN la deja en la galería. Los montos no van, salvo que la
+      persona los encienda (Administración puede bloquearlo).
+  11. MODO TEAM: tocando «Los lobos del mes» en el Inicio. El grito del
+      día, cómo va cada uno de tu equipo, La Manada y la tabla de los
+      equipos (de los otros, solo el total).
+  12. Configuración › Bonos también guarda: el % de «Dale con todo», el
+      título del podio, las frases (Cacería y modo team, una por línea)
+      y los nombres de la escalera de rachas.
+
+
+  ── LO QUE TRAJO LA 3j ─────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (columnas nuevas
+  en lotes y pedidos, y dos estados nuevos). Después, borrarlo. Si
+  todavía no subiste la 3i, esta la incluye.
+  Al actualizar, cada pedido vivo toma el estado que le toca (queda en
+  su historia «· al actualizar»). Lo que ya estaba en «Entregado» sigue
+  entregado, y lo que salió a despacho hace más de una semana se da por
+  entregado (sin foto). Los lotes que ya habían llegado quedan «Listo
+  para entrega».
+
+  LO QUE PEDISTE AL PROBAR LA 3i.
+  1. EL ESTADO DEL PEDIDO CAMBIA SOLO. Ya no hay botones para cambiarlo.
+     Venta de stock: Registrado → Pagado (cobrado al 100 %) → En
+     despacho (al mandarlo) → Entregado. Pre venta: Reservado → En
+     camino (su lote viaja) → Producto llegó → Listo para entrega → En
+     despacho → Entregado. En la pre venta el pago se ve en su chip,
+     no en el estado. Un pago que se revierte ya no mueve a un pedido
+     que salió o se entregó.
+  2. ENTREGADO, CON FOTO. En «Por alistar» hay «Por entregar»: lo ya
+     alistado. Almacén (o Administración) pulsa MARCAR ENTREGADO y sube
+     la foto de la entrega (o el comprobante de la agencia). Se puede
+     deshacer el mismo día. La ficha del pedido enseña la foto.
+  3. LA PRE VENTA NO SALE HASTA QUE EL LOTE ESTÉ «LISTO PARA ENTREGA».
+     Después de «Llegó», el lote tiene el botón LISTO PARA ENTREGA (el
+     CEO lo pulsa cuando el contenedor está descargado). Hasta entonces
+     el asesor ve «Llega aprox. dd/mm» (la fecha del almacén o, si no,
+     la de llegada) en vez de «Mandar». Una venta con piezas de dos
+     lotes espera al más lento. Se puede deshacer mientras no haya
+     salido ningún pedido de ese lote. Un pago denegado o sin confirmar
+     se sigue diciendo (y reclamando) aunque el lote no haya llegado.
+  4. EL COSTO DEL ENVÍO EN LA PRE VENTA ES OPCIONAL (con «Envío con
+     costo en Lima»): sale marcado «Opcional · puedes llenarlo luego».
+     Se pone desde el pedido (PONER EL COSTO DEL ENVÍO) o, como muy
+     tarde, al mandarlo a despacho: el botón lo pide al lado. Mientras
+     falte, no se emite el comprobante (el total va a cambiar).
+  5. EL LOTE, MÁS FÁCIL.
+  · «¿ES REPUESTO?» en vez de «Repuesto de»: una casilla y, al marcarla,
+    se elige la máquina de una lista (las del lote y las del catálogo).
+    Ya no se escribe ningún código.
+  · EL SIGUIENTE PASO SE RESALTA: arriba sale «Siguiente paso» (pon los
+    productos, revisa las filas, ponle precio a…, ponlo a la venta,
+    marca «Llegó», marca «Listo para entrega») y ese cuadro brilla.
+    Después de cada acción la pantalla vuelve mirando ese cuadro.
+  · UN ERROR SALE TAMBIÉN EN UNA VENTANA que dice qué pasa y tiene IR
+    AL CAMPO: lleva a la fila y al dato que hay que corregir.
+  · LOS PRECIOS SE GUARDAN SIN RECARGAR: guardar uno no borra lo escrito
+    en los demás. Abajo, GUARDAR TODOS LOS PRECIOS guarda los que
+    cambiaste, uno detrás de otro.
+  · El barco del lote es más grande.
+  6. PEDIDOS EN DOS PESTAÑAS: «Stock» y «Pre venta», cada una con sus
+     filtros. En pre venta: por lote y «¿Ya se puede entregar?» (listas
+     para mandar / todavía en camino). La pre venta dice cuándo llega.
+  7. «ENVIADOS», al final de «Por despachar»: lo que el asesor ya mandó
+     (últimos 30 días por defecto), con filtro de fechas, Lima o
+     provincia y buscador por cliente, DNI o producto. Cada envío con
+     sus fotos: lo alistado, los vouchers, el rótulo y la entrega.
+  8. EL MISMO PRODUCTO EN VARIOS COLORES SUMA PARA EL PRECIO: 5 negras
+     y 5 azules llevan el precio de 10, también en la venta de stock.
+  9. «ESE CLIENTE ES DE OTRO ASESOR»: salía porque el buscador de la
+     venta encontraba clientes que uno puede ver pero no venderles (el
+     líder veía los de su equipo). Ahora solo encuentra a quien le
+     puedes vender. En la ficha de un cliente ajeno dice de quién es y
+     que se pide a Administración pasarlo a tu cartera.
+  10. MÁS RÁPIDO. El HUB preguntaba a la base de datos, en cada página,
+      decenas de veces qué columnas existen (en el hosting compartido es
+      lo más lento que hace). Ahora lo pregunta una vez: la ficha de un
+      pedido pasó de 98 a 60 consultas. Y el .htaccess comprime las
+      páginas y deja el estilo guardado en el celular un año (cambia
+      solo cuando se actualiza).
+
+
+  ── LO QUE TRAJO LA 3i ─────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (tablas nuevas de
+  las garantías y del stock de los repuestos, y columnas nuevas). Después,
+  borrarlo. Si todavía no subiste la 3h.1, esta la incluye.
+
+  REPUESTOS Y GARANTÍA.
+  1. EL REPUESTO CUELGA DE SU MÁQUINA. En la ficha del producto, tarjeta
+     «Repuesto»: se escribe el código de su máquina (vacío = no es
+     repuesto). La máquina enseña «Sus repuestos». En Stock hay un filtro
+     «Repuestos».
+  · Se VENDE como cualquier producto si tiene precio. En el buscador de
+    la venta, buscar la máquina trae también sus repuestos, detrás de
+    ella, con «Repuesto de …».
+  · SIN PRECIO, SOLO SALE POR GARANTÍA (no se ofrece en la venta y no
+    cuenta como «sin precio»).
+  2. SU STOCK. Si el repuesto está en la web, usa el stock de la web,
+     como todo. Si no, lo lleva el HUB («Stock en el almacén» en su
+     ficha): entra solo cuando su lote marca «Llegó», sale con cada venta
+     y cada garantía, y vuelve si se anulan. Almacén pone lo que hay
+     (con su motivo), y se ve cada entrada y salida. Con el «Control de
+     stock» encendido, sin unidades no se vende ni se aprueba; apagado,
+     se apunta y no frena.
+  3. EN EL LOTE, PIEZA POR PIEZA. Los productos del lote tienen la
+     columna «Repuesto de» (el código de la máquina). Un kit en una fila
+     («2 botones, 2 joysticks, 2 cables») se parte en una fila por pieza.
+     Una pieza que ya existe bajo esa máquina («Botones» y «Botón») es la
+     misma. Si la máquina no está en el catálogo, la fila queda «Revisa».
+     Los repuestos no se venden en pre venta ni piden precio de lote.
+  · DEL EXCEL: las filas «Repuesto o accesorio» llegan partidas pieza
+    por pieza, con el código de su máquina en «Repuesto de», y marcadas
+    «Revisa» para que el CEO confirme unidades y máquina.
+  4. LA GARANTÍA CUENTA desde la PRIMERA vez que el pedido salió a
+     despacho, más los meses de su garantía (volver a mandarlo no la
+     reinicia). Una venta de antes de esta versión sin fecha de despacho
+     cuenta desde el día de la venta, y lo dice. La ficha del pedido
+     tiene la tarjeta «Garantía»: hasta cuándo vale y las que ya se
+     pidieron.
+  5. «¿SIGUE EN GARANTÍA?» (sección Garantías): se busca la compra por
+     pedido, DNI, nombre o celular y dice si está vigente, vencida o si
+     todavía no empieza.
+  6. PEDIRLA (el asesor, desde el pedido: PEDIR GARANTÍA). Las piezas de
+     las máquinas de ese pedido (con lo que hay de cada una), o «No sé
+     qué pieza es»; qué falla; y la FOTO DE LA FALLA (obligatoria, y se
+     pueden añadir hasta 5). VENCIDA TAMBIÉN SE PUEDE PEDIR: queda
+     marcada «Fuera de plazo» y decide Administración.
+  7. APROBARLA (Administración: su bandeja y el chip de «Garantías»).
+     Puede añadir otra pieza (de cualquier máquina) o quitar una. Al
+     APROBAR, las piezas salen del stock y la garantía pasa sola a «Por
+     alistar», con envío gratis a la dirección del pedido. NO APROBAR
+     pide el motivo, que el asesor ve en su Inicio. Una aprobada que
+     todavía no salió se puede ANULAR (las piezas vuelven).
+  · NO ES UNA VENTA: no suma a la meta, no da cashback y no se cobra.
+  8. POR ALISTAR: las garantías aprobadas salen arriba («Garantía · sin
+     cobro»), con su RÓTULO (PDF) y ALISTADO con quién y la foto, como un
+     pedido. «Garantías alistadas hoy» deja ver la foto o deshacer.
+  9. Configuración › GARANTÍAS: cada garantía con sus MESES (número).
+     «Que venga marcada» la pone primera. Una que ya se prometió en
+     ventas no cambia: se crea otra y se apaga esta.
+  10. FACTURACIÓN tiene «Más» en el celular (Reportes pasó ahí): ya
+      puede cerrar sesión y cambiar su contraseña desde el celular.
+  · El ZIP vuelve a traer el archivo que cierra la carpeta de vouchers
+    (a la 3h.1 le faltaba; el HUB lo escribe solo con el primer voucher).
+
+
+  ── LO QUE TRAJO LA 3h.1 ───────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (un ajuste nuevo
+  de los descuentos). Después, borrarlo. Si todavía no subiste la 3h,
+  esta la incluye.
+
+  1. BOTÓN PRE VENTA. En Stock, arriba y en amarillo, junto a TRAER DE
+     LA TIENDA. Abre un menú: Lotes en camino, Nuevo lote, Traer lotes
+     del Excel y Disponible para pre venta (cada uno sale a quien le
+     toca). Ya no hay aviso gris.
+  2. LOS PRODUCTOS DEL LOTE.
+  · Empieza con una sola fila. «Añadir fila» añade una; al lado se
+    escribe cuántas y se añaden todas de golpe.
+  · Cada fila tiene QUITAR. Una fila que ya tiene ventas no se quita.
+  · Al añadir o quitar, la pantalla no salta.
+  · Las filas en blanco no se guardan y ya no dan error («Fila 6: falta
+    el producto» salía cuando un guardado rebotaba y volvía a pintar
+    las filas vacías con 0 unidades).
+  · «Nuevo» tiene su explicación: el asesor ve ese producto con la
+    etiqueta «Nuevo» en la pre venta.
+  3. DESCUENTOS SIN PERMISO. El descuento del asesor ya no espera a
+     Administración: la venta sale sola y queda anotado en el pedido
+     (cuánto, el motivo, quién y cuándo). Si algún día se quiere volver
+     a pedir aprobación: Configuración › Descuentos › «Pedir aprobación
+     a Administración si pasa del tope». Lo que ya esperaba se sigue
+     contestando como antes.
+  4. PEDIDOS. «Más filtros» es ahora un botón con borde. Al crear un
+     pedido en la computadora, «Registrar nuevo cliente» ya no va
+     pegado al buscador.
+  5. MANDAR A DESPACHO, DE UN CLIC. El botón manda el pedido a despacho
+     directamente; ya no sale el mensaje para copiar al WhatsApp.
+     Almacén lo ve en «Por alistar». La pantalla de despacho queda para
+     ver si ya salió, cambiar el día de entrega, el rótulo, los textos
+     para el cliente y volver a mandarlo.
+  6. RÓTULO PARA ALMACÉN. Cada pedido de «Por alistar» (y los alistados
+     de hoy) tiene su RÓTULO (PDF) para pegarlo en la caja.
+  7. EL COMPROBANTE, APARTE. En la ficha del pedido ya no es un paso de
+     la línea de tiempo: sale debajo, como indicador (Todavía no · No
+     lleva · Boleta emitida con su número).
+  · Sin cambios: el asesor ve solo sus clientes. El cliente que
+    registra Administración queda a nombre de Administración.
+
+
+  ── LO QUE TRAJO LA 3h ─────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (columnas nuevas
+  de los lotes y de las ventas, y la lista «Agencias de carga»).
+  Después, borrarlo. Si todavía no subiste la 3g, esta la incluye.
+
+  PRE VENTA Y LOTES.
+  1. LOTES DE PRE VENTA (Stock › LOTES). Los ve Dirección,
+     Administración y Almacén; los llenan Dirección y Administración.
+  · NUEVO LOTE es un formulario con campos claros:
+      - El viaje: nombre, agencia de carga, referencia de la agencia,
+        BL, factura, fecha de salida, llegada estimada, puertos, canal
+        de aduana (verde, amarillo, rojo), almacén, responsable y notas.
+      - Los productos: código, producto, modelo o color, unidades y la
+        marca «Nuevo». Si el código ya existe, se enlaza con ese
+        producto. Varios colores en una fila («12 moradas, 15
+        naranjas») se parten solos en una fila por color.
+      - Los precios de pre venta de cada producto, por cantidad (1 a 2,
+        3 a más…). Son aparte de los de la tienda.
+  · PONER A LA VENTA: se puede aunque falte el precio de algún
+    producto; esos quedan ocultos para los asesores y se avisa.
+  · Estado de la carga: Por confirmar · En camino · En aduana · Llegó ·
+    Cancelado. Al marcar «Llegó», sus pedidos pasan solos a «Producto
+    llegó». Un lote con ventas no se cancela.
+  · La barra del barco dice cuánto lleva el viaje (con las fechas).
+  · TRAER DEL EXCEL (un plus, para lo de antes): se sube el Excel de
+    ingresos de carga (descargado como Excel o CSV), el HUB enseña los
+    contenedores que trae y se elige cuál. Nace apagado; lo dudoso sale
+    marcado «Revisa» (repuestos, dos códigos en una celda, colores que
+    no suman). La llegada sin año se completa y se avisa.
+  2. «DISPONIBLE PARA PRE VENTA» (el asesor): la lista ordenada de lo
+     que se puede vender, con sus precios por cantidad y lo que queda de
+     cada color. En el celular va en la barra, en lugar de Bonos (Bonos
+     baja a «Más» hasta que llegue el módulo de bonos).
+  3. LA VENTA DE PRE VENTA: con un lote a la venta, al marcar «Pre
+     venta» el buscador trae los productos de los lotes. El precio y el
+     color salen del lote. NO SE VENDE MÁS DE LO QUE TRAE EL LOTE: si
+     otro asesor se llevó las últimas, se dice y no se guarda. Al anular
+     una venta, sus unidades vuelven solas.
+  4. Configuración › AGENCIAS DE CARGA: las agencias que traen los
+     contenedores (se añaden, se renombran y se apagan).
+
+
+
+  ── LA 3g ─────────────────────────────────────────────────────────
+
+  Pedía actualizar.php (crea los dos
+  roles nuevos, la lista «Equipo de despacho», cuatro columnas del
+  alistado en los pedidos, y reparte el permiso de cambiar la tienda
+  web). Después, borrarlo. Si todavía no subiste la 3f, esta la incluye.
+
+  1. DOS ROLES NUEVOS. Se dan de alta en Usuarios como cualquier cuenta
+     (Administración y Dirección pueden). Ninguno vende, ni toca dinero,
+     ni configura. Los dos ven todo su país: no tienen nada «suyo».
+  · ALMACÉN — alistar y el stock.
+      - POR ALISTAR (pantalla nueva): cuando el asesor manda una venta
+        a despacho, aparece aquí con TODO lo que lleva (cantidad,
+        producto y MODELO resaltado) y las indicaciones del envío (el
+        mismo mensaje del grupo de despacho). Al terminar de prepararla
+        se pulsa ALISTADO: pide QUIÉN LO ALISTÓ (de la lista del equipo
+        de despacho) y la FOTO de lo alistado. Queda quién la marcó y
+        cuándo. «Alistados hoy» deja ver la foto o DESHACER (solo el
+        mismo día); ahí se avisa si una venta se anuló después de
+        alistarla (hay que desarmar la caja) o si el asesor la volvió a
+        mandar. La foto tiene que ser una foto, no un PDF.
+      - Lo que ya había salido a despacho antes de esta versión no
+        entra en la lista.
+      - Stock y pre venta: ve el catálogo, ACTUALIZAR STOCK y pone el
+        STOCK DE LA WEB (la cantidad que hay, con su motivo).
+      - Los lotes de pre venta, cuando lleguen, solo para ver.
+      - No ve Por despachar ni las listas de pedidos o de clientes. En
+        las indicaciones sí ve lo del envío (a quién, dónde y cuánto se
+        cobra al entregar), igual que el grupo de despacho.
+      - No cambia nombre, código ni precio.
+  · CONFIGURACIÓN › EQUIPO DE DESPACHO (pantalla nueva): los nombres de
+    quienes alistan. Se añaden, se renombran y se apagan (no se borran:
+    los pedidos que alistaron siguen diciendo su nombre). Cada país
+    tiene los suyos. Más adelante cada uno tendrá su cuenta.
+  · El asesor ve en la ficha de su venta «Alistado por … » con la foto.
+    Administración también puede alistar, de respaldo.
+  · MARKETING — los datos de la tienda.
+      - Traer de la tienda, crear y editar productos, y PRECIOS POR
+        CANTIDAD. El nombre, el código y el precio de 1 unidad cambian
+        también en la web.
+      - Clientes, SOLO MIRAR: ve la ficha y sus compras, sin editar ni
+        venderle.
+      - No pone el stock de la web.
+  · Su Inicio no enseña dinero: dice lo suyo (pedidos por alistar, o
+    productos sin precio) y sus secciones.
+  · Por seguridad, estas dos cuentas no quedan recordadas 30 días en el
+    celular (cambian lo que ven los clientes de la web): igual que
+    Administración y Facturación.
+  · Administración sigue pudiendo todo, y es la única que revisa
+    «Stock por mover en la web» (lo que las ventas no pudieron mover).
+
+  2. SIN EL CAMPO DE COLOR EN EL PRODUCTO. Los modelos y colores se
+     crean solo en la web y llegan al pulsar «Traer de la tienda»; en el
+     HUB se ven con su stock y se pueden apagar.
+
+  3. EN LA BANDEJA DEL INICIO, lo pendiente de la web sale como
+     «cambios de stock por mover en la web» (antes salía mal, como
+     «lotes sin precios»).
+
+
+  ── LA 3f ─────────────────────────────────────────────────────────
+
+  Pedía actualizar.php (dos columnas
+  nuevas: qué método pide la foto del DNI, y la foto del DNI del
+  pago). Después, borrarlo. Sin pasarlo, el DNI no se pide.
+  Si todavía no subiste la 3e, esta la incluye.
+
+  1. LA FOTO DEL DNI CON EL POS (pedido el 26/09).
+  · Configuración › MÉTODOS DE PAGO (pantalla nueva): cada método dice
+    si pide voucher, si pide la FOTO DEL DNI de quien paga, su recargo
+    (el 4 % del POS) y si está encendido. Se puede cambiar el nombre y
+    añadir métodos nuevos. No se borran: se apagan. Siempre tiene que
+    quedar al menos uno encendido.
+  · El POS nace pidiendo la foto del DNI. Con él, el pago no se
+    registra sin las dos fotos: ni al registrar la venta ni en los
+    pagos que vienen después desde la ficha.
+  · Facturación la ve con «VER DNI», al lado de «VER VOUCHER», en
+    Pagos por validar, en la pantalla de facturar y en la ficha.
+  · Si hay otro país (México), el método que cambia un país pasa a ser
+    solo suyo: el otro se queda con el suyo como estaba.
+
+  2. LA CÁMARA. Cada foto tiene dos botones: TOMAR FOTO (abre la
+     cámara del celular directamente) y ELEGIR ARCHIVO (galería,
+     archivos o un PDF). La foto de la cámara se achica sola en el
+     celular antes de enviarse, y llega derecha aunque el celular la
+     haya tomado de lado.
+
+  3. CATEGORÍAS Y COLORES.
+  · La categoría de un producto ya no se escribe: se elige de la lista
+    de categorías de la WEB (se llena sola cada vez que se lee la
+    tienda). En un producto que viene de la web la categoría se ve pero
+    se cambia allá.
+  · En un producto de la web no se añaden modelos ni colores desde el
+    HUB: se crean en la web y se trae la tienda. Así todo color
+    descuenta su stock.
+
+  4. PAGOS POR VALIDAR.
+  · Cada pago dice qué se está vendiendo (el producto, el color y si
+    lleva más cosas). Igual en «Validados».
+  · VER VENTA abre el resumen encima de la bandeja: lo que lleva, total,
+    cobrado, por cobrar, sus pagos y el stock de la web. CERRAR vuelve
+    al mismo sitio, con los filtros como estaban.
+  · Los filtros (fechas, asesor, comprobante) se ven como el resto del
+    HUB: redondeados y con el foco en amarillo. También en Pedidos y
+    en Reportes › Pagos.
+
+  SI ALGO SE SUBE MUY PESADO: si dos fotos juntas pasan de lo que
+  acepta el servidor, sale «Las fotos pesan demasiado» (antes decía «la
+  página caducó», que no era verdad).
+
+
+  ── LA 3e ─────────────────────────────────────────────────────────
+
+  Pedía actualizar.php (una tabla nueva: lo que las ventas mueven en
+  el stock de la web).
+
+  LA VENTA DESCUENTA EL STOCK DE LA WEB (decidido el 25/09).
+  Se enciende en Configuración › Tienda › «Control de stock». Para
+  encenderlo, el conector tiene que estar puesto y funcionando (el
+  botón lo prueba al encender). Nace APAGADO: con él apagado, todo
+  sigue como hasta hoy.
+
+  Con el control encendido:
+  · Una venta de ENTREGA INMEDIATA descuenta de compraenwaka en el
+    momento de registrarla. La pre venta y la liquidación no tocan la
+    web (tienen su propio stock).
+  · SIN STOCK EN LA WEB NO SE VENDE. El asesor lo ve así:
+    «No hay stock suficiente. «Silla X»: quedan 3 y pides 4.»
+    En el buscador de «Nuevo pedido» lo agotado sale en gris y no se
+    puede elegir (ni el color agotado).
+  · Si la venta se ANULA, las unidades vuelven a la web solas.
+  · Un producto que solo está en el HUB, o fuera de catálogo, se vende
+    sin tocar la web. Un producto que la web no lleva por unidades,
+    tampoco frena.
+  · En la venta, debajo de los productos, se lee cómo quedó:
+    «Descontado del stock de la web», «Stock devuelto a la web»…
+
+  SI LA TIENDA NO RESPONDE (caída, lenta):
+  · Se mira el último stock leído, restando lo vendido que todavía
+    espera. Si dice que hay, la venta se registra y el asesor lee:
+    «La tienda no respondió. El stock de la web se descontará solo en
+    unos minutos.» Si dice que no hay, no se vende.
+  · Lo que espera se reintenta solo: al rato, cada vez más espaciado
+    (1, 2, 5, 10… hasta 60 minutos). Nunca se descuenta dos veces,
+    aunque la tienda sí lo hiciera y no llegara la respuesta.
+  · Si cuando la tienda vuelve ya no hay stock (se vendió en la web
+    mientras tanto), SE DESCUENTA IGUAL: la web queda en negativo y
+    sale agotada, y Administración recibe el aviso para reponer o
+    corregir.
+
+  PARA ADMINISTRACIÓN: Stock › «Stock por mover en la web»
+  (/stock/pendientes). El menú Stock lleva la cuenta y el catálogo
+  avisa cuando hay algo que mirar.
+  · «Esperando a la tienda»: lo que no se pudo mover, con lo que dijo
+    la tienda. REINTENTAR (uno) o REINTENTAR TODO. Si ya lo arreglaste
+    a mano, «YA LO ARREGLÉ», con dos opciones distintas:
+      - «Lo desconté a mano en la web»: queda como hecho; si después
+        se anula la venta, se devuelve sola.
+      - «No hace falta descontarlo»: no se mueve nada, y tampoco se
+        devuelve si se anula.
+    Lo que sale como «No se arregla solo» (la tienda no deja entrar al
+    conector, o un producto ya no está en la web) necesita que lo
+    revises tú.
+  · «Para revisar»: lo que dejó la web en negativo. «YA LO VI» lo quita.
+  · En la ficha de un producto, si hay unidades vendidas esperando, se
+    avisa antes de poner el stock a mano: se descontarán de lo que
+    pongas (si ya salieron del almacén, súmalas).
+
+  CRON (recomendado): en cPanel › Trabajos cron, cada 5 minutos:
+        php /home/USUARIO/public_html/tareas.php cola
+  Sin él también se mueve, pero solo cuando alguien abre la lista de
+  pedidos (como mucho cada 2 minutos) y con la lectura de cada hora.
+
+  CUÁNDO APAGARLO: mientras cargas o corriges el inventario de la web,
+  o si la tienda va a estar caída mucho rato. Apagado, las ventas no
+  tocan la web; lo que ya esperaba se sigue moviendo.
+
+  SI CAMBIAS LA DIRECCIÓN DE LA TIENDA: el control se apaga solo y lo
+  que esperaba en la cola no se manda a la nueva; queda en «Para
+  revisar».
+
+  LO QUE NO HACE (a propósito):
+  · Un producto ESCRITO A MANO (que no está en el catálogo) no
+    descuenta de la web. Mientras el catálogo se llena se deja; cuando
+    esté completo, en la misma tarjeta pulsa «SOLO DEL CATÁLOGO».
+  · Una compra en la web justo en el mismo segundo puede ganarle la
+    última unidad a una venta del HUB: la web quedaría en -1 y se ve.
+  · «Borrón y cuenta nueva» (limpiar.php) avisa si las ventas de prueba
+    descontaron stock de la web: ese stock no vuelve solo.
+
+
+  ── LA 3d ─────────────────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (columnas nuevas
+  en los pedidos y un permiso nuevo: «Aprobar descuentos que pasan del
+  tope», solo Administración). Después, borrarlo.
+
+  EL DESCUENTO DEL ASESOR (pedido el 25/09).
+  · En «Nuevo pedido», en el resumen, sale «Descuento (S/)». El asesor
+    escribe cuánto rebaja en soles y el MOTIVO (obligatorio). Al lado
+    ve qué porcentaje es.
+  · Hasta el TOPE (5 % al empezar) la venta sale sola. Si pasa, la
+    venta se registra igual, con el precio que se le dijo al cliente,
+    pero ESPERA que Administración apruebe el descuento:
+      - a Administración le suena un aviso y lo ve en Pedidos ›
+        «Descuentos por aprobar» (o dentro de la venta) con dos
+        botones: APROBAR o RECHAZAR (con una nota para el asesor);
+      - mientras espera, la venta NO sale a despacho ni se le emite
+        comprobante: lo que se cobra depende de la respuesta;
+      - si se RECHAZA, el total vuelve a subir y queda saldo por cobrar;
+      - al asesor le avisa cuando le contestan.
+  · El tope se cambia en Configuración › Descuentos. Ahí también se
+    decide si se puede usar cashback y descuento en la misma venta
+    (al empezar: no).
+  · En liquidación no hay descuento: el precio ya es el descuento.
+  · Quién hizo el descuento, por qué y quién lo aprobó queda en la venta.
+
+  ARREGLADO DE PASO: el aviso al asesor de «ya puedes mandarla a
+  despacho» y el de «facturación paró tu pago» no llegaban a salir
+  nunca en la pantalla. Ahora salen.
+
+
+  ── LA 3c ─────────────────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (un permiso nuevo:
+  «Cambiar productos de la tienda web desde aquí», solo Administración).
+  Después, borrarlo.
+
+  CAMBIAR LA WEB DESDE AQUÍ (pedido el 25/09).
+  Para que funcione hay que instalar el conector en WordPress, una vez:
+    1. Configuración › Tienda › Conector › «Descarga el conector».
+    2. En WordPress: «Plugins» › «Añadir nuevo» › «Subir plugin», elige
+       el archivo waka-hub-conector.zip y actívalo.
+    3. En WordPress: WooCommerce › HUB Waka › GENERAR CLAVE. Copia la
+       clave y pégala en Configuración › Tienda › Conector › GUARDAR.
+       Debe salir «Funciona».
+  El conector solo sabe cambiar stock, precio, nombre y código: no
+  puede borrar productos, ni ver pedidos, ni tocar clientes.
+
+  Con el conector puesto (solo Administración):
+  · En la ficha de un producto de la tienda, cambiar el NOMBRE o el
+    CÓDIGO lo cambia también en la web. Si la web no lo acepta (por
+    ejemplo, ese código ya lo tiene otro producto), aquí tampoco.
+  · Al guardar los precios por cantidad, el PRECIO DE 1 UNIDAD va a la
+    web (en cada color). Los tramos por cantidad se quedan aquí.
+  · «Stock en la web»: pones cuántas hay de verdad y un motivo (conteo,
+    llegó mercadería, dañados…). Queda quién y cuándo.
+  · Al leer la tienda MANDA LO DE AQUÍ: si en la web cambiaron el
+    nombre, el código o el precio, sale en «En la web dice otra cosa»
+    con dos botones: «Corregir la web» (manda lo de aquí) o «Usar el
+    de la web» (lo trae aquí). Guardar no lo cambia solo.
+  · Sin el conector, todo sigue como antes (manda la tienda).
+
+  Todavía NO descuenta stock al vender: eso llega en la próxima, con el
+  interruptor «Control de stock» (lo decidido: se descuenta al registrar
+  la venta, se devuelve al anularla, y no deja vender sin stock).
+
+
+  ── LA 3b.6 ───────────────────────────────────────────────────────
+
+  AL SUBIRLO: si ya pasaste actualizar.php con la 3b.5, no hace falta
+  pasarlo otra vez.
+
+  LO QUE ENCONTRASTE CON «SALDO SIN REGISTRAR» (25/09).
+  · El menú «···» de cada pedido no se veía cuando la lista tenía pocas
+    filas: quedaba recortado dentro de la tabla. Ahora se abre siempre
+    a la vista, y hacia arriba si abajo no cabe (también en el celular).
+  · En ese menú sale «Escribir a Fulano por WhatsApp», con el mensaje
+    ya escrito: si la venta tiene saldo sin registrar, el mensaje dice
+    el pedido y cuánto falta.
+  · En el pedido, arriba: «Ya se entregó y falta registrar S/ X.
+    Pregúntale a Fulano» con el botón ESCRIBIR POR WHATSAPP. En los
+    demás pedidos de otro asesor, un botón «Escribir a Fulano».
+  · Si el asesor no tiene celular en su ficha, lo dice y ofrece
+    ponerlo (Usuarios › editar).
+
+
+  ── LA 3b.5 ───────────────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (una tabla nueva
+  para el stock de la web). Después, borrarlo.
+
+  1. EL STOCK DE LA WEB (pedido el 25/09).
+  · Se trae la cantidad de cada producto y de cada color de
+    compraenwaka. Sale en la lista del catálogo, en la ficha del
+    producto y al elegir el producto en «Nuevo pedido».
+  · «12 en stock» en verde; «3 en stock» en ámbar (quedan pocas);
+    «Agotado» en rojo; «Hay stock» si en la web ese producto no cuenta
+    unidades. Desde cuántas unidades es «quedan pocas» se cambia en
+    Configuración › Tienda.
+  · Siempre con su hora: «Stock de la web leído hace 20 min». Si pasan
+    más de 6 horas sin leerlo, sale en gris con su antigüedad.
+  · Se lee al guardar la tienda y con el botón ACTUALIZAR STOCK del
+    catálogo (solo Administración). Para que se lea solo cada hora,
+    añade en cPanel › Trabajos cron, una vez por hora:
+        php /home/USUARIO/public_html/tareas.php stock
+  · Por ahora el stock solo se VE: vender no lo descuenta de la web.
+    Eso llega con la 3c, junto con cambiar stock, precio, nombre y
+    código desde aquí.
+
+  2. EL RECLAMO SUENA. Cuando un asesor reclama que le confirmen un
+     pago, a Facturación y Administración les salta un aviso rojo con
+     sonido propio (tres toques iguales), en cualquier pantalla del HUB
+     que tengan abierta. A Dirección no.
+
+  3. EL WHATSAPP DEL RECLAMO, ARRIBA. Después de reclamar, el botón
+     AVISAR POR WHATSAPP sale arriba del todo en «Por despachar».
+
+  4. TRAER LAS FOTOS QUE FALTAN. En «Traer de la tienda», si faltan
+     fotos sale cuántas y el botón TRAER LAS FOTOS QUE FALTAN: las trae
+     de 40 en 40 él solo, sin volver a leer la tienda, diciendo cuántas
+     van. Si alguna no se puede traer ahora, lo dice y se para.
+
+
+  ── LA 3b.4 ───────────────────────────────────────────────────────
+
+  ARREGLO: GUARDAR CON FOTOS DABA «ALGO SE ROMPIÓ» (24/09).
+  · La causa: al bajar las fotos se usaba algo que el PHP del hosting
+    (8.1) todavía no tiene. Ya no se usa, y una revisión automática
+    avisa si vuelve a colarse algo así.
+  · Las fotos ya nunca impiden guardar: si alguna falla, el catálogo
+    se guarda igual y esa foto se pide otra vez la próxima vez que
+    leas la tienda y guardes.
+  · Si falla a mitad, se quedan las fotos que ya llegaron.
+  · Una foto que se corta a medias no se guarda rota: se pide otra vez.
+  · Solo se da por perdida (y no se vuelve a pedir hasta que la tienda
+    ponga otra) la foto que no existe, redirige, no es una imagen o
+    pesa más de 8 MB. Si la tienda dice «ahora no» (ocupada, bloqueo
+    del cortafuegos), se vuelve a intentar.
+  · Las fotos se piden en desorden: si unas cuantas nunca bajan, no
+    tapan a las demás.
+  · Una foto demasiado grande para la memoria del servidor no se abre
+    (antes podía tumbar la página).
+  · Leer la tienda y bajar fotos lleva su rato: si en ese rato se
+    corta la conexión con la base de datos, se abre otra y se sigue.
+  · Si algo falla al leer o al guardar, sale un aviso en la misma
+    pantalla en vez de la página de error.
+
+  AL SUBIRLO: si ya pasaste actualizar.php con la 3b.3, no hace falta
+  pasarlo otra vez. Si no, pásalo una vez y bórralo. Después: LEER
+  OTRA VEZ y GUARDAR EN EL CATÁLOGO.
+
+
+  ── LA 3b.3 ───────────────────────────────────────────────────────
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (dos columnas
+  nuevas en los productos, para la foto). Después, borrarlo.
+
+  LA FOTO PRINCIPAL DE CADA PRODUCTO (pedido el 24/09).
+  · Al guardar lo leído de la tienda, la foto principal de cada
+    producto se baja UNA vez, se achica (unos 10 KB) y queda en el
+    hosting. No se vuelve a bajar si en la tienda no cambia.
+  · Se ve en: el buscador de «Nuevo pedido», la lista del catálogo, la
+    ficha del producto y las líneas de cada venta.
+  · Como mucho 40 fotos por guardado: con un catálogo grande, lee otra
+    vez la tienda y guarda hasta que no falte ninguna. La vista previa
+    dice cuántas faltan.
+  · Una foto que no sirve (no es una imagen, es enorme) se apunta y no
+    se vuelve a pedir hasta que marketing ponga otra.
+  · Si compraenwaka se cae, las fotos se siguen viendo.
+
+
+  ── LA 3b.2 ───────────────────────────────────────────────────────
+
+  EL PRECIO DE LA WEB PARA TODO PRODUCTO SIN PRECIO (24/09). La 3b.1
+  solo lo ponía al crear, así que los productos que ya había traído la
+  3b se quedaban sin precio. Ahora:
+  · Un producto SIN NINGÚN PRECIO —nuevo o de antes— toma el precio
+    normal de la web como único tramo, «1 a más», y ya se puede vender.
+  · Un producto con algún precio puesto por ti no se toca NUNCA.
+  · En la vista previa salen en «Se actualizan» (o en «Se unen…») con
+    el precio que van a tomar.
+
+  PARA VER LOS PRECIOS: sube el ZIP, entra en Stock y pre venta › Traer
+  de la tienda, pulsa LEER OTRA VEZ y GUARDAR EN EL CATÁLOGO.
+
+  AL SUBIRLO: si ya pasaste actualizar.php con la 3b, no hace falta
+  pasarlo otra vez. Si no, pásalo una vez y bórralo.
+
+
+  ── LA 3b.1 ───────────────────────────────────────────────────────
+
+  El precio normal de la web al crear un producto.
+
+
+  ── LA 3b ─────────────────────────────────────────────────────────
+
+  1. CONFIGURACIÓN › TIENDA. Pegas la dirección de compraenwaka y las
+     dos claves de WooCommerce (las de solo lectura). La secreta se
+     guarda y no se vuelve a enseñar: solo sus cuatro últimas letras.
+     Botón PROBAR LA CONEXIÓN: dice si la tienda contesta y cuántos
+     productos publicados tiene.
+     · Si cambias la dirección, te pide otra vez las dos claves.
+     · La tienda queda como de TU país: desde otro país no se trae.
+
+  2. STOCK Y PRE VENTA › TRAER DE LA TIENDA. Dos pasos:
+     · LEER LA TIENDA: trae los productos publicados y sus colores o
+       modelos, y te enseña ANTES de guardar cuántos se crean, cuántos
+       se actualizan, cuántos siguen igual y cuáles no entran y por qué.
+     · GUARDAR EN EL CATÁLOGO: guarda exactamente eso. Si el catálogo
+       cambió mientras mirabas, no guarda y pide leer otra vez. Es
+       todo o nada: nunca queda medio catálogo.
+
+  CÓMO SE EMPAREJA
+  · Por el código (SKU). «COD: PRD-016782» se lee como PRD-016782.
+  · Un código que no es PRD (NEL-603) entra con el suyo.
+  · Cada color o modelo con su código; si en la tienda no tiene, se le
+    pone uno colgado del producto (PRD-016782-ROJO).
+  · «Marrón» y «marron» son el mismo color.
+  · Manda la tienda en el NOMBRE y la CATEGORÍA.
+  · EL PRECIO DE LA WEB (desde la 3b.2, para todo producto sin precio):
+    entra con el precio NORMAL de la web (no el de oferta) como único
+    tramo, «1 a más», y ya se puede vender. Si tiene colores con precios distintos,
+    el que más se repite va al producto y los demás colores llevan el
+    suyo. Después afinas los tramos aquí.
+  · Un producto que YA existe nunca recibe precio de la web, y su
+    garantía tampoco se toca.
+  · Los nuevos que no tienen precio en la web entran SIN PRECIO: el
+    asesor no los ve hasta que les pongas uno. Si queda alguno así, al
+    guardar te lleva a esa lista.
+  · Un producto que ya tenías aquí con el mismo código y se une a la
+    tienda por primera vez sale aparte en la vista previa, para que
+    compruebes que es el mismo.
+
+  LOS CÓDIGOS AUTOMÁTICOS PASAN A WK-. Un producto que das de alta a
+  mano sin pegar código recibe WK-000001, no PRD-000001: así nunca se
+  confunde con un PRD de marketing. Los que ya existen no cambian.
+
+  LO QUE NO ENTRA (se corrige en la tienda y entra la próxima vez):
+  sin código, código repetido, código con signos raros, paquetes o
+  enlaces a otra web, un producto con colores del que no entra ninguno,
+  y los casos dudosos (el código cambió en la tienda, ya enlazado con
+  otro). Cada uno dice su motivo.
+
+  Todo revisado también en el celular.
+
+  LO QUE SIGUE: el stock de la tienda (el interruptor de control de
+  stock) y el resto de la 3b.
+
+
+  ── QUÉ TRAJO LA VERSIÓN ANTERIOR (3a.1) ───────────────────────────────────
+
+  Lo que pediste el 23/09 probando el HUB. Si ya pasaste actualizar.php
+  con la 3a, hay que pasarlo otra vez: trae una columna nueva (la fecha
+  de nacimiento).
+
+  1. EN PEDIDOS SE VE QUÉ LLEVA CADA VENTA. Una columna nueva con el
+     producto y la cantidad; si lleva más de uno, dice cuántos más.
+
+  2. FILTROS POR ASESOR Y POR ESTADO, y los demás recogidos. Arriba
+     quedan los cuatro de siempre; zona, tipo, estado y asesor van
+     detrás de «Más filtros», que dice cuántos tienes puestos.
+
+  3. PAGOS POR VALIDAR: ABAJO, LO QUE YA VALIDASTE. Con filtro de
+     fechas (empieza en hoy), asesor y comprobante —incluido «todavía
+     sin emitir»—. El pago que acabas de validar sale un momento en
+     verde, sin ninguna palabra.
+
+  4. DENTRO DE UN PEDIDO, LO QUE TOCA HACER, ARRIBA Y EN GRANDE.
+     «Manda este pedido a despacho ahora», «Falta S/ X por registrar»,
+     «Confirma el pago de esta venta», «Esta venta todavía no tiene su
+     comprobante». Cada uno ve lo que él puede hacer, y si no hay nada
+     pendiente no sale nada.
+
+  5. FECHA DE NACIMIENTO AL DAR DE ALTA UNA CUENTA. El día que toca,
+     el Inicio de quien lleva al equipo dice «Hoy cumple años Fulano».
+
+  6. EL LOGO LLEVA AL INICIO.
+
+  Todo revisado también en el celular.
+
+
+  ── QUÉ TRAJO LA 3a ─────────────────────────────
+
+  EL CATÁLOGO DE PRODUCTOS. Primera entrega del módulo 3.
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (columnas nuevas
+  del catálogo y un permiso nuevo).
+
+  QUÉ CAMBIA PARA EL ASESOR:
+  · Al registrar la venta, escribe el nombre y ELIGE el producto de una
+    lista. El precio sale solo, según la cantidad, y no se puede tocar.
+  · Si el producto tiene colores o modelos, elige uno. Sin eso no se
+    registra: despacho no puede adivinar qué color mandar.
+  · La garantía la trae el producto (los carritos, 6 meses). Sigue
+    pudiendo cambiarla si el caso lo pide.
+  · Mientras el catálogo se llena, puede escribir un producto que no
+    está cargado, como hasta ahora. Esa línea queda marcada «fuera de
+    catálogo» para que Administración vea qué falta. Se cierra desde
+    Configuración › Ajustes (catalogo_libre) cuando ya no haga falta.
+
+  QUÉ CAMBIA PARA ADMINISTRACIÓN Y DIRECCIÓN:
+  · La sección «Stock y pre venta» ya abre, y es el catálogo.
+  · NUEVO PRODUCTO: nombre, categoría, garantía y código. El código se
+    genera solo (WK-000001 desde la 3b) o se pega el del Excel de cargas.
+  · PRECIO POR CANTIDAD: 1 a 2 → S/699 · 3 a 9 → S/649 · 10 a más →
+    S/589. Los tramos van seguidos y el último se queda sin «hasta».
+    Sin precio, el producto no se puede vender y no le sale al asesor.
+  · MODELOS Y COLORES: se añaden uno a uno y se apagan, no se borran.
+    Un color puede tener su propio precio.
+  · Los precios se congelan en la venta: cambiarlos no cambia lo ya
+    vendido.
+
+  LO QUE LLEGA EN LA SIGUIENTE ENTREGA (3a-2): cargar el Excel de
+  contenedores, las variantes de cada fila, el stock de pre venta y el
+  interruptor de disponibilidad del lote.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2x) ──────────────────────────────
+
+  REPASO VISUAL DE TODAS LAS PANTALLAS, en computadora y en celular.
+  No cambia ninguna regla ni ningún número: solo cómo se ve. No hace
+  falta pasar actualizar.php si ya pasaste el de la 2u.
+
+  1. CADA BLOQUE SE VE COMO UN BLOQUE.
+     El título de cada tarjeta lleva su filete amarillo y su línea
+     debajo, y entre tarjetas hay más aire. De un vistazo se sabe
+     dónde acaba una acción y empieza otra, sin leerlo todo.
+
+  2. LAS FLECHAS, DENTRO DE SU CAJA.
+     · El triángulo de los pasos del pedido caía solo, en su propia
+       línea; ahora va a la derecha del título.
+     · El «+» de los desplegables ya no queda contra el borde.
+     · Los desplegables de elegir (banco, estado, asesor…) llevan su
+       propia flecha, separada del borde.
+
+  3. EN EL CELULAR, CADA VENTA ES UNA TARJETA.
+     Las listas eran cincuenta filas separadas por una raya de 1 px.
+     Y el código ya no sale pegado a la fecha («P-0005922/09/2026»).
+
+  4. EL DINERO NO SE PARTE EN DOS LÍNEAS. En la lista de pedidos, las
+     columnas de total, cobrado y saldo salían con «S/» arriba y la
+     cifra abajo.
+
+  5. FILTROS POR GRUPOS. Once píldoras seguidas: ahora van separadas
+     por una raya (y en el celular, cada grupo en su renglón).
+
+  6. DETALLES: los campos de archivo y de dirección web ya no salen
+     con el estilo crudo del navegador; los botones «Copiar» de la
+     pantalla de facturar dejan de tapar las cifras; en Usuarios,
+     «Apagar» y «Nueva contraseña» dejan de competir con «Editar»;
+     las secciones «Pronto» de Configuración ya no llevan flecha; las
+     tres cifras de los reportes quedan a la misma altura; y en la
+     ficha solo el siguiente paso sale en amarillo.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2w) ──────────────────────────────
+
+  Lo que pediste el 22/09 probando el HUB. No hace falta pasar
+  actualizar.php si ya pasaste el de la 2u.
+
+  1. EL COMPROBANTE SE EMITE CON EL TOTAL COBRADO.
+     Antes se podía emitir con cualquier adelanto confirmado —una
+     boleta de S/2,000 con S/10 dentro—. Ahora hace falta el 100%.
+     La excepción es el envío a Lima con contraentrega: como el
+     cliente recibe la caja y paga el resto al entregar, ahí se puede
+     emitir en cuanto la venta se manda a despacho. A provincia no
+     hay excepción: allí se cobra todo antes de despachar.
+     Donde no se puede todavía, la pantalla dice cuánto falta cobrar.
+
+  2. NUEVO PEDIDO: el botón del cliente nuevo sale en amarillo y dice
+     «Registrar nuevo cliente».
+
+  3. LA FICHA DEL PEDIDO, MÁS LIMPIA.
+     · Fuera de la cabecera «Datos para facturar» y «Textos rápidos».
+     · Los textos para el cliente están ahora junto a los pagos, que
+       es donde se usan, y también en «Mandar a despacho».
+     · El SALDO POR COBRAR sale resaltado mientras quede saldo.
+     · El formulario de abajo dice «Añadir otro pago» (o «Registrar
+       el primer pago» si todavía no hay ninguno).
+     · Facturación tiene su enlace «Emitir comprobante» en la tarjeta
+       del comprobante.
+
+  4. «DATOS PARA FACTURAR» AHORA SE LLAMA «EMITIR COMPROBANTE», en la
+     lista de pedidos y en la bandeja. Dentro, los datos para copiar
+     quedan plegados: con NUBEFACT ya no hay que tipearlos.
+
+  5. REPORTES › PAGOS INGRESADOS, MÁS CORTO.
+     Los filtros son una tira en vez de un formulario grande, las tres
+     cifras van compactas, «Por día» enseña diez y pliega el resto, y
+     «Ventas sin comprobante» enseña cinco.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2v) ──────────────────────────────
+
+  Solo pantalla: en Configuración › Facturación electrónica y en
+  Configuración › Contactos el título salía dos veces. Ahora sale una.
+  No hace falta pasar actualizar.php si ya pasaste el de la 2u; si no
+  subiste la 2u, esta la incluye y entonces sí hay que pasarlo.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2u) ──────────────────────────────
+
+  BOLETAS, FACTURAS Y NOTAS DE CRÉDITO CON NUBEFACT.
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (dos tablas
+  nuevas, la dirección fiscal del cliente y los ajustes de NUBEFACT).
+  Si no subiste la 2r, la 2s o la 2t, esta las incluye.
+  Mientras NUBEFACT no esté configurado, todo sigue como hoy: se
+  emite fuera y se anota la serie y el número a mano.
+
+  CÓMO SE CONFIGURA (Administración, una sola vez):
+  1. Configuración › Facturación electrónica. Arriba dice en qué se
+     emite: empieza en PRUEBA (no va a SUNAT).
+  2. En la pestaña «Prueba», pega la RUTA y el TOKEN que te da
+     NUBEFACT (en tu cuenta: API · Integración). El token no se vuelve
+     a mostrar; solo sus cuatro últimos caracteres.
+  3. Revisa las series (boletas, facturas y sus notas de crédito) y
+     GUARDAR. Si ya emitiste con una serie en NUBEFACT, pon como
+     «próximo número» el que sigue al último que emitiste allá.
+  4. PROBAR LA CONEXIÓN. Tiene que decir «Conexión correcta».
+  5. Emite dos o tres boletas de prueba y anula una venta, para ver
+     la nota de crédito.
+  6. Cuando estés conforme, lo mismo en la pestaña «Producción»
+     (ruta, token y series reales) y «Pasar a producción». Las
+     boletas de prueba dejan de contar: esas ventas vuelven a quedar
+     sin comprobante, para emitirles el de verdad.
+  El token nunca se manda por chat ni por correo: se pega solo ahí.
+
+  CÓMO SE USA:
+  · Facturación pulsa EMITIR BOLETA o EMITIR FACTURA en la venta (o
+    en la ventana que sale al confirmar un pago). Se puede en cuanto
+    hay un pago confirmado. El PDF, en A4, le llega al cliente a su
+    correo, y queda en el pedido.
+  · El cashback usado sale como descuento: el comprobante dice lo que
+    el cliente pagó.
+  · La factura pide RUC, razón social y DIRECCIÓN FISCAL en la ficha
+    del cliente (campo nuevo; sale al elegir factura).
+  · Si NUBEFACT no contesta, se dice. Se vuelve a pulsar EMITIR y se
+    comprueba si salió, sin duplicarla. Mientras tanto la venta no se
+    puede anular.
+  · Anular una venta con boleta o factura emite su nota de crédito
+    primero. Si la nota no sale, la venta no se anula. Lo hace
+    Administración: el asesor ve el aviso de pedírselo.
+  · Si una venta no lleva comprobante, o se emitió fuera, sigue el
+    desplegable «No lleva comprobante, o se emitió fuera».
+
+  PENDIENTE PARA DESPUÉS: revisar solas las boletas que SUNAT
+  rechace días después (hoy se ve en tu cuenta de NUBEFACT), y la
+  guía de remisión.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2t) ──────────────────────────────
+
+  Solo pantalla, en la ficha del pedido:
+  · «MANDAR A DESPACHO», «Solicitar boleta / factura» y «Pasar a
+    Entregado» salen resaltados en amarillo.
+  · El cashback del cliente sale en grande, en verde.
+  No cambia nada de cómo funciona. No hace falta pasar actualizar.php
+  si ya pasaste el de la 2s; si no subiste la 2s, esta la incluye y
+  entonces sí hay que pasarlo una vez.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2s) ──────────────────────────────────────
+
+  Lo que pediste el 21/09 sobre despacho y cobros.
+
+  1. NADA SALE A DESPACHO SIN PAGO CONFIRMADO.
+     Se quitó la única excepción que quedaba (una venta sin ningún
+     pago). Ahora, sin dinero confirmado por facturación, no sale.
+
+  2. A PROVINCIA SOLO SALE CON TODO COBRADO.
+     También la PRE VENTA: se separa con el adelanto y, cuando el
+     contenedor llega, completa el 100% y recién ahí sale por agencia.
+     En «Por despachar» esas ventas dicen «Falta cobrar el total».
+     En Lima sigue existiendo la contraentrega: sale con el adelanto
+     confirmado y el mensaje dice cuánto cobrar al entregar.
+
+  3. CADA PAGO CON SU NÚMERO Y SU CONCEPTO.
+     El HUB numera solo: 1.er pago, 2.º pago… Desde el segundo, el
+     asesor escribe el concepto («saldo contraentrega»…) y sin él no
+     se registra. Se ve en la ficha y en la bandeja de facturación.
+
+  4. AVISO DEL SALDO POR REGISTRAR.
+     Una venta ya enviada a la que le falta dinero por registrar:
+     · el asesor la ve en su Inicio desde el día siguiente del
+       despacho (o del día de entrega, si es después);
+     · a los 3 días aparece también en la bandeja de Administración,
+       que lleva a la lista de esas ventas.
+     Los dos plazos se cambian en Configuración › Ajustes
+     (saldo_aviso_dias y saldo_admin_dias).
+     Si una venta tiene una devolución, no entra en el aviso.
+
+  IMPORTANTE AL SUBIRLO: pasar actualizar.php una vez (columna nueva
+  para el concepto de los pagos y los dos ajustes). Si no subiste la
+  2r, esta la incluye: con subir la 2s basta.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2r) ──────────────────────────────────────
+
+  Lo que pediste el 20/09, sobre registrar la venta y mandarla a
+  despacho. Nada de esto cambia el dinero ni las metas.
+
+  1. LA COMISIÓN DE PASARELA SOLO SALE CON POS.
+     Con efectivo, Yape o transferencia el campo ya no aparece, y si
+     llega igual no se guarda. «POS» aquí quiere decir «método con
+     recargo configurado», así que se cambia desde Configuración.
+
+  2. EL DÍA DE ENTREGA, A PARTIR DE MAÑANA.
+     Al registrar la venta no se puede prometer el mismo día: la ruta
+     de hoy ya está armada. El texto dice que es una sugerencia y que
+     la hora la termina de poner despacho.
+     · Tope: un año. Un día ya acordado se puede seguir corrigiendo
+       desde «Mandar a despacho» aunque sea el de hoy.
+     · Las fechas de pedido y de pago no dejan cambiar el año a mano
+       más allá de lo que el HUB ya admitía (un año atrás el pedido,
+       treinta días el pago; facturación sin tope).
+
+  3. EL MENSAJE A DESPACHO, PARTIDO EN DOS.
+     · PROVINCIA: destino en una sola línea («Puno - Puno - Puno»),
+       sin mapa, SIN PRECIOS y sin cobro. Queda así:
+         Nombre · Número de contacto · DNI · Destino · Producto ·
+         Modelo/color · Agencia - Sucursal · Cómo lo recibe · Nota
+     · LIMA: lo mismo más dirección, referencia, mapa y el día
+       acordado. Los productos también van sin precio.
+     · Los dos mensajes se pueden editar cuando llegue Configuración
+       › Plantillas de WhatsApp.
+
+  4. MODELO / COLOR POR PRODUCTO.
+     Campo nuevo al lado de cada producto: «1 negro - 1 blanco». Sale
+     en el mensaje de despacho, en el rótulo y en la ficha.
+
+  5. RÓTULO DE ENVÍO EN PDF.
+     Botón «DESCARGAR EL RÓTULO (PDF)» en Mandar a despacho. Media
+     hoja A5 con el logo: destinatario, destino, agencia, contenido y
+     nota. Sin precios. Solo sale de una venta que ya puede salir.
+
+  6. A PROVINCIA SE COBRA TODO ANTES DE DESPACHAR.
+     No hay contraentrega: en provincia desaparece «pagó una parte» y
+     el servidor rechaza una venta a medias. La PRE VENTA queda fuera:
+     ahí el adelanto es el trato.
+
+  7. «ENVIAR ARMADO» SOLO EN LIMA Y NUNCA EN LIQUIDACIÓN.
+
+  8. RESUMEN ANTES DE CONFIRMAR.
+     Al pulsar REGISTRAR sale una ventana con todo resumido: venta,
+     cliente, entrega, productos, total, lo que paga y lo que queda.
+     De ahí se confirma o se vuelve a revisar.
+
+  9. BUSCAR DISTRITOS COMO SE HABLA.
+     «SJL», «S.J.L.», «SMP», «VMT», «VES» y «cercado de lima»
+     encuentran lo que tienen que encontrar. Y si escribes mal
+     —«lurigacho»— salen los parecidos con un «¿Quisiste decir…?».
+
+  10. SUCURSALES QUE SE APRENDEN SOLAS.
+      Al elegir agencia y distrito, el campo Sucursal sugiere las que
+      ya se han usado ahí. La lista se llena con lo que escriben los
+      asesores: no hay nada que cargar. Si la sucursal es nueva, se
+      escribe y desde la siguiente venta se ofrece.
+      Al limpiar los datos de prueba, esta lista también se vacía.
+
+  11. FILTRO LIMA / PROVINCIA EN PEDIDOS.
+      Al lado de «Todos · Con saldo · Míos · De hoy · Anulados».
+
+
+  IMPORTANTE AL SUBIRLO: hay que pasar actualizar.php una vez. Este
+  parche añade una columna (modelo y color del producto), una tabla
+  (las sucursales aprendidas) y la plantilla del mensaje de despacho
+  a provincia. Sin ese paso, el HUB avisa y sigue funcionando, pero
+  no verás lo nuevo.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2q) ──────────────────────────────────────
+
+  Textos de pantalla. Se revisaron todas las pantallas de los cinco
+  perfiles (asesor, líder, facturación, administración, dirección) y
+  se reescribieron los textos que estaban escritos para el
+  programador y no para quien usa el HUB: «El HUB no emite», «falta
+  pasar actualizar.php», «plugin», «módulo 3», «el botón no se pinta»,
+  «es lo que frena al voucher falso», explicaciones del porqué de una
+  regla, etc. Ahora son cortos y dicen qué hacer.
+
+  · Nada cambia de funcionamiento: solo textos.
+  · Si un asesor te dice que vio «falta terminar la actualización.
+    Avisa a Administración», es que falta abrir actualizar.php una
+    vez en el servidor. Es el único aviso que te lo pide.
+  · Hay una prueba nueva que falla si vuelve a aparecer en una
+    pantalla «el HUB» como actor, actualizar.php, «programador»,
+    «plugin» o «módulo N». Los comentarios del código no cuentan.
+  · Se queda «Entrar al HUB» en el acceso y el nombre «HUB Waka» en
+    la pestaña: es el nombre de la herramienta.
+  · «Tumifactura» sigue en los textos de facturación hasta que
+    conectemos NUBEFACT.
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2p) ──────────────────────────────────────
+
+  Las cuatro cosas que pediste el 14/09, y lo que salió de auditarlas.
+
+
+  1. EL FORMULARIO YA NO NACE MEDIO LLENO.
+     Tenías razón: los pasos 1 y 2 salían con su ✓ y su respuesta
+     escrita antes de que el asesor tocara nada, porque traen
+     respuesta por defecto («Entrega inmediata» y «Lima»). Ahora el
+     ✓ significa «esto lo contestaste TÚ».
+     · Si vuelve con errores, todo lo que mandó cuenta como suyo.
+     · Y si se va y vuelve con el botón atrás del navegador, el
+       formulario aparece como lo dejó, no otra vez en el paso 1.
+
+  2. RECLAMAR QUE CONFIRMEN UNA VENTA.
+     En «Por mandar a despacho», debajo, está la lista de ventas
+     esperando a facturación. Cada una lleva ahora un botón que
+     nace APAGADO con su cuenta atrás y se enciende solo a los
+     5 MINUTOS. Al pulsarlo pasan las dos cosas que elegiste:
+     · la venta SUBE al tope de la bandeja de facturación, marcada
+       «Reclamado» (y «×2», «×3» si insiste);
+     · y sale un botón para avisar además por WhatsApp, con el
+       mensaje ya escrito. El HUB no puede mandarlo solo.
+     · Los 5 minutos se cambian en Configuración → Ajustes, sin
+       llamarme. No los bajes a 1: un aviso que suena cuando no toca
+       se aprende a ignorar, y con él los que sí tocan.
+     · Queda escrito quién reclamó y cuándo, en la línea de tiempo
+       del pedido.
+
+  3. YA NO SE EXPLICA DE MÁS en el recojo en oficina. Fuera la
+     coletilla de «el HUB ya sabe en qué oficina…».
+
+  4. LA VENTANA DE «PEDIDO REGISTRADO», CENTRADA. Un solo eje: el ✓
+     encima del título, las cifras, el aviso y los botones. Y las dos
+     decisiones —el comprobante y la salida— van cada una en su
+     franja, separadas por una línea, en vez de ser cinco botones
+     seguidos.
+     · Y SOLICITAR BOLETA / SOLICITAR FACTURA te mandan al Inicio,
+       como pediste: pedir el comprobante es lo último que se hace
+       con esa venta. (Si la solicitud falla, no: ahí te deja en la
+       ficha, que es donde está el problema.)
+
+  5. LO QUE SALIÓ AUDITANDO ESTO, y que te afecta:
+     · LA VENTA DEL VOUCHER DENEGADO YA NO SE QUEDA BAJO EL CARTEL
+       «esperando que facturación confirme». Esa respuesta YA llegó:
+       fue «no». Ahora la fila dice «Pago denegado» y qué hacer
+       (registrar el pago bueno), y no se ofrece reclamar — reclamar
+       ahí no sirve de nada. Lo mismo con las que facturación ya miró
+       y están esperando al banco: dicen «Revisando el banco».
+     · AL QUE SOLO MIRA no se le pinta el botón de reclamar. Al
+       líder de equipo le salía, y al pulsarlo se le caía la pantalla
+       con un 403.
+     · EL RELOJ CUENTA DESDE EL PAGO MÁS VIEJO sin confirmar. Antes,
+       registrar el saldo de una pre venta le quitaba al asesor el
+       derecho a reclamar el adelanto que llevaba una hora esperando.
+     · «RECLAMADO» ES DEL PAGO, NO DEL PEDIDO. El adelanto reclamado
+       en marzo dejaba marcado —y arriba del todo— al saldo que entra
+       en junio, que nadie ha reclamado. Con el tiempo, el rojo
+       dejaba de significar nada.
+     · LA CUENTA de «Esperando que facturación confirme» dice cuántas
+       hay, no cuántas cupieron en la pantalla.
+     · Y la cuenta atrás ya no se queda clavada en el celular con la
+       pantalla apagada.
+
+
+  6. LAS DOS VENTANAS DEL HUB, CENTRADAS IGUAL.
+     Pediste centrar también la de «Pago aprobado». Las dos —esa y la
+     de «Pedido registrado»— salen del MISMO trozo de código, así que
+     el centrado se escribió una vez y lo heredan las dos: el ✓ encima
+     del título, todo sobre un solo eje, y cada decisión en su franja
+     separada por una línea. No pueden volver a verse distinto sin que
+     alguien lo decida.
+
+  7. AL LIMPIAR EL HUB TAMBIÉN SE VAN LAS BOLETAS Y FACTURAS SUBIDAS.
+     Lo preguntaste y resultó ser un hueco: `limpiar.php` borraba los
+     vouchers del disco pero no los comprobantes. Al vaciar los
+     pedidos se perdía la única referencia que los nombraba, así que
+     se quedaban ahí para siempre —con el nombre, el documento y lo
+     que compró el cliente dentro— y ninguna pantalla podía verlos ni
+     borrarlos. Las fotos de perfil NO se tocan: son de los usuarios,
+     y los usuarios se quedan.
+
+
+  8. EL CELULAR, REVISADO PANTALLA POR PANTALLA.
+     Encontraste que en la bandeja de pagos el botón de validar salía
+     cortado. Tenías razón, y era peor de lo que se veía: «En espera» y
+     «Denegar» quedaban FUERA de la pantalla y no había forma de
+     alcanzarlos. Desde el celular, Facturación solo podía validar — no
+     podía dejar en espera ni denegar un voucher que no cuadra, que es
+     justo el control que frena al voucher falso.
+     Se revisaron las 98 pantallas de los cuatro roles con un navegador
+     midiendo cada botón, y salieron diez cosas. Están todas arregladas:
+     · los tres botones del pago ya caben y van juntos;
+     · la ficha del pedido y la de facturar ya no se deslizan de lado;
+     · todo lo que se pulsa mide 42 px de alto — el dedo no es un ratón;
+     · los campos de texto van a 16 px: por debajo, el iPhone hace zoom
+       al tocarlos y deja la pantalla movida;
+     · la barra de abajo se lee, y «Pagos por validar» ya no parte en
+       dos renglones: dice «Pagos».
+     Y el HUB trae ahora su propio revisor: `pruebas/movil.cjs` abre las
+     98 pantallas a cinco anchos y avisa si algo se sale, se recorta o
+     queda demasiado chico. Se pasa antes de cada entrega.
+
+
+  9. EL AVISO DE «LISTAS PARA DESPACHO», EN LA LISTA DE PEDIDOS.
+     Lo pediste, y hacía falta: el asesor pasa el día en «Pedidos», así
+     que ahí es donde tiene que enterarse de que facturación le confirmó
+     un pago y la venta quedó libre. Sale arriba, en verde, con cuántas
+     son y un botón. En el celular el botón ocupa el ancho.
+     · El botón dice **VER Y MANDAR** y no «Mandar a despacho», porque
+       no manda nada: abre la lista y desde ahí todavía hay que copiar
+       el mensaje y pegarlo en el grupo. Un botón que promete lo que la
+       frase de al lado desmiente enseña a no leer los botones.
+     · La cifra del aviso, la del chip del menú y la de la pantalla de
+       destino salen del mismo sitio. Hay una prueba que lo comprueba.
+     · Al líder de equipo le cuenta SOLO LO SUYO: ve las ventas de los
+       suyos pero no las manda, así que contarlas le dejaba un número
+       rojo que no podía bajar nunca.
+
+  10. EL ASESOR TIENE «MÁS» EN EL CELULAR, y «Por despachar» bajó a la
+      barra. Antes esa sección no estaba en la barra y el asesor tampoco
+      tenía «Más»: no había NINGUNA forma de llegar a ella desde el
+      teléfono — justo la que lleva el contador.
+      La barra queda: Inicio · Pedidos · Despacho · Bonos · Más. Dentro
+      de «Más» están Clientes, Stock y Recepción, y nada que el asesor
+      no pueda hacer. En la computadora no cambia nada: el menú de la
+      izquierda sigue enseñándolo todo, en el mismo orden.
+
+
+  CÓMO SABER QUÉ VERSIÓN ESTÁ SUBIDA: abajo del menú, a la izquierda,
+  al lado de «Desarrollado por Bloomit.pe», el HUB dice ahora
+  «versión 3a.1 · 23/09/2026». Si dice otra cosa o no dice nada, lo que
+  está arriba no es este parche.
+  (Se saltaron la «l» y la «o»: minúsculas se confunden con un uno y
+  un cero. El 2k, el 2m y el 2n nunca llegaron a subirse; este los
+  incluye a los tres.)
+
+  ESTE PARCHE TRAE COLUMNAS NUEVAS: HAY QUE ABRIR actualizar.php
+  ANTES DE QUE NADIE REGISTRE UNA VENTA. Mientras no se pase, el
+  botón de reclamar no aparece — el HUB lo esconde solo, a propósito,
+  y sigue vendiendo.
+  ───────────────────────────────────────────────────────────────────
+
+
+  QUÉ SE BORRA Y QUÉ SE QUEDA AL LIMPIAR (lo preguntaste)
+  ───────────────────────────────────────────────────────────────────
+  SE VA (el movimiento): pedidos y sus líneas y su línea de tiempo,
+  pagos, clientes con sus notas y direcciones, cashback, rachas,
+  resultados de bonos, visitas, la bitácora y los intentos de acceso.
+  Del disco: los vouchers y las boletas/facturas subidas. Y los
+  contadores vuelven a empezar: la próxima venta es P-00001.
+
+  SE QUEDA (la casa): los USUARIOS con sus contraseñas, roles, ámbitos
+  y países —no hay que dar de alta a nadie otra vez—, los equipos,
+  oficinas y países, las metas ya fijadas, toda la configuración, las
+  listas editables, las plantillas de WhatsApp, los bonos, los estados
+  del pedido, el ubigeo entero y las fotos de perfil.
+
+  EL CATÁLOGO VA APARTE y NO se borra salvo que marques la casilla:
+  lotes, productos, variantes, precios y stock. La pantalla te enseña
+  cuántas filas se llevaría ANTES de que decidas.
+
+  Lo de «boletas generadas»: el HUB no emite, así que no hay nada que
+  revocar en SUNAT. Lo que se borra es la ANOTACIÓN de qué llevó cada
+  venta y el archivo que se hubiera subido. Lo emitido de verdad vive
+  en tu sistema de facturación y de ahí no se toca nada.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2j) ──────────────────────────────
+
+  Todo esto sale de lo que dibujaste y corregiste tú. Son tus
+  pantallas, con tus palabras.
+
+
+  1. CONFIRMAR UN PAGO YA NO TE SACA DE LA COLA.
+     Antes, aprobar un pago te llevaba a otra pantalla y había que
+     volver a buscar por dónde ibas, con veinte pagos esperando
+     detrás. Ahora sale una VENTANA ENCIMA, en la misma pantalla:
+     · «Pago aprobado» · EMITIR BOLETA · EMITIR FACTURA ·
+       ESTA NO LLEVA · VER INGRESOS DE HOY · CERRAR VENTANA (y la ✕).
+     · «Pago en espera» y «Pago denegado» tienen la suya, con
+       SEGUIR REVISANDO y VER EL PEDIDO. Sin preguntar por el
+       comprobante: no hay nada que emitir de un dinero que no entró.
+     · ESTA NO LLEVA no pide motivo y te devuelve a la cola. Aquí hay
+       ventas sin boleta a propósito y no hay por qué explicarlas.
+     · Los botones de emitir NO se conectan todavía con ningún
+       sistema de facturación: por ahora solo dejan la constancia en
+       el HUB, con quién y cuándo. El día que decidas el sistema,
+       se enchufan ahí.
+     · La ventana sale igual desde la ficha del pedido y desde la
+       pantalla de facturar, y cada una te devuelve a la suya.
+
+  2. EL AVISO DE «X VENTAS SIN COMPROBANTE» SE FUE de la cola de
+     pagos, como pediste. La lista sigue en Reportes → Pagos
+     ingresados, para cuando quieras mirarla a propósito.
+
+  3. EL ASESOR SOLICITA EL COMPROBANTE, CUANDO LO SABE.
+     No es un campo del formulario: casi nunca lo sabe mientras
+     teclea la venta. Es un aviso que manda después, desde tres
+     sitios y con los mismos dos botones:
+     · en la ventana que sale al registrar el pedido,
+     · en el menú ⋮ de la lista de pedidos («Solicitar boleta» /
+       «Solicitar factura»),
+     · y en la ficha del pedido, debajo de los datos del cliente.
+     NO PEDIR NADA ES UNA RESPUESTA: esa venta no lleva comprobante.
+     Por eso solo hay dos botones y no tres — el silencio ya dice lo
+     que antes decía «No necesita».
+     · Se puede cambiar de idea (de boleta a factura) y se puede
+       retirar. Cada cambio queda en la línea de tiempo del pedido
+       con quién y cuándo.
+     · Es SOLO UNA INDICACIÓN: quien decide y emite sigue siendo
+       administración o facturación. Lo pedido y lo emitido se
+       guardan por separado a propósito, para poder ver después qué
+       pidió el cliente y qué se hizo.
+     · A FACTURACIÓN LE LLEGA sola: en «Pagos por validar» le sale
+       arriba una cola de «Comprobantes solicitados» con el pedido,
+       el cliente y qué pidió. Esa cola SE VACÍA — en cuanto emite o
+       marca que no lleva, la fila desaparece. No es el contador que
+       quitamos: aquel contaba todas las ventas sin boleta, también
+       las que a propósito no llevan, y por eso nunca bajaba a cero.
+     · Y en la pantalla de facturar viene marcado LO QUE PIDIÓ EL
+       ASESOR, no lo que dice la ficha del cliente, con un aviso que
+       lo dice. Si no cuadra, facturación lo cambia: decide ella.
+
+  4. EL ESTADO DEL PAGO, EN LA LISTA DE PEDIDOS.
+     Columna nueva: Esperando confirmación · En espera · Denegado ·
+     Confirmado. Manda el PEOR, porque es el que pide una acción.
+     Y dentro del pedido, cuando está en espera o denegado, sale una
+     BANDA que no se puede pasar por alto, con el motivo que escribió
+     facturación, el plazo real y dos botones: CORREGIR PAGO y
+     HABLAR CON FACTURACIÓN (a WhatsApp).
+     · El número de facturación se pone en Configuración →
+       Contactos. Mientras esté vacío, ese botón no sale.
+
+  5. MENÚ ⋮ EN CADA FILA de la lista de pedidos: ver el pedido,
+     ★ mandar a despacho (con su estrella amarilla, y desaparece en
+     cuanto sale), solicitar boleta o factura, datos para facturar y
+     anular pedido. Cada opción solo sale a quien de verdad puede
+     hacerla, y al usarla te deja donde estabas, con tus filtros.
+     · Y «Todos» es ahora el filtro por defecto y el primer botón.
+
+  6. LOS DATOS DEL CLIENTE, DENTRO DEL PEDIDO. Documento, celular
+     con botón de copiar, correo y qué comprobante pidió. Ya no hay
+     que salir del pedido para ver un número.
+     · Y «Mensajes al cliente» se llama ahora «Textos rápidos».
+
+  7. EL MAPA VIAJA A DESPACHO, y en Lima es OBLIGATORIO. Lo
+     repartimos nosotros y una dirección escrita a mano no basta
+     para encontrar la casa. A provincia y en recojo no se pide.
+
+  8. EL 4% DEL POS SE CALCULA SOLO. Al elegir POS / tarjeta, la
+     comisión de pasarela sale puesta —el 4% de lo pagado— y se
+     puede cambiar a mano si el banco cobró otra cosa. El porcentaje
+     es editable en la lista de métodos de pago.
+
+  9. EL VUELTO. Al cobrar en efectivo hay un campo «Paga con» y el
+     HUB dice el vuelto. No se guarda todavía: eso llega con la
+     CAJA, en la versión 2.
+
+  10. LA FECHA DEL PEDIDO YA NO SE LE PREGUNTA AL ASESOR. Tenías
+      razón: es el día en que se registra. Ahora la marca la fecha
+      del PAGO, que es el dato que él sí tiene —el cliente yapeó
+      anoche y la venta se registra hoy—. Administración y
+      facturación sí pueden fecharla, por si hay que meter una venta
+      vieja.
+
+  11. LA VENTANA DE «PEDIDO REGISTRADO», con tus textos: ESPERAR
+      CONFIRMACIÓN (lleva al Inicio), VER EL PEDIDO, OTRA VENTA, y
+      «Esperando confirmación por parte de facturación. Te
+      notificaremos cuando el pago esté aprobado.»
+
+  12. Y DOS COSAS QUE SALIERON AUDITANDO, que no pediste pero te
+      afectan:
+      · UN PAGO DENEGADO YA NO ABRE LA PUERTA DEL DESPACHO. Denegar
+        apaga el pago, y el pedido se quedaba «sin pagos pendientes»
+        — o sea, listo para despachar—. El HUB lo ponía en «Listas
+        para despacho» con el mensaje diciendo «lo que ya pagó el
+        cliente está confirmado», y 48 horas después anulaba el
+        pedido con la mercadería ya fuera. Ahora hace falta dinero
+        CONFIRMADO para que salga, y se dice por qué cuando no lo hay.
+      · «POR COBRAR» YA NO CUENTA LOS ANULADOS. La cabecera de
+        Pedidos sumaba el total entero de cada venta anulada, así que
+        no cuadraba con la cifra del Inicio.
+
+  13. REPORTE DE DENEGADOS. En Reportes → Pagos ingresados hay un
+      filtro nuevo, «Solo denegados por facturación», con una tabla
+      de cuántos lleva cada asesor y de cuántos pagos. Es lo que
+      pediste para ver si hay alguien a quien mirar de cerca.
+      Un denegado suelto no es una falta; lo que dice algo es que se
+      repita en la misma persona, y eso es lo que esa tabla enseña.
+
+
+  CÓMO SABER QUÉ VERSIÓN ESTÁ SUBIDA: abajo del menú, a la izquierda,
+  al lado de «Desarrollado por Bloomit.pe», el HUB dice ahora
+  «versión 2j · 13/09/2026». Si dice otra cosa o no dice nada, lo que
+  está arriba no es este parche.
+
+  ESTE PARCHE TRAE COLUMNAS NUEVAS: HAY QUE ABRIR actualizar.php
+  ANTES DE QUE NADIE REGISTRE UNA VENTA. Mientras no se pase, no se
+  puede solicitar el comprobante y el 4% del POS no se calcula — el
+  HUB esconde las dos cosas solo, a propósito, y sigue vendiendo.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ── QUÉ TRAJO EL PARCHE 2i ─────────────────────────────────────────
+
+  Dos cosas que pediste: la GARANTÍA y la LIQUIDACIÓN.
+
+
+  1. LA GARANTÍA VA EN EL PEDIDO.
+     En «Selecciona los productos a vender», junto a la fecha, hay un
+     campo nuevo: Garantía. Viene puesto «12 meses» y no hay que
+     tocarlo en el caso normal. Las otras opciones son «6 meses» y
+     «No aplica».
+     · Sale en la ficha del pedido, en la pantalla de facturar y en
+       el mensaje al grupo. Ya no se pacta solo por WhatsApp.
+     · Los pedidos de antes de este parche no tienen garantía, y
+       entonces no se pinta ninguna: prefiero eso a inventarles doce
+       meses que nadie prometió.
+     · Las tres opciones se cambian desde Configuración → Listas,
+       como los métodos de pago. La que viene marcada es la PRIMERA
+       de la lista: para cambiar la promesa por defecto, se sube de
+       sitio. Sin llamarme.
+
+
+  2. LIQUIDACIÓN, TERCER TIPO DE VENTA.
+     Al lado de «Entrega inmediata» y «Pre venta». No es una
+     etiqueta: es una venta distinta.
+     · SALE DE SU PROPIO STOCK. Lo que se liquida no se le descuenta
+       a la tienda ni al contenedor.
+     · NACE SIN GARANTÍA. Al marcar «Liquidación», el campo de
+       garantía salta solo a «No aplica». Si pactas otra cosa, la
+       cambias y manda la tuya.
+     · NO JUEGA AL CASHBACK, NI PARA UN LADO NI PARA EL OTRO. Ni lo
+       gana ni se puede pagar con él: el precio ya ES el descuento.
+       El campo del cashback desaparece de la pantalla al marcarla.
+     · Se filtra en la lista de pedidos como los otros dos, y sale
+       con su nombre en la ficha, en la del cliente y en el Excel.
+
+     Por lo demás se comporta como una entrega inmediata: nace
+     «Registrado» y se paga al momento.
+
+
+  ESTE PARCHE TRAE COLUMNAS NUEVAS Y CAMBIA UNA COLUMNA EXISTENTE:
+  HAY QUE ABRIR actualizar.php ANTES DE QUE NADIE REGISTRE UNA VENTA.
+  Mientras no se pase, «Liquidación» ni siquiera se ofrece en el
+  formulario — el HUB lo esconde solo, a propósito.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2h) ──────────────────────────────
+
+  TODO ESTO SALIÓ DE QUE PROBASTE EL HUB. Son tus siete hallazgos.
+
+  1. EL TIPO DE ENVÍO YA NO OFRECE LO QUE NO APLICA.
+     A provincia salían igual «Envío gratis Lima» y «Envío con costo
+     en Lima». Ahora cada rama enseña lo suyo, y a provincia
+     «Flete a provincia» es la única y viene puesta.
+     · Y DESAPARECE EL COSTO DEL ENVÍO a provincia: ese flete se lo
+       paga el cliente a la agencia en destino, no a Waka. No es
+       plata nuestra, no entra en el total y no pinta nada aquí.
+     · El día que crees «Envío con costo a Arequipa», le pones su
+       marca y aparece donde toca. Sin llamarme.
+
+  2. «LA MERCED» YA SE ENCUENTRA.
+     No era un hueco del padrón: el distrito se llama Chanchamayo y
+     La Merced es su capital. Y pasa en 357 distritos —uno de cada
+     cinco—, donde la gente habla con el nombre de la capital. Ahora
+     el buscador las conoce: escribes «la merced» y sale
+     «Chanchamayo (La Merced) · Junín».
+
+  3. LA AGENCIA QUE NO ESTÁ EN LA LISTA.
+     Eliges «Otra», escribes el nombre y la venta sigue. Va en el
+     pedido, sale en la ficha, en facturación y en el mensaje al
+     grupo de despacho. Queda marcada «por autorizar» hasta que la
+     metas a la lista. Y si ya existe escrita distinto —«shalom»
+     contra «Shalom»— no te deja añadirla.
+
+  4. FUERA «TODAVÍA NO PAGA».
+     Un pedido no se registra sin dinero. Cualquier monto vale. Y
+     viene marcado lo que toca según el tipo de venta: entrega
+     inmediata «pagó todo», pre venta «pagó una parte».
+
+  5. EL RESUMEN TE ACOMPAÑA en escritorio mientras bajas, con el
+     botón de registrar dentro. Ya no hay que subir a buscarlo.
+
+  6. AL REGISTRAR, UN AVISO ENCIMA DEL PEDIDO: total, cuánto pagó,
+     cuánto queda, y qué hacer ahora. Con la frase reescrita:
+     «Facturación tiene que confirmar el pago. Hasta entonces no
+     suma a tu meta y el pedido no puede salir a despacho. Te
+     avisamos aquí cuando lo confirmen.»
+
+  7. YA NO TE PIDE COBRAR UN PEDIDO QUE YA ESTÁ PAGADO.
+     El HUB solo sabía «lo que falta por cobrar», y ahí solo cuenta
+     el dinero YA CONFIRMADO: con tu pago registrado y sin revisar,
+     para el HUB faltaba todo y te ofrecía cobrarlo otra vez. Ahora
+     distingue lo que falta por REGISTRAR de lo que falta por
+     CONFIRMAR, y cuando está todo registrado te lo dice en vez de
+     enseñarte un formulario.
+
+  Y EN EL CELULAR: cada paso con su número en un círculo —gris el que
+  no tocaste, amarillo el que estás llenando, verde con un check el
+  que ya está—, una sola línea por paso y sin la caja vacía debajo.
+
+  ── LO QUE SE ANULA SOLO A LAS 48 HORAS ────────────────────────────
+
+  Si facturación DENIEGA un pago y nadie lo corrige, a las 48 horas
+  el pedido se ANULA solo, con su motivo escrito. No se borra: un
+  pago denegado es justo el caso que después hace falta poder mirar,
+  y Administración puede revertirlo.
+
+  Funciona solo, pero para que ocurra a su hora y no cuando alguien
+  entre, ponlo en cPanel → Trabajos cron, una vez al día:
+
+      php /home/USUARIO/public_html/tareas.php
+
+  Cambia USUARIO por el tuyo. Si no lo pones, también pasa: la lista
+  de pedidos hace el mismo repaso como mucho una vez por hora.
+
+  ESTE PARCHE TRAE COLUMNAS NUEVAS: hay que abrir actualizar.php.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2g) ──────────────────────────────
+
+  LA PANTALLA DE NUEVO PEDIDO, REHECHA.
+
+  El orden nuevo, el que pediste:
+
+    1 · Selecciona el tipo de venta
+    2 · A dónde va          ← sube aquí
+    3 · Selecciona o registra al cliente
+    4 · Selecciona los productos a vender
+    5 · Datos de envío
+    6 · Registra el pago
+
+  «A dónde va» sube al puesto 2 porque decide la mitad del
+  formulario. Antes se preguntaba al final, cuando ya habías llenado
+  campos que no aplicaban a tu caso.
+
+  · RECOGE EN LA AGENCIA es ahora una opción propia. Es el caso más
+    usado fuera de Lima y no existía: el formulario pedía dirección
+    igual. Ahora son tres campos —distrito, agencia y sucursal— y
+    ninguno es una dirección que nadie va a usar.
+
+  · «¿CUÁNDO LO ENTREGAMOS?» YA NO SALE A PROVINCIA. Ahí el horario lo
+    pone la agencia. Y si alguien lo intenta desde la pantalla de
+    despacho, el HUB lo dice en vez de tragárselo en silencio.
+
+  · EL CANAL DE VENTA se movió junto al producto y se pregunta como se
+    pregunta de verdad: «¿dónde nos conoció?».
+
+  · EL LATERAL se queda con dos cosas: el resumen de la venta y la
+    nota. El tipo de envío y su costo bajaron al paso 5, que es donde
+    se habla de envío.
+
+  · EL CASHBACK QUE GANA EL CLIENTE sale en el resumen, calculado
+    sobre el pago que estás registrando —que es como se acredita de
+    verdad—, no sobre el total. Una pre venta separada con el 10%
+    genera el 1% de ese 10%, no del pedido entero.
+
+  · EN EL CELULAR los seis pasos van plegados, cada uno enseñando lo
+    que ya llenaste, y se abre uno a la vez. El total y lo que queda
+    por cobrar viven fijos abajo. En la computadora NO se pliega nada:
+    ahí caben tres bloques de un vistazo y plegar solo cobraría clics.
+
+  · EL VOUCHER abre la cámara directamente en el celular.
+
+  Y cinco cosas que estaban mal y ya no:
+
+  · El costo del envío y la comisión se borraban al volver el
+    formulario con un error. También la hora de entrega acordada.
+  · «Enviar armado» se colaba en un recojo en oficina y llegaba así al
+    grupo de despacho.
+  · La comisión de pasarela se guardaba en pedidos que no cobraron
+    nada.
+  · El campo para usar el cashback del cliente solo aparecía si
+    entrabas desde su ficha.
+  · Villa El Salvador: ya está escrito bien.
+
+  ESTE PARCHE TRAE UNA COLUMNA NUEVA: hay que abrir actualizar.php.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2f) ──────────────────────────────
+
+  EL PERÚ ENTERO. YA SE PUEDE VENDER A PROVINCIA.
+
+  El HUB conocía 79 distritos: Lima, Callao y Arequipa. Y el distrito
+  es obligatorio en toda venta con envío. O sea que una venta a Cusco,
+  a Piura, a Trujillo o a Chiclayo NO SE PODÍA REGISTRAR: el buscador
+  no encontraba el distrito y el formulario rebotaba. La pantalla
+  prometía «si tu distrito no está, se añade desde el mismo buscador»
+  y eso nunca se construyó.
+
+  Ahora están los 1.893 distritos, las 196 provincias y los 25
+  departamentos del padrón completo. Nadie tiene que añadir nada nunca,
+  y el reporte por zonas podrá cuadrar cuando se construya.
+
+  Tres detalles que vienen con esto:
+
+  · Los distritos que ya estaban conservan su tilde: sigue siendo
+    «Ancón» y «San Juan de Lurigancho», no «Ancon» ni «San Juan de
+    Lurigancho» sin tilde. Y buscar sin tildes encuentra igual.
+
+  · Está Santa María de Huachipa, que pediste tú. Es centro poblado y
+    no distrito de ley, pero se envía ahí y el cliente lo llama así.
+
+  · Con el país entero, «santa rosa» son catorce distritos repartidos
+    por todo el Perú. Ahora el buscador busca TAMBIÉN por provincia y
+    departamento: escribe «santa rosa lima» y sale la tuya. Y cuando
+    quedan resultados fuera de la lista, lo dice en vez de enseñar una
+    lista cortada como si fuera completa.
+
+  · Villa El Salvador estaba escrito «Villa el Salvador», con la ele
+    minúscula, en el buscador, en la ficha y en el mensaje que se le
+    manda al cliente. Lo escribía mal el propio HUB. Corregido, y de
+    paso San Miguel de El Faique.
+
+  Y tres correcciones sueltas:
+
+  · Administración no tenía por dónde empezar una venta desde su
+    Inicio. Puede registrarlas —tiene el permiso desde el primer
+    día— pero el botón solo estaba en Pedidos. Ahora sale también en
+    su Inicio. A Dirección y a Facturación no les sale: no venden.
+
+  · El botón NUEVO PEDIDO del Inicio del asesor llevaba a la LISTA de
+    pedidos en vez de a crear uno. Un clic de más en lo que más se
+    repite del día.
+
+  · La tarjeta «Tu racha» leía una tabla que nadie escribe todavía y
+    salía siempre en cero, como si el asesor no hubiera vendido nada.
+    Ahora dice «Pronto», que es la verdad.
+
+  Al abrir actualizar.php se carga el padrón. Tarda unos segundos: son
+  dos mil sitios. Corre UNA sola vez y no deshace nada de lo que ya
+  hubiera en la tabla.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ── QUÉ TRAJO EL PARCHE ANTERIOR (2e) ──────────────────────────────
+
+  Los tres primeros salieron de probar el HUB de verdad:
+
+  1. EL ENVÍO CON COSTO YA TIENE DÓNDE ESCRIBIR EL MONTO.
+     Antes el campo solo aparecía a provincia, así que «Envío con
+     costo en Lima» se quedaba sin sitio para el importe y el HUB lo
+     tiraba en silencio. Ahora lo decide el tipo de envío, no la rama
+     Lima/provincia: el día que crees «Envío con costo a Arequipa»
+     aparece solo.
+     · En Lima ese envío SUMA al total: ese dinero te lo paga a ti.
+     · A provincia sigue igual, y el monto sigue siendo opcional:
+       ese flete se lo paga a la agencia.
+     · El envío NO genera cashback. El 1% sale solo del producto.
+
+  2. EL VOUCHER YA NO SE PIERDE.
+     Si el formulario rebotaba por cualquier otro error, el archivo
+     desaparecía sin avisar y el asesor creía que lo había mandado.
+     Ahora se guarda antes de validar y la pantalla dice
+     «Adjunto: foto.jpg».
+
+  3. AL ASESOR LE AVISAN CUANDO LE PARAN UN PAGO.
+     Si Facturación deja un pago en espera o lo deniega, ahora sale
+     en su Inicio CON EL MOTIVO, y le llega el aviso en vivo. Antes
+     el HUB le frenaba la venta y no le decía nunca por qué.
+
+  4. LOS ESTADOS TIENEN COLOR.
+     Sin revisar (gris) · En espera (ámbar) · Validado (verde) ·
+     Denegado (rojo). Y siempre con su palabra, no solo el color.
+
+  Al abrir actualizar.php se añade una columna a los tipos de envío y
+  se corrige la línea del flete en los mensajes de WhatsApp, que decía
+  «lo paga el cliente en destino» incluso cuando ya iba dentro del
+  cobro — es decir, le pedía el dinero dos veces.
+  ───────────────────────────────────────────────────────────────────
+
+
+  ═══════════════════════════════════════════════════════════════════
+   SI EL HUB YA ESTÁ INSTALADO, LEE ESTO PRIMERO
+
+   Este módulo TRAE TABLAS Y COLUMNAS NUEVAS. No basta con extraer el
+   ZIP encima:
+
+     1. Sube el ZIP a la carpeta pública y extráelo encima.
+        No borres nada antes: la configuración y las fotos viven fuera
+        y no se tocan.
+     2. Entra al HUB con tu cuenta de Administración.
+     3. Abre  https://wakalatamcorp.com/actualizar.php  y pulsa
+        ACTUALIZAR AHORA.  ← ESTE PASO NO ES OPCIONAL
+     4. Borra actualizar.php desde el Administrador de archivos.
+
+   Si te saltas el paso 3, el HUB se queda con el código nuevo y las
+   tablas viejas: Clientes y Pedidos darán error.
+  ═══════════════════════════════════════════════════════════════════
+
+
+INSTALACIÓN DESDE CERO (10 minutos, todo desde cPanel)
+
+1. En cPanel → Bases de datos MySQL:
+   - Crea una base de datos nueva (por ejemplo: waka_hub).
+   - Crea un usuario nuevo con una contraseña larga que genere cPanel.
+   - En "Añadir usuario a la base de datos", añádelo con TODOS los permisos.
+   - Apunta los tres datos: nombre de la base, usuario y contraseña.
+
+2. En cPanel → Administrador de archivos:
+   - Entra a la carpeta pública de wakalatamcorp.com.
+   - Sube hub-waka.zip ahí dentro.
+   - Clic derecho sobre el ZIP → Extract (Extraer).
+   - Borra el ZIP.
+
+3. Abre en el navegador:  https://wakalatamcorp.com/instalar.php
+   El instalador te lleva de la mano en cinco pasos. La contraseña de la base
+   la escribes tú ahí: no viaja por chat ni por correo, y queda guardada en un
+   archivo FUERA de la carpeta pública (waka-config/config.php).
+
+4. En el último paso creas dos cuentas —la de Administración y la de Dirección—
+   y cada una elige su propia contraseña. Nadie más las conoce.
+
+5. VUELVE A cPanel Y BORRA instalar.php.  Este paso no es opcional.
+
+
+EL ORDEN PARA ARRANCAR CON EL MÓDULO 2
+
+1. Configuración → Equipos y líderes → crea los TRES equipos
+   (dos de Lima y uno de Arequipa). Los nombres los eligen ustedes.
+2. Configuración → Usuarios y roles → da de alta a los 19 asesores.
+   El equipo ya sale en el desplegable, así que cada ficha se llena UNA vez.
+3. Vuelve a Equipos y marca la estrella del líder de cada equipo.
+   El líder ve los pedidos de los suyos, pero no los edita ni los anula.
+4. Da de alta la cuenta de FACTURACIÓN (mismo sitio, rol "Facturación").
+   No vende: confirma los pagos y baja el Excel del reporte. Su ámbito no se
+   elige, lo pone el HUB solo: quien confirma el dinero tiene que poder verlo.
+   Administración y Dirección también pueden confirmar; a Dirección no le
+   llegan los avisos, a propósito.
+
+   NINGÚN método de pago cuenta al instante. Todos entran PENDIENTES y alguien
+   los confirma mirando el banco — lo pediste tú, por los vouchers falsos.
+   Hasta que se confirme, un pago no suma a la meta, no sale en el podio y no
+   genera cashback. Cuando se confirme, suma al mes de la FECHA DEL PAGO, no al
+   día en que se confirmó: facturación puede confirmar el lunes un pago del
+   viernes y el dinero cuenta en el viernes.
+
+   (La pantalla para tocar métodos de pago uno a uno todavía no está: sale como
+   "Pronto" en Configuración. Llega en el módulo 3.)
+
+   MANDAR A DESPACHO ES TAREA DEL ASESOR, no de facturación ni de dirección
+   (a ellos esa pantalla ya no les sale). Administración también puede, como
+   respaldo cuando el asesor está de baja.
+   El asesor tiene en su menú "Por despachar" con un contador: son sus ventas
+   con el pago ya confirmado que todavía no ha mandado. También le sale en su
+   Inicio y, si tiene el HUB abierto cuando facturación confirma, le salta un
+   aviso "Pago confirmado · 1 venta lista para despacho".
+   Al registrar la venta se puede anotar el DÍA y la HORA de entrega y si se
+   puede dejar en recepción. Todo opcional; se corrige desde la pantalla de
+   despacho si el cliente reprograma, y sale dentro del mensaje del grupo.
+
+   SOLO SALE A DESPACHO CON EL PAGO CONFIRMADO. Si el pedido tiene un pago
+   registrado que facturación aún no ha mirado (o que dejó "en espera"), el
+   botón de despacho no aparece y la pantalla explica por qué. Es lo que frena
+   al voucher falso: la mercadería no sale antes de que alguien abra el banco.
+   Lo que NO frena es el saldo contraentrega: una venta con adelanto confirmado
+   y el resto a cobrar en la entrega sale igual, y el mensaje dice cuánto
+   cobrar. Una venta 100% contraentrega, sin ningún pago, también sale.
+
+   AL CONFIRMAR UN PAGO sale una ventana encima, sin sacar a nadie de la
+   pantalla, y pregunta si se emite el comprobante: EMITIR BOLETA, EMITIR
+   FACTURA o ESTA NO LLEVA. Es uno por PEDIDO, no por pago, y la serie y el
+   número son opcionales — se pegan cuando se emiten en el sistema de
+   facturación. Cerrar la ventana sin decidir tampoco pierde la venta.
+   Lo que queda sin comprobante se ve en Reportes > Pagos ingresados, que las
+   lista con el enlace para emitirlas y sin rango de fechas. Y lo que el asesor
+   PIDIÓ a mano sale además en la bandeja de Pagos por validar, arriba, en su
+   propia cola.
+
+
+DOS REGLAS QUE CONVIENE QUE SEPA TODO EL EQUIPO
+
+· EL CASHBACK NACE DEL PAGO, NO DEL PEDIDO. Una pre venta de S/20,000 con el
+  10% adelantado le da al cliente S/20 hoy, no S/200. El resto nace el día que
+  entre el saldo.
+· LA META SE MIDE POR DINERO COBRADO, NO POR VENDIDO. Un pedido registrado no
+  mueve la barra hasta que entra el dinero, y cada pago suma al mes de SU fecha.
+
+Y una que cambia el hábito de los asesores:
+· EL CORREO DEL CLIENTE AHORA ES OBLIGATORIO. Es la llave de su cuenta en
+  compraenwaka y de su Cashback Waka. Sin correo, el cliente nunca ve su saldo.
+
+
+LO QUE CAMBIÓ EN ESTA ENTREGA
+
+- Cada venta tiene una LÍNEA DE TIEMPO arriba de su ficha: Registrado → Pago
+  confirmado → Comprobante → Despacho → Entregado. Se calcula sola, no hay
+  nada que marcar. El estado de siempre (Reservado, En camino) no cambia:
+  en pre venta ese estado dice dónde va el contenedor, que es otra cosa.
+- El N.º de operación es OBLIGATORIO para validar en los métodos que lo
+  tienen (transferencia, Yape, Plin, depósito, POS). En efectivo no se pide.
+- La bandeja tiene las TRES salidas en la propia fila: Validar, En espera y
+  Denegar. Las dos últimas abren una franja debajo para escribir el motivo,
+  que es lo que después lee el asesor. Antes solo se veía "Validar".
+- Se puede subir el PDF de la boleta o factura al pedido y abrirlo después
+  desde la ficha, sin entrar a Tumifactura.
+- Reportes > Quién hizo qué: el rastro completo, con filtros y diciendo sobre
+  qué pedido o qué cliente fue cada movimiento.
+- Los mensajes al cliente van recogidos en un solo botón "Mensajes al cliente".
+- Tipo de envío nuevo: "Envío con costo en Lima", para la pre venta.
+- Los avisos suenan, y cada uno suena distinto: uno para "entró un pago" y
+  otro para "ya puedes mandarlo a despacho".
+- Arreglado: el modo noche se apagaba solo a los 60 segundos.
+
+BORRAR LOS DATOS DE PRUEBA ANTES DE ARRANCAR
+
+El HUB nunca borra nada por diseño: se apaga en vez de borrar. Y OJO, anular
+no es borrar — anular escribe filas negativas con la fecha de hoy, así que
+anular las ventas de prueba dejaría la meta del mes en negativo.
+
+Para estrenar el HUB limpio hay un archivo aparte: limpiar.php. Se sube, se
+abre UNA vez y se borra, igual que instalar.php y actualizar.php.
+
+- Se va: ventas, clientes, pagos, cashback, vouchers, visitas y bitácora.
+- Se queda: usuarios, equipos, metas, oficinas, listas, plantillas y toda la
+  configuración. NO hay que volver a dar de alta a los 19 asesores.
+- El catálogo (lotes, productos, stock) NO se toca salvo que lo marques.
+- Antes de borrar te enseña cuántas filas se va a llevar de cada tabla.
+- Pide tu contraseña y escribir la palabra BORRAR.
+- La numeración vuelve a empezar: la primera venta real será P-00001.
+
+Hazlo el día antes de la primera venta de verdad, y BORRA limpiar.php después.
+
+LO QUE HACE FALTA DEL LADO DE USTEDES
+
+- Cambiar la contraseña de MySQL antes de dar la dirección a los asesores.
+- Una segunda cuenta de Administración de respaldo, por si la principal se
+  bloquea a los cinco intentos.
+- Los nombres de los tres equipos y quién lidera cada uno.
+
+
+DÓNDE ESTÁ CADA COSA
+
+  index.php          El único archivo que atiende peticiones.
+  instalar.php       La instalación. Se borra después de usarlo.
+  actualizar.php     Las actualizaciones. Se borra después de usarlo.
+  app/               El HUB. No se sirve por web (lo bloquea .htaccess).
+  assets/            Estilos, JavaScript, logo e íconos.
+  uploads/fotos/     Las fotos de perfil.
+  uploads/vouchers/  Los vouchers de los pagos. Esta carpeta está CERRADA:
+                     los vouchers se sirven por /pagos/voucher, que comprueba
+                     antes quién los pide.
+  ../waka-config/    La configuración, FUERA de la carpeta pública.
+
+Desarrollado por Bloomit para Waka Importaciones.

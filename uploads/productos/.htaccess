@@ -1,0 +1,5 @@
+# Las miniaturas del catálogo tienen nombre único: si cambia la foto, cambia el
+# nombre. Se pueden guardar en el celular sin volver a preguntar.
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>

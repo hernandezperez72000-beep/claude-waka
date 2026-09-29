@@ -1,0 +1,9 @@
+# Los vouchers NO se sirven por su dirección: se piden por /pagos/voucher,
+# que comprueba antes quién está pidiendo.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

@@ -1,0 +1,18 @@
+{
+  "name": "HUB Waka Importaciones",
+  "short_name": "HUB Waka",
+  "description": "Donde los asesores de Waka registran sus clientes, sus ventas y sus pagos.",
+  "lang": "es-PE",
+  "dir": "ltr",
+  "start_url": "../",
+  "scope": "../",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAD91A",
+  "theme_color": "#FAD91A",
+  "icons": [
+    { "src": "img/icono-192.png",  "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icono-512.png",  "sizes": "512x512", "type": "image/png" },
+    { "src": "img/icono-mask.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

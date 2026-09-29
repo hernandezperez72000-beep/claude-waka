@@ -1,0 +1,13 @@
+# Las boletas y facturas NO se sirven por su dirección.
+#
+# Un comprobante lleva el nombre, el documento y la dirección del cliente, y el
+# detalle de lo que compró. Una carpeta pública con nombres adivinables sería
+# eso colgando de internet. Se sirven por /pedidos/comprobante-archivo, que
+# comprueba primero quién está pidiendo.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

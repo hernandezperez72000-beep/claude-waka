@@ -1,0 +1,56 @@
+# HUB Waka — reglas del servidor
+# Forzar HTTPS (wakalatamcorp.com es dominio adicional: cPanel no ofrece el interruptor)
+RewriteEngine On
+# Las dos condiciones se cumplen a la vez (AND), nunca [OR]: si el certificado
+# lo termina un proxy, el servidor ve HTTPS apagado en TODAS las peticiones y
+# un [OR] redirigiría en bucle hasta tumbar el sitio (ERR_TOO_MANY_REDIRECTS).
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+RewriteCond %{HTTP:X-Forwarded-Ssl} !=on
+# SERVER_NAME y no HTTP_HOST: la cabecera Host la escribe quien pide, así que
+# con HTTP_HOST el salto a https sería un redirect abierto al dominio que
+# quisiera el atacante.
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
+
+# No listar carpetas
+Options -Indexes
+
+# Todo lo que no sea un archivo real entra por el front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# La carpeta de la aplicación no se sirve por web.
+# Vale igual si el HUB se instala en una subcarpeta (/hub/app/…).
+RedirectMatch 404 (^|/)app/
+RedirectMatch 404 (^|/)pruebas/
+
+# Cabeceras de seguridad
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "same-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# 3j · VELOCIDAD: las páginas, el CSS y el JS viajan comprimidos (un tercio
+# del peso). Si el hosting no tiene el módulo, esto no hace nada.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json image/svg+xml application/manifest+json
+</IfModule>
+
+# Caché de estáticos. El CSS y el JS llevan ?v=<fecha del archivo>: al subir
+# una versión nueva cambia la dirección, así que pueden guardarse un año.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+</IfModule>
+
+# De ejecutar PHP dentro de subidas ya se encarga uploads/.htaccess, que sí
+# vale también si el HUB va en una subcarpeta. Aquí no se repite: un <If>
+# dentro de <FilesMatch> no lo acepta todo Apache, y donde no lo acepta
+# devuelve 500 en TODAS las peticiones del sitio.

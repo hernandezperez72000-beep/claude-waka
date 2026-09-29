@@ -1,0 +1,123 @@
+BANCO DE PRUEBAS DEL HUB WAKA
+=============================
+
+    bash pruebas/todo.sh
+
+Eso corre las tres tandas y deja el marcador en verde o rojo. Nada más.
+
+
+LAS TRES TANDAS
+
+  correr.php   (60)  Lo que no toca la base: dinero en céntimos, validación de
+                     documentos, el tercio del cashback, las plantillas de
+                     WhatsApp y el generador de Excel.
+
+  correr2.php  (159) Las reglas del negocio contra una base de verdad. Aquí
+                     viven, con su nombre y su cifra, las dos que ya hicieron
+                     tropezar al proyecto:
+                       · EL CASHBACK NACE DEL PAGO, NO DEL PEDIDO
+                       · LA META SE MIDE POR COBRADO, NO POR VENDIDO
+
+  correr4.php  (20)  LA RUTA DE ACTUALIZACIÓN. Arma un HUB «viejo» —solo con
+                     el esquema del módulo 1, con datos dentro— y le pasa por
+                     encima lo mismo que hace actualizar.php. Comprueba que un
+                     HUB actualizado y uno recién instalado quedan IGUALES en
+                     tablas, columnas y DATOS de arranque, que no se pierde
+                     nada de lo que había, y que pasarlo dos veces no rompe.
+                     Aquí se pilló que en un HUB actualizado todos los métodos
+                     de pago contaban al instante: una transferencia habría
+                     sumado a la meta sin que nadie la confirmara en el banco.
+
+  correr5.php  (63)  LAS FOTOS BAJADAS DE VERDAD (3b.4). Levanta un servidor
+                     https de fotos en la misma máquina y baja de él, seis a
+                     la vez y una a una, con la forma del PHP 8.2 y con la del
+                     8.1: fotos buenas, que no existen, que redirigen, cortadas
+                     a medias, enormes, o una tienda ocupada. Necesita python3;
+                     sin él se salta. correr.php, además, revisa que el código
+                     no use nada que el PHP 8.1 del hosting no tenga.
+
+  correr6.php  (64)  EL CONECTOR DE PUNTA A PUNTA (3c). Corre el plugin de
+                     WordPress «Waka HUB · Conector» (carpeta wordpress/) de
+                     verdad sobre un WordPress de mentira (wp_falso.php): la
+                     firma, lo que deja y no deja cambiar, mover el stock sin
+                     descontar dos veces, y que al leer la tienda mande el HUB.
+
+  correr3.php también lleva la 3f: la foto del DNI por método (en la
+                     venta y en la ficha, por la cámara o por archivo), la
+                     pantalla de métodos de pago, la categoría de la web, los
+                     colores de un producto de la web y la venta encima de la
+                     bandeja de pagos. movil.cjs mira además que la caja del
+                     DNI salga y se esconda según el método.
+
+  correr7.php  (152) LA VENTA DESCUENTA LA WEB (3e). El plugin de verdad
+                     sobre el WordPress de mentira: descontar al registrar,
+                     no vender sin stock, devolver al anular, la tienda caída
+                     (se mira el último stock), la respuesta que se pierde
+                     (no descuenta dos veces), la cola que llega tarde (la
+                     web en negativo) y todo lo que encontraron la auditoría
+                     y las dos verificaciones.
+
+  correr8.php  (122) PRE VENTA Y LOTES (3h): el lote, sus precios, el corte
+                     duro del stock de pre venta y el Excel de carga.
+
+  correr9.php  (124) REPUESTOS Y GARANTÍA (3i): el repuesto colgado de su
+                     máquina, el kit pieza por pieza, su stock en el HUB
+                     (entra al llegar el lote, sale con la venta y con la
+                     garantía), la vigencia, pedirla, aprobarla y que NO sea
+                     una venta (ni meta, ni cashback, ni cobro).
+
+  correr10.php (119) LO QUE PIDIÓ EL USUARIO AL PROBAR LA 3i (3j): el estado
+                     que mueve el HUB, la pre venta que espera a «Listo para
+                     entrega» (con «Llega aprox.»), ENTREGADO con la foto, el
+                     costo del envío opcional en la pre venta, el siguiente
+                     paso del lote, «Enviados», las máquinas para «¿Es
+                     repuesto?», los clientes a los que se les puede vender,
+                     la caché del esquema y lo que encontró la auditoría.
+
+  correr11.php (237) BONOS, METAS Y RACHAS (5a): el motor de los 7 bonos
+                     (niveles, escalera, puestos, primeros, equipo), los
+                     períodos, el cierre con sus reglas congeladas, el Dúo y
+                     el Rápido, la Cacería del Día, encender/apagar/pausas,
+                     pagar y deshacer, la historia de niveles, los tres
+                     contadores de racha y sus avisos, la pila de novedades,
+                     el modo team, la meta general y lo que encontró la
+                     auditoría.
+
+  correr3.php  (110)  HTTP de verdad: un servidor PHP, cookies, redirecciones,
+                     CSRF y códigos de estado. Es donde se comprueba que el
+                     aislamiento vive en el SERVIDOR: escribir la dirección de
+                     un pedido ajeno a mano tiene que devolver 403.
+
+
+CÓMO FUNCIONA
+
+El HUB corre sobre MySQL, pero las pruebas no pueden depender de que haya uno.
+banco.php traduce el MISMO DDL que se sube al hosting a SQLite al vuelo, y
+PdoPruebas reescribe las funciones de fecha de MySQL en cada consulta.
+
+El único punto de contacto con el producto es $GLOBALS['__pdo_instalacion'],
+que NO se inventó para esto: es el gancho que ya usaba instalar.php para poder
+trabajar antes de que exista el archivo de configuración.
+
+  ═══════════════════════════════════════════════════════════════
+   CERO LÍNEAS DE CÓDIGO DE PRUEBAS DENTRO DEL PRODUCTO.
+   Esta carpeta NO viaja en el ZIP y el .htaccess la bloquea.
+  ═══════════════════════════════════════════════════════════════
+
+correr2 y correr3 rehacen la base en cada pasada. Si se reutilizara, el cliente
+que creó una prueba seguiría ahí en la siguiente y los fallos hablarían de
+cualquier cosa menos del error.
+
+
+LOS NOMBRES DE AQUÍ NO SON PERSONAS
+
+Las cuentas de prueba se llaman "Cuenta De Prueba" y usan correos @waka.test.
+No corresponden a nadie de la empresa y no se mencionan al usuario como si
+existieran. Los nombres reales están en la memoria del proyecto.
+
+
+UNA PRUEBA QUE PASA NO ES UNA PANTALLA REVISADA
+
+Ya pasó en el módulo 1: las pruebas decían que la cuenta se creaba, pero
+ninguna comprobaba que la contraseña se pintara. Después de correr esto, hay
+que MIRAR las pantallas.
